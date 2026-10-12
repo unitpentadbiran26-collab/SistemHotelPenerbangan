@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sistem Penempahan Hotel &amp; Penerbangan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --navy:#0F0E2A; --navy-2:#16213E; --navy-3:#1A1A3E;
+    --paper:#1E1E3A; --paper-2:#252545; --mist:#2E2E55; --mist-2:#232340;
+    --gold:#D4A843; --gold-dark:#B8891F; --gold-light:#F0C96A;
+    --ink:#F0EDE8; --ink-dim:#9AA5B4; --ok:#4CAF82; --coral:#E05C5C;
+    --radius:10px; --sidebar-w:220px; --topbar-h:58px;
+    --shadow:0 2px 8px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{background:var(--navy);color:var(--ink);font-family:'Inter',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;color:var(--ink);}
+  a{color:var(--gold);text-decoration:none;}
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--navy-2);border-bottom:1px solid var(--mist);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+  .topbar-brand{display:flex;align-items:center;gap:10px;width:var(--sidebar-w);flex-shrink:0;}
+  .brand-mark{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
+  .brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
+  .brand-sub{font-size:10px;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;}
+  .topbar-nav{display:flex;align-items:center;gap:4px;flex:1;}
+  .topbar-nav a{padding:7px 14px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--ink-dim);transition:all .15s;}
+  .topbar-nav a:hover{background:var(--mist);color:var(--ink);}
+  .topbar-nav a.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;}
+  .topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
+  .btn-admin{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;}
+  .btn-admin:hover{box-shadow:0 4px 12px rgba(212,168,67,0.4);}
+  .app-layout{display:flex;margin-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h));}
+  .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-2);border-right:1px solid var(--mist);padding:24px 12px;position:fixed;top:var(--topbar-h);bottom:0;overflow-y:auto;}
+  .sidebar-section{margin-bottom:24px;}
+  .sidebar-label{font-size:10.5px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;padding:0 10px;margin-bottom:6px;}
+  .sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink-dim);cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
+  .sidebar-item:hover{background:var(--mist);color:var(--ink);}
+  .sidebar-item.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;border-left:3px solid var(--gold);padding-left:9px;}
+  .sidebar-item svg{flex-shrink:0;opacity:.7;}
+  .sidebar-item.active svg{opacity:1;}
+  .sidebar-note{font-size:12px;color:var(--ink-dim);padding:0 10px;line-height:1.5;}
+  .count{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:1px 7px;border-radius:100px;}
+  .count:empty{display:none;}
+  .main-content{margin-left:var(--sidebar-w);flex:1;padding:28px 28px 60px;min-width:0;}
+  .page-header{margin-bottom:24px;}
+  .page-header h2{font-size:22px;font-weight:700;}
+  .page-header p{font-size:13px;color:var(--ink-dim);margin-top:4px;}
+  .card{background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--mist);}
+  .btn{border:1px solid var(--mist);background:var(--paper-2);color:var(--ink);padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;text-align:center;}
+  .btn:hover{border-color:var(--gold);color:var(--gold);}
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-color:var(--gold-dark);color:var(--navy);font-weight:700;}
+  .btn-primary:hover{box-shadow:0 4px 14px rgba(212,168,67,0.4);color:var(--navy);}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--gold);}
+  .btn-ghost:hover{background:rgba(212,168,67,0.08);border-color:transparent;color:var(--gold);}
+  .btn-danger{background:transparent;border-color:var(--coral);color:var(--coral);}
+  .btn-danger:hover{background:var(--coral);color:#fff;}
+  .btn:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-sm{padding:6px 12px;font-size:12.5px;border-radius:7px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
+  .field label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);transition:border-color .15s,box-shadow .15s;}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.12);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .field select option{background:var(--paper-2);}
+  .field-row{display:flex;gap:10px;}
+  .field-row .field{flex:1;min-width:0;}
+  .form-card{max-width:620px;padding:28px 30px;}
+  .form-section{font-size:12px;font-weight:700;color:var(--ink);margin:6px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--mist);}
+  .form-error{background:rgba(224,92,92,0.1);color:var(--coral);border:1px solid rgba(224,92,92,0.3);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+  .form-error.show{display:block;}
+  .note{background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:var(--ink-dim);}
+  .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:100px;text-transform:uppercase;white-space:nowrap;}
+  .badge-Menunggu{background:rgba(212,168,67,0.15);color:var(--gold);border:1px solid rgba(212,168,67,0.3);}
+  .badge-Diluluskan{background:rgba(76,175,130,0.15);color:var(--ok);border:1px solid rgba(76,175,130,0.3);}
+  .badge-Ditolak{background:rgba(224,92,92,0.15);color:var(--coral);border:1px solid rgba(224,92,92,0.3);}
+  .badge-Dibatalkan{background:rgba(154,165,180,0.15);color:var(--ink-dim);border:1px solid rgba(154,165,180,0.3);}
+  .badge-jenis{background:var(--mist-2);color:var(--ink-dim);border:1px solid var(--mist);}
+  .rows{display:grid;grid-template-columns:150px 1fr;gap:5px 12px;font-size:12.5px;margin-top:12px;background:var(--mist-2);padding:10px 12px;border-radius:8px;border:1px solid var(--mist);}
+  .rows b{color:var(--ink-dim);font-weight:600;}
+  .rows span{color:var(--ink);word-break:break-word;}
+  table.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+  table.tbl th{text-align:left;font-size:10.5px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.06em;padding:10px 12px;border-bottom:1px solid var(--mist);background:var(--paper-2);}
+  table.tbl td{padding:9px 12px;border-bottom:1px solid var(--mist);color:var(--ink);vertical-align:top;}
+  table.tbl tr:last-child td{border-bottom:none;}
+  .empty-state{text-align:center;color:var(--ink-dim);padding:40px 20px;border:1px dashed var(--mist);border-radius:var(--radius);font-size:13.5px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(10,10,30,.8);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--paper);border-radius:14px;max-width:420px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.7);border:1px solid var(--mist);}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--mist);background:var(--paper-2);border-radius:14px 14px 0 0;}
+  .modal-head h2{font-size:16px;color:var(--gold);}
+  .modal-close{cursor:pointer;color:var(--ink-dim);font-size:22px;background:none;border:none;}
+  .modal-close:hover{color:var(--coral);}
+  .modal-body{padding:22px 24px 26px;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--paper-2);color:var(--ink);padding:12px 22px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid var(--mist);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:300;max-width:90vw;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.error{background:#3a1f2b;border-color:var(--coral);color:var(--coral);}
+  .hamburger-btn{display:none;background:none;border:none;color:var(--ink);padding:6px;cursor:pointer;border-radius:7px;align-items:center;justify-content:center;}
+  .hamburger-btn:hover{background:var(--mist);}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:149;}
+  .sidebar-backdrop.open{display:block;}
+  svg{color:#fff;}
+  @media(max-width:768px){
+    :root{--topbar-h:48px;}
+    .hamburger-btn{display:flex;}
+    .sidebar{display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .22s ease;z-index:150;box-shadow:0 0 30px rgba(0,0,0,.5);width:250px;}
+    .sidebar.open{transform:translateX(0);}
+    .topbar-nav{display:none;}
+    .topbar{padding:0 8px 0 4px;gap:6px;}
+    .topbar-brand{width:auto;}
+    .brand-mark{width:28px;height:28px;}
+    .brand-name{font-size:12px;}
+    .brand-sub{font-size:8.5px;}
+    .btn-admin{padding:5px 10px;font-size:11px;}
+    .main-content{margin-left:0;padding:14px 14px 40px;}
+    .page-header{margin-bottom:14px;}
+    .page-header h2{font-size:17px;}
+    .page-header p{font-size:11.5px;margin-top:2px;}
+    .form-card{padding:18px 16px;}
+    .field-row{flex-direction:column;gap:0;}
+    .field label{font-size:9.5px;}
+    .field input,.field select,.field textarea{padding:8px 10px;font-size:13px;}
+    .btn{padding:7px 12px;font-size:12px;}
+    .rows{grid-template-columns:110px 1fr;font-size:11.5px;}
+    table.tbl{font-size:11.5px;}
+    table.tbl th,table.tbl td{padding:7px 8px;}
+  }
+  .start-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px;}
+  .start-card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:20px 22px;cursor:pointer;transition:border-color .15s,transform .15s;text-align:left;font-family:inherit;color:var(--ink);}
+  .start-card:hover{border-color:var(--gold);transform:translateY(-1px);}
+  .start-card .ic{width:40px;height:40px;border-radius:10px;background:rgba(212,168,67,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .start-card h3{font-size:16px;margin-bottom:4px;}
+  .start-card p{font-size:12.5px;color:var(--ink-dim);line-height:1.5;}
+  .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:24px;}
+  .step{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:14px 16px;font-size:12.5px;color:var(--ink-dim);line-height:1.5;}
+  .step b{display:block;color:var(--gold);font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px;}
+  .card-head{padding:16px 20px;border-bottom:1px solid var(--mist);}
+  .card-head h3{font-size:15px;}
+  .card-head p{font-size:12px;color:var(--ink-dim);margin-top:3px;}
+  .summary{display:none;background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--gold-light);}
+  .status-card{padding:20px 22px;margin-top:16px;}
+  .status-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
+  .status-top .t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;}
+  .status-top .s{font-size:12px;color:var(--ink-dim);margin-top:3px;}
+  .ref-box{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.04em;background:var(--mist-2);border:1px dashed var(--gold-dark);border-radius:10px;padding:12px;margin:6px 0 14px;}
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <div class="topbar-brand">
+      <div class="brand-mark"><img src="logo.png" width="34" height="34" style="object-fit:contain;" alt=""></div>
+      <div>
+        <div class="brand-name">Sistem Penempahan</div>
+        <div class="brand-sub">Hotel &amp; Penerbangan</div>
+      </div>
+    </div>
+    <nav class="topbar-nav">
+      <a href="#" class="active" id="nav-utama">Utama</a>
+      <a href="#" id="nav-hotel">Mohon Hotel</a>
+      <a href="#" id="nav-flight">Mohon Penerbangan</a>
+      <a href="#" id="nav-status">Semak Status</a>
+    </nav>
+    <div class="topbar-right">
+      <a class="btn-admin" href="admin.html">Panel Admin</a>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Menu</div>
+        <button class="sidebar-item active" id="sb-utama">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          Utama
+        </button>
+        <button class="sidebar-item" id="sb-hotel">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 20V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12M3 14h18M7 10h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Mohon Hotel
+        </button>
+        <button class="sidebar-item" id="sb-flight">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 16l20-6-3-2-7 2-6-5-2 1 4 6-4 1-2-1-1 1 3 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          Mohon Penerbangan
+        </button>
+        <button class="sidebar-item" id="sb-status">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Semak Status
+        </button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Maklumat</div>
+        <p class="sidebar-note">Keputusan permohonan akan dihantar ke emel anda. Simpan No. Rujukan untuk semak status atau cetak borang.</p>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <!-- UTAMA -->
+      <div id="page-utama">
+        <div class="page-header"><h2>Selamat Datang</h2><p>Mohon penginapan hotel atau tiket penerbangan untuk urusan rasmi</p></div>
+        <div class="start-grid">
+          <button class="start-card" id="go-hotel">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12M3 14h18M7 10h3" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <h3>Mohon Hotel</h3><p>Penginapan untuk kursus, mesyuarat atau tugasan luar. Had sewa ikut gred.</p>
+          </button>
+          <button class="start-card" id="go-flight">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M2 16l20-6-3-2-7 2-6-5-2 1 4 6-4 1-2-1-1 1 3 3z" stroke="#D4A843" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <h3>Mohon Penerbangan</h3><p>Tiket pergi dan balik dengan tarikh serta masa bertolak.</p>
+          </button>
+          <button class="start-card" id="go-status">
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#D4A843" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <h3>Semak Status</h3><p>Guna No. Rujukan dan emel untuk lihat status atau cetak borang.</p>
+          </button>
+        </div>
+        <div class="steps">
+          <div class="step"><b>1 &middot; Mohon</b>Isi borang hotel atau penerbangan dan hantar.</div>
+          <div class="step"><b>2 &middot; Semakan</b>Unit Pentadbiran semak kelayakan ikut gred anda.</div>
+          <div class="step"><b>3 &middot; Keputusan</b>Emel dihantar sama ada diluluskan atau ditolak.</div>
+        </div>
+        <div class="card" style="overflow:hidden;">
+          <div class="card-head"><h3>Kelayakan Sewa Hotel Ikut Gred</h3><p>Had sewa hotel semalam dan elaun lojing. "Sebenar" = kos sebenar mengikut jenis bilik.</p></div>
+          <div style="overflow-x:auto;" id="kelayakanWrap"><div class="empty-state" style="border:none;">Memuatkan...</div></div>
+        </div>
+      </div>
+
+      <!-- HOTEL -->
+      <div id="page-hotel" style="display:none;">
+        <div class="page-header"><h2>Mohon Hotel</h2><p>Hantar permohonan penginapan hotel untuk urusan rasmi</p></div>
+        <div class="card form-card">
+          <div class="form-error" id="h_error"></div>
+          <div class="form-section">Maklumat Pemohon</div>
+          <div class="field"><label>Nama Pemohon</label><input type="text" id="h_nama" placeholder="Nama penuh"></div>
+          <div class="field-row">
+            <div class="field"><label>Bahagian</label><select id="h_bahagian"><option value="">-- Pilih Bahagian --</option></select></div>
+            <div class="field"><label>Unit <span>(pilihan)</span></label><select id="h_unit"><option value="">-- Pilih Bahagian dahulu --</option></select></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Emel</label><input type="email" id="h_emel" placeholder="Keputusan dihantar ke emel ini"></div>
+            <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="h_noTelefon" placeholder="Contoh: 019-1234567"></div>
+          </div>
+          <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
+          <div class="field"><label>Nama Hotel</label><input type="text" id="h_namaHotel" placeholder="Contoh: Hotel Pullman"></div>
+          <div class="field"><label>Alamat / Kawasan</label><input type="text" id="h_alamat" placeholder="Contoh: Jalan Tunku Abdul Rahman"></div>
+          <div class="field-row">
+            <div class="field"><label>Daerah</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
+            <div class="field"><label>Kadar Semalam (RM) <span>(jika tahu)</span></label><input type="number" id="h_kadar" min="0" step="0.01" placeholder="Contoh: 320"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Tarikh Masuk</label><input type="date" id="h_tarikhMasuk"></div>
+            <div class="field"><label>Tarikh Keluar</label><input type="date" id="h_tarikhKeluar"></div>
+          </div>
+          <div class="summary" id="h_ringkasan"></div>
+          <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset di Kuching"></textarea></div>
+          <div class="note">Kelayakan sewa hotel akan disemak oleh admin mengikut gred anda.</div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="h_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
+            <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PENERBANGAN -->
+      <div id="page-flight" style="display:none;">
+        <div class="page-header"><h2>Mohon Penerbangan</h2><p>Hantar permohonan tiket penerbangan untuk urusan rasmi</p></div>
+        <div class="card form-card">
+          <div class="form-error" id="p_error"></div>
+          <div class="form-section">Maklumat Pemohon</div>
+          <div class="field"><label>Nama Pemohon</label><input type="text" id="p_nama" placeholder="Nama penuh"></div>
+          <div class="field-row">
+            <div class="field"><label>Bahagian</label><select id="p_bahagian"><option value="">-- Pilih Bahagian --</option></select></div>
+            <div class="field"><label>Unit <span>(pilihan)</span></label><select id="p_unit"><option value="">-- Pilih Bahagian dahulu --</option></select></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Emel</label><input type="email" id="p_emel" placeholder="Keputusan dihantar ke emel ini"></div>
+            <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="p_noTelefon" placeholder="Contoh: 019-1234567"></div>
+          </div>
+          <div class="form-section" style="margin-top:8px;">Maklumat Penerbangan</div>
+          <div class="field-row">
+            <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kuching"></div>
+            <div class="field"><label>Destinasi</label><input type="text" id="p_destinasi" placeholder="Contoh: Kuala Lumpur"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Tarikh Pergi</label><input type="date" id="p_tarikhPergi"></div>
+            <div class="field"><label>Masa Bertolak (Pergi)</label><input type="time" id="p_masaPergi"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Tarikh Balik</label><input type="date" id="p_tarikhBalik"></div>
+            <div class="field"><label>Masa Bertolak (Balik)</label><input type="time" id="p_masaBalik"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>No. Penerbangan Pergi <span>(jika ada)</span></label><input type="text" id="p_noPergi" placeholder="Contoh: MH2511"></div>
+            <div class="field"><label>No. Penerbangan Balik <span>(jika ada)</span></label><input type="text" id="p_noBalik"></div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Syarikat Penerbangan <span>(pilihan)</span></label><input type="text" id="p_syarikat" placeholder="Contoh: MASwings"></div>
+            <div class="field"><label>Kelas</label><select id="p_kelas"><option value="Ekonomi">Ekonomi</option><option value="Bisnes">Bisnes</option></select></div>
+          </div>
+          <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Mesyuarat Jawatankuasa di Putrajaya"></textarea></div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="p_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
+            <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEMAK STATUS -->
+      <div id="page-status" style="display:none;">
+        <div class="page-header"><h2>Semak Status</h2><p>Masukkan No. Rujukan dan emel yang digunakan semasa memohon</p></div>
+        <div class="card form-card">
+          <div class="form-error" id="s_error"></div>
+          <div class="field-row">
+            <div class="field"><label>No. Rujukan</label><input type="text" id="s_id" placeholder="Contoh: HTL-2026-0001" style="text-transform:uppercase;"></div>
+            <div class="field"><label>Emel</label><input type="email" id="s_emel" placeholder="Emel semasa memohon"></div>
+          </div>
+          <button class="btn btn-primary" id="s_btn" style="width:100%;padding:11px;">Semak</button>
+        </div>
+        <div id="s_hasil" style="max-width:620px;"></div>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="doneModal">
+    <div class="modal" style="text-align:center;">
+      <div class="modal-head"><h2>Permohonan Dihantar</h2><button class="modal-close" id="doneClose">&times;</button></div>
+      <div class="modal-body">
+        <p style="color:var(--ink-dim);font-size:13px;">No. Rujukan anda:</p>
+        <div class="ref-box" id="doneRef"></div>
+        <p style="color:var(--ink-dim);font-size:12.5px;margin-bottom:16px;">Simpan nombor ini. Keputusan akan dihantar ke emel anda.</p>
+        <a class="btn btn-primary" id="donePrint" style="width:100%;padding:10px;" target="_blank">Cetak Borang Permohonan</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ====================== KONFIGURASI - WAJIB TUKAR ======================
+    // URL web app GAS (Deploy > Web app). Mesti berakhir dengan /exec
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
+    const BAHAGIAN_OPTIONS = ['Pejabat Pengurus Besar','Khidmat Pengurusan','Perancangan dan Pembangunan Strategik','Pembangunan Nelayan','Pembangunan Industri Perikanan'];
+    const UNIT_GROUPS = {
+      'Pejabat Pengurus Besar': ['Unit Pengurusan Petroleum','Unit Audit Dalam','Unit Pemasaran','Unit Perundangan dan Penguatkuasaan','Unit Komunikasi Korporat','Unit Kejuruteraan'],
+      'Khidmat Pengurusan': ['Unit Pentadbiran','Unit Akaun dan Kewangan','Unit Sumber Manusia','Unit Teknologi Maklumat','Unit Pengurusan Harta'],
+      'Perancangan dan Pembangunan Strategik': ['Unit Perancangan Pembangunan','Unit Pelaburan','Unit Pemantauan'],
+      'Pembangunan Nelayan': ['Unit Pengurusan Kredit','Unit Pengurusan Kompleks'],
+      'Pembangunan Industri Perikanan': [] // tiada unit di Ibu Pejabat
+    };
+    // =========================================================================
+
+    async function api(action, params) {
+      if (API_URL.indexOf('GANTI') === 0) throw new Error('API_URL belum ditetapkan. Sila kemas kini bahagian KONFIGURASI.');
+      const url = new URL(API_URL);
+      url.searchParams.set('action', action);
+      if (params) Object.keys(params).forEach(function (k) {
+        if (params[k] !== undefined && params[k] !== null && params[k] !== '') url.searchParams.set(k, params[k]);
+      });
+      const res = await fetch(url.toString());
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Ralat tidak diketahui');
+      return json.data;
+    }
+    function escapeHtml(s) {
+      return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    function showToast(msg, isError) {
+      var t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (isError ? ' error' : '');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(function () { t.className = 'toast'; }, 4500);
+    }
+    function rm(n) { return (n || n === 0) ? 'RM' + Number(n).toFixed(2) : ''; }
+    function rowsHtml(list) {
+      return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] !== null && r[1] !== undefined && r[1] !== '-'; })
+        .map(function (r) { return '<b>' + escapeHtml(r[0]) + '</b><span>' + escapeHtml(r[1]) + '</span>'; }).join('') + '</div>';
+    }
+    function butiranPermohonan(b) {
+      if (b.jenis === 'Hotel') return [
+        ['Hotel', b.namaHotel], ['Alamat / kawasan', b.alamat], ['Daerah', b.daerah],
+        ['Tarikh', b.tarikhMasuk + '  →  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)],
+        ['Kadar semalam', rm(b.kadar) || 'Tidak dinyatakan'], ['Tujuan', b.tujuan]
+      ];
+      return [
+        ['Dari → Destinasi', b.dari + '  →  ' + b.destinasi],
+        ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
+        ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
+        ['Syarikat', b.syarikat], ['Kelas', b.kelas], ['Tujuan', b.tujuan]
+      ];
+    }
+    function populateUnitSelect(selectEl, bahagian) {
+      if (!bahagian) { selectEl.innerHTML = '<option value="">-- Pilih Bahagian dahulu --</option>'; selectEl.disabled = true; return; }
+      var units = UNIT_GROUPS[bahagian] || [];
+      if (!units.length) { selectEl.innerHTML = '<option value="">(Tiada unit di Ibu Pejabat)</option>'; selectEl.disabled = true; return; }
+      selectEl.innerHTML = '<option value="">-- Pilih Unit --</option>' + units.map(function (u) { return '<option value="' + escapeHtml(u) + '">' + escapeHtml(u) + '</option>'; }).join('');
+      selectEl.disabled = false;
+    }
+    function setupDrawer() {
+      var sb = document.getElementById('sidebar'), bd = document.getElementById('sidebarBackdrop');
+      document.getElementById('hamburgerBtn').addEventListener('click', function () { sb.classList.add('open'); bd.classList.add('open'); });
+      bd.addEventListener('click', closeDrawer);
+    }
+    function closeDrawer() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('open');
+    }
+    /** Navigasi: setiap halaman ada #page-X, #sb-X dan (pilihan) #nav-X */
+    function setupPages(pages, onShow) {
+      function show(p) {
+        pages.forEach(function (x) {
+          document.getElementById('page-' + x).style.display = x === p ? 'block' : 'none';
+          var sb = document.getElementById('sb-' + x); if (sb) sb.className = 'sidebar-item' + (x === p ? ' active' : '');
+          var nv = document.getElementById('nav-' + x); if (nv) nv.className = x === p ? 'active' : '';
+        });
+        window.scrollTo(0, 0);
+        if (onShow) onShow(p);
+      }
+      pages.forEach(function (x) {
+        var sb = document.getElementById('sb-' + x); if (sb) sb.addEventListener('click', function () { show(x); closeDrawer(); });
+        var nv = document.getElementById('nav-' + x); if (nv) nv.addEventListener('click', function (e) { e.preventDefault(); show(x); });
+      });
+      return show;
+    }
+    var showPage = setupPages(['utama', 'hotel', 'flight', 'status']);
+    setupDrawer();
+    document.getElementById('go-hotel').addEventListener('click', function () { showPage('hotel'); });
+    document.getElementById('go-flight').addEventListener('click', function () { showPage('flight'); });
+    document.getElementById('go-status').addEventListener('click', function () { showPage('status'); });
+    Array.prototype.forEach.call(document.querySelectorAll('.btn-batal'), function (b) {
+      b.addEventListener('click', function () { showPage('utama'); });
+    });
+
+    function $(id) { return document.getElementById(id); }
+    function v(id) { return $(id).value.trim(); }
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function today() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+
+    // ---------- Jadual kelayakan ----------
+    async function loadKelayakan() {
+      var el = $('kelayakanWrap');
+      try {
+        var rows = await api('getJadualKelayakan');
+        var had = function (r) { return r.had === null ? 'Sebenar' + (r.jenisBilik ? ' (' + r.jenisBilik + ')' : '') : r.had.toFixed(2); };
+        // Gabung baris SSM & SSPA yang sama kelayakan (padanan ikut elaun lojing), seperti jadual asal.
+        var tahap = [];
+        rows.filter(function (r) { return r.skim !== 'PSH'; }).forEach(function (r) {
+          var t = tahap.find(function (x) { return x.lojing === r.lojing && x.had === had(r); });
+          if (!t) { t = { lojing: r.lojing, had: had(r), ssm: '-', sspa: '-' }; tahap.push(t); }
+          t[r.skim === 'SSPA' ? 'sspa' : 'ssm'] = r.label;
+        });
+        var psh = rows.filter(function (r) { return r.skim === 'PSH'; });
+        var h = '<table class="tbl"><thead><tr><th>Gred SSM</th><th>Gred SSPA</th><th>Sewa Hotel (RM)</th><th>Elaun Lojing (RM)</th></tr></thead><tbody>' +
+          tahap.map(function (t) {
+            return '<tr><td>' + escapeHtml(t.ssm) + '</td><td>' + escapeHtml(t.sspa) + '</td><td>' + escapeHtml(t.had) + '</td><td>' + (t.lojing !== null ? t.lojing.toFixed(2) : '-') + '</td></tr>';
+          }).join('') + '</tbody></table>';
+        if (psh.length) {
+          h += '<div style="padding:14px 12px 6px;font-size:12px;font-weight:700;color:var(--ink);">Pekerja Sambilan Harian (PSH)</div>' +
+            '<table class="tbl"><thead><tr><th>Kelayakan Akademik</th><th>Sewa Hotel (RM)</th><th>Elaun Lojing (RM)</th></tr></thead><tbody>' +
+            psh.map(function (r) {
+              return '<tr><td>' + escapeHtml(r.akademik) + '</td><td>' + escapeHtml(had(r)) + '</td><td>' + (r.lojing !== null ? r.lojing.toFixed(2) : '-') + '</td></tr>';
+            }).join('') + '</tbody></table>';
+        }
+        el.innerHTML = h;
+      } catch (e) {
+        el.innerHTML = '<div class="empty-state" style="border:none;">Gagal memuatkan: ' + escapeHtml(e.message) + '</div>';
+      }
+    }
+
+    // ---------- Borang ----------
+    ['h', 'p'].forEach(function (px) {
+      var sel = $(px + '_bahagian');
+      sel.innerHTML = '<option value="">-- Pilih Bahagian --</option>' +
+        BAHAGIAN_OPTIONS.map(function (b) { return '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + '</option>'; }).join('');
+      populateUnitSelect($(px + '_unit'), '');
+      sel.addEventListener('change', function () { populateUnitSelect($(px + '_unit'), this.value); });
+    });
+    ['h_tarikhMasuk', 'h_tarikhKeluar', 'p_tarikhPergi', 'p_tarikhBalik'].forEach(function (id) { $(id).min = today(); });
+    $('h_tarikhMasuk').addEventListener('change', function () { if (this.value) $('h_tarikhKeluar').min = this.value; ringkasHotel(); });
+    $('p_tarikhPergi').addEventListener('change', function () { if (this.value) $('p_tarikhBalik').min = this.value; });
+    $('h_tarikhKeluar').addEventListener('change', ringkasHotel);
+    $('h_kadar').addEventListener('input', ringkasHotel);
+
+    function ringkasHotel() {
+      var a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), k = parseFloat(v('h_kadar')), el = $('h_ringkasan');
+      if (!a || !b) { el.style.display = 'none'; return; }
+      var malam = Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
+      el.style.display = 'block';
+      if (malam < 1) { el.style.color = 'var(--coral)'; el.textContent = 'Tarikh keluar mesti selepas tarikh masuk.'; return; }
+      el.style.color = 'var(--gold-light)';
+      el.textContent = malam + ' malam' + (k > 0 ? ' × RM' + k.toFixed(2) + ' = RM' + (malam * k).toFixed(2) : '');
+    }
+
+    function err(px, msg) { var e = $(px + '_error'); e.textContent = msg; e.classList.add('show'); e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+    function semakPemohon(px) {
+      if (!v(px + '_nama')) return 'Sila isi Nama Pemohon.';
+      if (!v(px + '_bahagian')) return 'Sila pilih Bahagian.';
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v(px + '_emel'))) return 'Sila isi Emel yang sah.';
+      return '';
+    }
+    function dataPemohon(px) {
+      return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
+        noTelefon: v(px + '_noTelefon'), tujuan: v(px + '_tujuan') };
+    }
+
+    async function hantar(btn, action, data, px) {
+      btn.disabled = true; btn.textContent = 'Menghantar...';
+      try {
+        var res = await api(action, data);
+        Array.prototype.forEach.call(document.querySelectorAll('#page-' + (px === 'h' ? 'hotel' : 'flight') + ' input, #page-' + (px === 'h' ? 'hotel' : 'flight') + ' textarea'), function (el) { el.value = ''; });
+        $(px + '_bahagian').value = ''; populateUnitSelect($(px + '_unit'), '');
+        $('h_ringkasan').style.display = 'none';
+        $('doneRef').textContent = res.id;
+        $('donePrint').href = 'print.html?id=' + encodeURIComponent(res.id);
+        $('doneModal').classList.add('open');
+        showPage('utama');
+      } catch (e) {
+        err(px, 'Ralat: ' + e.message);
+      }
+      btn.disabled = false; btn.textContent = 'Hantar Permohonan';
+    }
+
+    $('h_submitBtn').addEventListener('click', function () {
+      $('h_error').classList.remove('show');
+      var m = semakPemohon('h');
+      if (!m && !v('h_namaHotel')) m = 'Sila isi Nama Hotel.';
+      if (!m && !v('h_alamat')) m = 'Sila isi Alamat / Kawasan.';
+      if (!m && !v('h_daerah')) m = 'Sila isi Daerah.';
+      if (!m && (!v('h_tarikhMasuk') || !v('h_tarikhKeluar'))) m = 'Sila pilih Tarikh Masuk dan Tarikh Keluar.';
+      if (!m && v('h_tarikhKeluar') <= v('h_tarikhMasuk')) m = 'Tarikh Keluar mesti selepas Tarikh Masuk.';
+      if (!m && !v('h_tujuan')) m = 'Sila isi Tujuan / Program.';
+      if (m) return err('h', m);
+      var d = dataPemohon('h');
+      d.namaHotel = v('h_namaHotel'); d.alamat = v('h_alamat'); d.daerah = v('h_daerah');
+      d.tarikhMasuk = v('h_tarikhMasuk'); d.tarikhKeluar = v('h_tarikhKeluar'); d.kadar = v('h_kadar');
+      hantar(this, 'submitHotel', d, 'h');
+    });
+
+    $('p_submitBtn').addEventListener('click', function () {
+      $('p_error').classList.remove('show');
+      var m = semakPemohon('p');
+      if (!m && !v('p_dari')) m = 'Sila isi tempat berlepas (Dari).';
+      if (!m && !v('p_destinasi')) m = 'Sila isi Destinasi.';
+      if (!m && (!v('p_tarikhPergi') || !v('p_masaPergi'))) m = 'Sila isi Tarikh dan Masa Bertolak (Pergi).';
+      if (!m && (!v('p_tarikhBalik') || !v('p_masaBalik'))) m = 'Sila isi Tarikh dan Masa Bertolak (Balik).';
+      if (!m && v('p_tarikhBalik') < v('p_tarikhPergi')) m = 'Tarikh Balik tidak boleh sebelum Tarikh Pergi.';
+      if (!m && v('p_tarikhBalik') === v('p_tarikhPergi') && v('p_masaBalik') <= v('p_masaPergi')) m = 'Untuk perjalanan sehari, masa balik mesti selepas masa pergi.';
+      if (!m && !v('p_tujuan')) m = 'Sila isi Tujuan / Program.';
+      if (m) return err('p', m);
+      var d = dataPemohon('p');
+      d.dari = v('p_dari'); d.destinasi = v('p_destinasi');
+      d.tarikhPergi = v('p_tarikhPergi'); d.masaPergi = v('p_masaPergi'); d.noPergi = v('p_noPergi');
+      d.tarikhBalik = v('p_tarikhBalik'); d.masaBalik = v('p_masaBalik'); d.noBalik = v('p_noBalik');
+      d.syarikat = v('p_syarikat'); d.kelas = v('p_kelas');
+      hantar(this, 'submitPenerbangan', d, 'p');
+    });
+
+    // ---------- Semak status ----------
+    $('s_btn').addEventListener('click', async function () {
+      $('s_error').classList.remove('show');
+      var id = v('s_id').toUpperCase(), emel = v('s_emel');
+      if (!id || !emel) return err('s', 'Sila isi No. Rujukan dan Emel.');
+      var btn = this; btn.disabled = true; btn.textContent = 'Menyemak...';
+      $('s_hasil').innerHTML = '';
+      try {
+        var r = await api('semakStatus', { id: id, emel: emel });
+        if (!r.found) {
+          $('s_hasil').innerHTML = '<div class="empty-state" style="margin-top:16px;">Tiada permohonan dijumpai untuk No. Rujukan dan emel ini.</div>';
+        } else {
+          var b = r.permohonan;
+          var rows = butiranPermohonan(b).concat([
+            ['Kelayakan', b.hadKelayakan || ''], ['Catatan admin', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
+          ]);
+          $('s_hasil').innerHTML = '<div class="card status-card"><div class="status-top"><div>' +
+            '<div class="t">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(b.id) + '</div>' +
+            '<div class="s">' + escapeHtml(b.nama) + ' &middot; dimohon ' + escapeHtml(b.tarikhMohon) + '</div></div>' +
+            '<span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
+            rowsHtml(rows) +
+            '<div style="margin-top:14px;"><a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak Borang</a></div></div>';
+        }
+      } catch (e) { err('s', 'Ralat: ' + e.message); }
+      btn.disabled = false; btn.textContent = 'Semak';
+    });
+    $('s_emel').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('s_btn').click(); });
+
+    $('doneClose').addEventListener('click', function () { $('doneModal').classList.remove('open'); });
+    $('doneModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
+
+    loadKelayakan();
+  </script>
+</body>
+</html>
