@@ -259,7 +259,7 @@
           <div class="field-row">
             <div class="field"><label>Tarikh Masuk</label><input type="date" id="h_tarikhMasuk"></div>
             <div class="field"><label>Tarikh Keluar</label><input type="date" id="h_tarikhKeluar"></div>
-            <div class="field" style="max-width:150px;"><label>Bil. Malam</label><input type="text" id="h_bilMalam" readonly placeholder="Auto" tabindex="-1"></div>
+            <div class="field" style="max-width:170px;"><label>Tempoh</label><input type="text" id="h_bilMalam" readonly placeholder="Auto" tabindex="-1"></div>
           </div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" id="h_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
@@ -390,6 +390,8 @@
       return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] !== null && r[1] !== undefined && r[1] !== '-'; })
         .map(function (r) { return '<b>' + escapeHtml(r[0]) + '</b><span>' + escapeHtml(r[1]) + '</span>'; }).join('') + '</div>';
     }
+    /** 3 -> "4 hari 3 malam" */
+    function tempoh(malam) { var n = Number(malam) || 0; return n ? (n + 1) + ' hari ' + n + ' malam' : ''; }
     function skimGred(b) {
       if (!b.skim) return '';
       return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
@@ -398,7 +400,7 @@
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
       if (b.jenis === 'Hotel') return asas.concat([
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
-        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)]
+        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Tempoh', tempoh(b.bilMalam)]
       ]);
       return asas.concat([
         ['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
@@ -500,12 +502,12 @@
     $('h_tarikhMasuk').addEventListener('input', kiraMalam);
     $('h_tarikhKeluar').addEventListener('input', kiraMalam);
 
-    /** Bil. malam dikira automatik dari tarikh masuk & keluar. */
+    /** Tempoh dikira automatik dari tarikh masuk & keluar, contoh "4 hari 3 malam". */
     function kiraMalam() {
       var a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), el = $('h_bilMalam');
       if (!a || !b) { el.value = ''; el.style.color = ''; return; }
       var malam = Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
-      el.value = malam >= 1 ? malam + ' malam' : 'Tarikh salah';
+      el.value = malam >= 1 ? (malam + 1) + ' hari ' + malam + ' malam' : 'Tarikh salah';
       el.style.color = malam >= 1 ? '' : 'var(--coral)';
     }
 
