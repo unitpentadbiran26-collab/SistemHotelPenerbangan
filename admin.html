@@ -339,6 +339,8 @@
       return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] !== null && r[1] !== undefined && r[1] !== '-'; })
         .map(function (r) { return '<b>' + escapeHtml(r[0]) + '</b><span>' + escapeHtml(r[1]) + '</span>'; }).join('') + '</div>';
     }
+    /** 3 -> "4 hari 3 malam" */
+    function tempoh(malam) { var n = Number(malam) || 0; return n ? (n + 1) + ' hari ' + n + ' malam' : ''; }
     function skimGred(b) {
       if (!b.skim) return '';
       return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
@@ -347,7 +349,7 @@
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
       if (b.jenis === 'Hotel') return asas.concat([
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
-        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)]
+        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Tempoh', tempoh(b.bilMalam)]
       ]);
       return asas.concat([
         ['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
