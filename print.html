@@ -45,7 +45,7 @@
 
   <script>
     // ====================== KONFIGURASI - WAJIB TUKAR ======================
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
+    const API_URL = 'GANTI_DENGAN_URL_WEB_APP_GAS';
     // =========================================================================
 
     function esc(s) {
@@ -53,7 +53,6 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
     }
-    function rm(n) { return (n || n === 0) ? 'RM' + Number(n).toFixed(2) : ''; }
     function jadual(rows) {
       return '<table>' + rows.map(function (r) {
         return '<tr><td class="k">' + esc(r[0]) + '</td><td>' + (r[1] === '' || r[1] === null || r[1] === undefined ? '&nbsp;' : esc(r[1])) + '</td></tr>';
@@ -79,20 +78,17 @@
       var hotel = b.jenis === 'Hotel';
       document.title = 'Borang ' + b.jenis + ' ' + b.id;
       var butiran = hotel ? [
-        ['Nama hotel', b.namaHotel], ['Alamat / kawasan', b.alamat], ['Daerah', b.daerah],
-        ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Bilangan malam', b.bilMalam],
-        ['Kadar semalam', rm(b.kadar)], ['Tujuan / program', b.tujuan]
+        ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+        ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Bilangan malam', b.bilMalam]
       ] : [
         ['Dari', b.dari], ['Destinasi', b.destinasi],
         ['Tarikh pergi', b.tarikhPergi], ['Masa bertolak (pergi)', b.masaPergi], ['No. penerbangan (pergi)', b.noPergi],
         ['Tarikh balik', b.tarikhBalik], ['Masa bertolak (balik)', b.masaBalik], ['No. penerbangan (balik)', b.noBalik],
-        ['Syarikat penerbangan', b.syarikat], ['Kelas', b.kelas], ['Tujuan / program', b.tujuan]
+        ['Syarikat penerbangan', b.syarikat], ['Kelas', b.kelas]
       ];
-      var keputusan = [
-        ['Status', b.status],
-        ['Skim / gred', b.skim ? b.skim + ' ' + (b.gred || b.akademik || '') : ''],
-      ];
-      if (hotel) keputusan.push(['Kelayakan sewa hotel', b.hadKelayakan ? b.hadKelayakan + (b.melebihiHad ? ' (kadar melebihi had)' : '') : '']);
+      var skimGred = b.skim ? b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || '')) : '';
+      var keputusan = [['Status', b.status]];
+      if (hotel) keputusan.push(['Kelayakan sewa hotel', b.status === 'Diluluskan' ? b.hadKelayakan : '']);
       keputusan.push(['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]);
 
       root.innerHTML =
@@ -101,7 +97,8 @@
         '<div class="meta"><div>No. Rujukan<br><b>' + esc(b.id) + '</b></div>' +
         '<div style="text-align:right;">Tarikh mohon: ' + esc(b.tarikhMohon) + '<br><span class="status s-' + esc(b.status) + '">' + esc(b.status) + '</span></div></div>' +
         '<h2>A. Maklumat Pemohon</h2>' + jadual([
-          ['Nama', b.nama], ['Bahagian', b.bahagian], ['Unit', b.unit === '-' ? '' : b.unit], ['Emel', b.emel], ['No. telefon', b.noTelefon]
+          ['Nama', b.nama], ['Bahagian', b.bahagian], ['Unit', b.unit === '-' ? '' : b.unit], ['Emel', b.emel], ['No. telefon', b.noTelefon],
+          ['Skim / gred', skimGred], ['Tujuan / program', b.tujuan]
         ]) +
         '<h2>B. Butiran ' + (hotel ? 'Penginapan' : 'Penerbangan') + '</h2>' + jadual(butiran) +
         '<h2>C. Keputusan ' + esc(b.organisasi) + '</h2>' + jadual(keputusan) +
