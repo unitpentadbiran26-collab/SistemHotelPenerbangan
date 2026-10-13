@@ -299,7 +299,7 @@
   <script>
     // ====================== KONFIGURASI - WAJIB TUKAR ======================
     // URL web app GAS (Deploy > Web app). Mesti berakhir dengan /exec
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
+    const API_URL = 'GANTI_DENGAN_URL_WEB_APP_GAS';
     const BAHAGIAN_OPTIONS = ['Pejabat Pengurus Besar','Khidmat Pengurusan','Perancangan dan Pembangunan Strategik','Pembangunan Nelayan','Pembangunan Industri Perikanan'];
     const UNIT_GROUPS = {
       'Pejabat Pengurus Besar': ['Unit Pengurusan Petroleum','Unit Audit Dalam','Unit Pemasaran','Unit Perundangan dan Penguatkuasaan','Unit Komunikasi Korporat','Unit Kejuruteraan'],
@@ -339,18 +339,22 @@
       return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] !== null && r[1] !== undefined && r[1] !== '-'; })
         .map(function (r) { return '<b>' + escapeHtml(r[0]) + '</b><span>' + escapeHtml(r[1]) + '</span>'; }).join('') + '</div>';
     }
+    function skimGred(b) {
+      if (!b.skim) return '';
+      return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
+    }
     function butiranPermohonan(b) {
-      if (b.jenis === 'Hotel') return [
-        ['Hotel', b.namaHotel], ['Alamat / kawasan', b.alamat], ['Daerah', b.daerah],
-        ['Tarikh', b.tarikhMasuk + '  →  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)],
-        ['Kadar semalam', rm(b.kadar) || 'Tidak dinyatakan'], ['Tujuan', b.tujuan]
-      ];
-      return [
-        ['Dari → Destinasi', b.dari + '  →  ' + b.destinasi],
+      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
+      if (b.jenis === 'Hotel') return asas.concat([
+        ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)]
+      ]);
+      return asas.concat([
+        ['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
         ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
         ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
-        ['Syarikat', b.syarikat], ['Kelas', b.kelas], ['Tujuan', b.tujuan]
-      ];
+        ['Syarikat', b.syarikat], ['Kelas', b.kelas]
+      ]);
     }
     function populateUnitSelect(selectEl, bahagian) {
       if (!bahagian) { selectEl.innerHTML = '<option value="">-- Pilih Bahagian dahulu --</option>'; selectEl.disabled = true; return; }
@@ -498,20 +502,22 @@
         '<span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div></div>';
     }
 
-    function pilihGred() {
-      return '<select class="sel f-skim"><option value="">-- Skim --</option><option>SSM</option><option>SSPA</option><option>PSH</option></select>' +
-        '<input type="text" class="sel f-gred" placeholder="Gred (cth. 41, Khas C)" style="width:180px;">' +
+    function pilihGred(b) {
+      var opt = function (v) { return '<option value="' + v + '"' + (b.skim === v ? ' selected' : '') + '>' + v + '</option>'; };
+      return '<span style="font-size:12px;color:var(--ink-dim);">Semak / betulkan:</span>' +
+        '<select class="sel f-skim"><option value="">-- Skim --</option>' + opt('SSM') + opt('SSPA') + opt('PSH') + '</select>' +
+        '<input type="text" class="sel f-gred" placeholder="Gred (cth. 41, Khas C)" style="width:180px;" value="' + escapeHtml(b.gred || '') + '">' +
         '<select class="sel f-akad" style="display:none;"><option value="">-- Kelayakan Akademik --</option>' +
-        AKADEMIK_PSH.map(function (a) { return '<option>' + escapeHtml(a) + '</option>'; }).join('') + '</select>';
+        AKADEMIK_PSH.map(function (a) { return '<option' + (b.akademik === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select>';
     }
 
     function kadPending(b) {
       var hotel = b.jenis === 'Hotel';
       return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rowsHtml(butiranPermohonan(b)) +
-        '<div class="pending-actions">' + pilihGred() +
-        (hotel ? '' : '<span style="font-size:11.5px;color:var(--ink-dim);">(pilihan &mdash; untuk rekod; kelayakan penerbangan belum ditetapkan)</span>') + '</div>' +
+        '<div class="pending-actions">' + pilihGred(b) +
+        (hotel ? '' : '<span style="font-size:11.5px;color:var(--ink-dim);">(kelayakan penerbangan belum ditetapkan)</span>') + '</div>' +
         (hotel ? '<div class="kel">Pilih skim dan isi gred untuk semak kelayakan.</div>' : '') +
-        '<input type="text" class="note-input" placeholder="Catatan / sebab (wajib jika ditolak' + (hotel ? ' atau kadar melebihi had' : '') + ')">' +
+        '<input type="text" class="note-input" placeholder="Catatan / sebab (wajib jika ditolak)">' +
         '<div class="pending-actions"><button class="btn btn-primary btn-sm b-lulus">&#10003; Luluskan</button>' +
         '<button class="btn btn-danger btn-sm b-tolak">&#10007; Tolak</button></div></div>';
     }
@@ -545,16 +551,15 @@
         kel.className = 'kel'; kel.textContent = 'Menyemak kelayakan...';
         t = setTimeout(async function () {
           try {
-            var r = await adminApi('semakKelayakan', { skim: n.skim, gred: n.gred, akademik: n.akademik, kadar: b.kadar });
+            var r = await api('semakKelayakan', { skim: n.skim, gred: n.gred, akademik: n.akademik });
             if (!r.jumpa) { kel.className = 'kel lebih'; kel.textContent = 'Gred ini tiada dalam jadual Kelayakan_Hotel.'; return; }
             var s = r.label + ': had sewa ' + r.teks + (r.lojing ? ' · elaun lojing RM' + r.lojing.toFixed(2) : '');
-            if (r.melebihi) s += ' — kadar dipohon ' + rm(b.kadar) + ' MELEBIHI had. Isi catatan jika tetap diluluskan.';
-            else if (b.kadar) s += ' — kadar dipohon ' + rm(b.kadar) + ' dalam had.';
-            kel.className = 'kel ' + (r.melebihi ? 'lebih' : 'ok'); kel.textContent = s;
+            kel.className = 'kel ok'; kel.textContent = s;
           } catch (e) { kel.className = 'kel lebih'; kel.textContent = 'Ralat: ' + e.message; }
         }, 400);
       }
       skim.addEventListener('change', tukar); gred.addEventListener('input', tukar); akad.addEventListener('change', tukar);
+      tukar(); // terus semak kelayakan berdasarkan gred yang diisi pemohon
     }
 
     function kunci(card, ya) { Array.prototype.forEach.call(card.querySelectorAll('button,select,input'), function (x) { x.disabled = ya; }); }
