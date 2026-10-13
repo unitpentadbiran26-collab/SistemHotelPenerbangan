@@ -66,6 +66,7 @@
   .field input,.field select,.field textarea{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);transition:border-color .15s,box-shadow .15s;}
   .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.12);}
   .field textarea{resize:vertical;min-height:70px;}
+  .field select:disabled,.sel:disabled{opacity:.4;cursor:not-allowed;}
   .field select option{background:var(--paper-2);}
   .field-row{display:flex;gap:10px;}
   .field-row .field{flex:1;min-width:0;}
@@ -247,8 +248,8 @@
             <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="h_noTelefon" placeholder="Contoh: 019-1234567"></div>
           </div>
           <div class="field-row">
-            <div class="field"><label>Skim</label><select id="h_skim"><option value="">-- Pilih Skim --</option><option value="SSM">SSM</option><option value="SSPA">SSPA</option><option value="PSH">PSH (Pekerja Sambilan Harian)</option></select></div>
-            <div class="field" id="h_gredWrap"><label>Gred</label><input type="text" id="h_gred" placeholder="Contoh: 41, N41, Khas C"></div>
+            <div class="field"><label>Skim</label><select id="h_skim"><option value="">-- Pilih Skim --</option><option value="N">N</option><option value="G">G</option><option value="F">F</option><option value="W">W</option><option value="H">H</option><option value="KP">KP</option><option value="J">J</option><option value="S">S</option><option value="VU">VU</option><option value="PSH">PSH</option></select></div>
+            <div class="field" id="h_gredWrap"><label>Gred</label><select id="h_gred"><option value="">-- Pilih Gred --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="9">9</option><option value="10">10</option><option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>
             <div class="field" id="h_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="h_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
@@ -284,8 +285,8 @@
             <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="p_noTelefon" placeholder="Contoh: 019-1234567"></div>
           </div>
           <div class="field-row">
-            <div class="field"><label>Skim</label><select id="p_skim"><option value="">-- Pilih Skim --</option><option value="SSM">SSM</option><option value="SSPA">SSPA</option><option value="PSH">PSH (Pekerja Sambilan Harian)</option></select></div>
-            <div class="field" id="p_gredWrap"><label>Gred</label><input type="text" id="p_gred" placeholder="Contoh: 41, N41, Khas C"></div>
+            <div class="field"><label>Skim</label><select id="p_skim"><option value="">-- Pilih Skim --</option><option value="N">N</option><option value="G">G</option><option value="F">F</option><option value="W">W</option><option value="H">H</option><option value="KP">KP</option><option value="J">J</option><option value="S">S</option><option value="VU">VU</option><option value="PSH">PSH</option></select></div>
+            <div class="field" id="p_gredWrap"><label>Gred</label><select id="p_gred"><option value="">-- Pilih Gred --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="9">9</option><option value="10">10</option><option value="12">12</option><option value="13">13</option><option value="14">14</option></select></div>
             <div class="field" id="p_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="p_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
@@ -392,9 +393,15 @@
     }
     /** 3 -> "4 hari 3 malam" */
     function tempoh(malam) { var n = Number(malam) || 0; return n ? (n + 1) + ' hari ' + n + ' malam' : ''; }
+    const SKIM_LIST = ['N', 'G', 'F', 'W', 'H', 'KP', 'J', 'S', 'VU', 'PSH'];
+    const GRED_LIST = ['1', '2', '3', '5', '6', '7', '9', '10', '12', '13', '14'];
+    /** "N9", "KP12", "VU", "PSH (STPM / Diploma)" */
     function skimGred(b) {
       if (!b.skim) return '';
-      return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
+      if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
+      if (b.skim === 'VU') return 'VU';
+      if (b.skim === 'SSM' || b.skim === 'SSPA') return b.skim + ' ' + (b.gred || '');
+      return b.skim + (b.gred || '');
     }
     function butiranPermohonan(b) {
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
@@ -515,13 +522,16 @@
     ['h', 'p'].forEach(function (px) {
       var t = null;
       function tukar() {
-        var psh = v(px + '_skim') === 'PSH';
+        var psh = v(px + '_skim') === 'PSH', vu = v(px + '_skim') === 'VU', g = $(px + '_gred');
         $(px + '_gredWrap').style.display = psh ? 'none' : '';
         $(px + '_akadWrap').style.display = psh ? '' : 'none';
+        // VU = paling tinggi, tiada gred: ruang Gred dikelabukan
+        g.disabled = vu;
+        if (vu) { g.value = ''; g.options[0].textContent = 'Tiada gred (VU)'; } else { g.options[0].textContent = '-- Pilih Gred --'; }
         if (px !== 'h') return;
         var el = $('h_kelayakan'), skim = v('h_skim'), gred = v('h_gred'), akad = v('h_akademik');
         clearTimeout(t);
-        if (!skim || (psh ? !akad : !gred)) { el.style.display = 'none'; return; }
+        if (!skim || (psh ? !akad : (!vu && !gred))) { el.style.display = 'none'; return; }
         t = setTimeout(async function () {
           try {
             var r = await api('semakKelayakan', { skim: skim, gred: gred, akademik: akad });
@@ -533,7 +543,7 @@
         }, 450);
       }
       $(px + '_skim').addEventListener('change', tukar);
-      $(px + '_gred').addEventListener('input', tukar);
+      $(px + '_gred').addEventListener('change', tukar);
       $(px + '_akademik').addEventListener('change', tukar);
       window['tukarSkim_' + px] = tukar;
     });
@@ -544,7 +554,8 @@
       if (!v(px + '_bahagian')) return 'Sila pilih Bahagian.';
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v(px + '_emel'))) return 'Sila isi Emel yang sah.';
       if (!v(px + '_skim')) return 'Sila pilih Skim.';
-      if (v(px + '_skim') === 'PSH' ? !v(px + '_akademik') : !v(px + '_gred')) return v(px + '_skim') === 'PSH' ? 'Sila pilih Kelayakan Akademik.' : 'Sila isi Gred.';
+      if (v(px + '_skim') === 'PSH' && !v(px + '_akademik')) return 'Sila pilih Kelayakan Akademik.';
+      if (v(px + '_skim') !== 'PSH' && v(px + '_skim') !== 'VU' && !v(px + '_gred')) return 'Sila pilih Gred.';
       if (!v(px + '_tujuan')) return 'Sila isi Tujuan / Program.';
       return '';
     }
