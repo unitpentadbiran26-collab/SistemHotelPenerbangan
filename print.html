@@ -45,7 +45,7 @@
 
   <script>
     // ====================== KONFIGURASI - WAJIB TUKAR ======================
-    const API_URL = 'GANTI_DENGAN_URL_WEB_APP_GAS';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
     // =========================================================================
 
     function esc(s) {
@@ -86,7 +86,8 @@
         ['Tarikh balik', b.tarikhBalik], ['Masa bertolak (balik)', b.masaBalik], ['No. penerbangan (balik)', b.noBalik],
         ['Syarikat penerbangan', b.syarikat], ['Kelas', b.kelas]
       ];
-      var skimGred = b.skim ? b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || '')) : '';
+      var skimGred = !b.skim ? '' : b.skim === 'PSH' ? 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '')
+        : b.skim === 'VU' ? 'VU' : (b.skim === 'SSM' || b.skim === 'SSPA') ? b.skim + ' ' + (b.gred || '') : b.skim + (b.gred || '');
       var keputusan = [['Status', b.status]];
       if (hotel) keputusan.push(['Kelayakan sewa hotel', b.status === 'Diluluskan' ? b.hadKelayakan : '']);
       keputusan.push(['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]);
