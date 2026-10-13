@@ -66,6 +66,7 @@
   .field input,.field select,.field textarea{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);transition:border-color .15s,box-shadow .15s;}
   .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.12);}
   .field textarea{resize:vertical;min-height:70px;}
+  .field select:disabled,.sel:disabled{opacity:.4;cursor:not-allowed;}
   .field select option{background:var(--paper-2);}
   .field-row{display:flex;gap:10px;}
   .field-row .field{flex:1;min-width:0;}
@@ -341,9 +342,15 @@
     }
     /** 3 -> "4 hari 3 malam" */
     function tempoh(malam) { var n = Number(malam) || 0; return n ? (n + 1) + ' hari ' + n + ' malam' : ''; }
+    const SKIM_LIST = ['N', 'G', 'F', 'W', 'H', 'KP', 'J', 'S', 'VU', 'PSH'];
+    const GRED_LIST = ['1', '2', '3', '5', '6', '7', '9', '10', '12', '13', '14'];
+    /** "N9", "KP12", "VU", "PSH (STPM / Diploma)" */
     function skimGred(b) {
       if (!b.skim) return '';
-      return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
+      if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
+      if (b.skim === 'VU') return 'VU';
+      if (b.skim === 'SSM' || b.skim === 'SSPA') return b.skim + ' ' + (b.gred || '');
+      return b.skim + (b.gred || '');
     }
     function butiranPermohonan(b) {
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
@@ -505,10 +512,13 @@
     }
 
     function pilihGred(b) {
-      var opt = function (v) { return '<option value="' + v + '"' + (b.skim === v ? ' selected' : '') + '>' + v + '</option>'; };
+      // Rekod lama mungkin ada nilai di luar senarai (cth. SSM / 41) — kekalkan sebagai pilihan.
+      var skimList = SKIM_LIST.indexOf(b.skim) < 0 && b.skim ? SKIM_LIST.concat([b.skim]) : SKIM_LIST;
+      var gredList = GRED_LIST.indexOf(b.gred) < 0 && b.gred ? GRED_LIST.concat([b.gred]) : GRED_LIST;
+      var opt = function (v, pilih) { return '<option value="' + escapeHtml(v) + '"' + (pilih === v ? ' selected' : '') + '>' + escapeHtml(v) + '</option>'; };
       return '<span style="font-size:12px;color:var(--ink-dim);">Semak / betulkan:</span>' +
-        '<select class="sel f-skim"><option value="">-- Skim --</option>' + opt('SSM') + opt('SSPA') + opt('PSH') + '</select>' +
-        '<input type="text" class="sel f-gred" placeholder="Gred (cth. 41, Khas C)" style="width:180px;" value="' + escapeHtml(b.gred || '') + '">' +
+        '<select class="sel f-skim"><option value="">-- Skim --</option>' + skimList.map(function (k) { return opt(k, b.skim); }).join('') + '</select>' +
+        '<select class="sel f-gred" style="min-width:130px;"><option value="">-- Gred --</option>' + gredList.map(function (g) { return opt(g, b.gred); }).join('') + '</select>' +
         '<select class="sel f-akad" style="display:none;"><option value="">-- Kelayakan Akademik --</option>' +
         AKADEMIK_PSH.map(function (a) { return '<option' + (b.akademik === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select>';
     }
@@ -538,18 +548,20 @@
     }
 
     function nilaiGred(card) {
-      return { skim: card.querySelector('.f-skim').value, gred: card.querySelector('.f-gred').value.trim(), akademik: card.querySelector('.f-akad').value };
+      return { skim: card.querySelector('.f-skim').value, gred: card.querySelector('.f-gred').value, akademik: card.querySelector('.f-akad').value };
     }
 
     function pasangGred(card, b) {
       var skim = card.querySelector('.f-skim'), gred = card.querySelector('.f-gred'), akad = card.querySelector('.f-akad'), kel = card.querySelector('.kel'), t = null;
       function tukar() {
-        var psh = skim.value === 'PSH';
+        var psh = skim.value === 'PSH', vu = skim.value === 'VU';
         gred.style.display = psh ? 'none' : ''; akad.style.display = psh ? '' : 'none';
+        gred.disabled = vu;
+        if (vu) { gred.value = ''; gred.options[0].textContent = 'Tiada gred (VU)'; } else { gred.options[0].textContent = '-- Gred --'; }
         if (!kel) return;
         clearTimeout(t);
         var n = nilaiGred(card);
-        if (!n.skim || (psh ? !n.akademik : !n.gred)) { kel.className = 'kel'; kel.textContent = 'Pilih skim dan isi gred untuk semak kelayakan.'; return; }
+        if (!n.skim || (psh ? !n.akademik : (!vu && !n.gred))) { kel.className = 'kel'; kel.textContent = 'Pilih skim dan isi gred untuk semak kelayakan.'; return; }
         kel.className = 'kel'; kel.textContent = 'Menyemak kelayakan...';
         t = setTimeout(async function () {
           try {
@@ -560,16 +572,20 @@
           } catch (e) { kel.className = 'kel lebih'; kel.textContent = 'Ralat: ' + e.message; }
         }, 400);
       }
-      skim.addEventListener('change', tukar); gred.addEventListener('input', tukar); akad.addEventListener('change', tukar);
+      card._tukarGred = tukar;
+      skim.addEventListener('change', tukar); gred.addEventListener('change', tukar); akad.addEventListener('change', tukar);
       tukar(); // terus semak kelayakan berdasarkan gred yang diisi pemohon
     }
 
-    function kunci(card, ya) { Array.prototype.forEach.call(card.querySelectorAll('button,select,input'), function (x) { x.disabled = ya; }); }
+    function kunci(card, ya) {
+      Array.prototype.forEach.call(card.querySelectorAll('button,select,input'), function (x) { x.disabled = ya; });
+      if (!ya && card._tukarGred) card._tukarGred(); // kelabukan semula Gred jika VU
+    }
 
     async function putus(card, b, keputusan) {
       var nota = card.querySelector('.note-input').value.trim(), n = nilaiGred(card), hotel = b.jenis === 'Hotel';
       if (keputusan === 'Ditolak' && !nota) { showToast('Sila isi sebab penolakan dalam ruang catatan.', true); return; }
-      if (keputusan === 'Diluluskan' && hotel && (!n.skim || (n.skim === 'PSH' ? !n.akademik : !n.gred))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
+      if (keputusan === 'Diluluskan' && hotel && (!n.skim || (n.skim === 'PSH' ? !n.akademik : (n.skim !== 'VU' && !n.gred)))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
       if (!confirm(keputusan + ' permohonan ' + b.id + '? Emel akan dihantar kepada pemohon.')) return;
       kunci(card, true);
       try {
