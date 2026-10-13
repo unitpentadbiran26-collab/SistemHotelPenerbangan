@@ -79,7 +79,7 @@
       document.title = 'Borang ' + b.jenis + ' ' + b.id;
       var butiran = hotel ? [
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
-        ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Bilangan malam', b.bilMalam]
+        ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', b.bilMalam ? (Number(b.bilMalam) + 1) + ' hari ' + b.bilMalam + ' malam' : '']
       ] : [
         ['Dari', b.dari], ['Destinasi', b.destinasi],
         ['Tarikh pergi', b.tarikhPergi], ['Masa bertolak (pergi)', b.masaPergi], ['No. penerbangan (pergi)', b.noPergi],
