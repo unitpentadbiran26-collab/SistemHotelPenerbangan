@@ -141,6 +141,7 @@
   .card-head{padding:16px 20px;border-bottom:1px solid var(--mist);}
   .card-head h3{font-size:15px;}
   .card-head p{font-size:12px;color:var(--ink-dim);margin-top:3px;}
+  .field input[readonly]{background:var(--navy-3);color:var(--gold-light);font-weight:700;cursor:default;}
   .summary{display:none;background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--gold-light);}
   .status-card{padding:20px 22px;margin-top:16px;}
   .status-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
@@ -245,20 +246,21 @@
             <div class="field"><label>Emel</label><input type="email" id="h_emel" placeholder="Keputusan dihantar ke emel ini"></div>
             <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="h_noTelefon" placeholder="Contoh: 019-1234567"></div>
           </div>
-          <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
-          <div class="field"><label>Nama Hotel</label><input type="text" id="h_namaHotel" placeholder="Contoh: Hotel Pullman"></div>
-          <div class="field"><label>Alamat / Kawasan</label><input type="text" id="h_alamat" placeholder="Contoh: Jalan Tunku Abdul Rahman"></div>
           <div class="field-row">
-            <div class="field"><label>Daerah</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
-            <div class="field"><label>Kadar Semalam (RM) <span>(jika tahu)</span></label><input type="number" id="h_kadar" min="0" step="0.01" placeholder="Contoh: 320"></div>
+            <div class="field"><label>Skim</label><select id="h_skim"><option value="">-- Pilih Skim --</option><option value="SSM">SSM</option><option value="SSPA">SSPA</option><option value="PSH">PSH (Pekerja Sambilan Harian)</option></select></div>
+            <div class="field" id="h_gredWrap"><label>Gred</label><input type="text" id="h_gred" placeholder="Contoh: 41, N41, Khas C"></div>
+            <div class="field" id="h_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="h_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
           </div>
+          <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
+          <div class="summary" id="h_kelayakan"></div>
+          <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
+          <div class="field"><label>Daerah / Destinasi</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
+          <div class="field"><label>Nama Hotel</label><input type="text" id="h_namaHotel" placeholder="Contoh: Hotel Pullman"></div>
           <div class="field-row">
             <div class="field"><label>Tarikh Masuk</label><input type="date" id="h_tarikhMasuk"></div>
             <div class="field"><label>Tarikh Keluar</label><input type="date" id="h_tarikhKeluar"></div>
+            <div class="field" style="max-width:150px;"><label>Bil. Malam</label><input type="text" id="h_bilMalam" readonly placeholder="Auto" tabindex="-1"></div>
           </div>
-          <div class="summary" id="h_ringkasan"></div>
-          <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset di Kuching"></textarea></div>
-          <div class="note">Kelayakan sewa hotel akan disemak oleh admin mengikut gred anda.</div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" id="h_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
             <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
@@ -281,6 +283,12 @@
             <div class="field"><label>Emel</label><input type="email" id="p_emel" placeholder="Keputusan dihantar ke emel ini"></div>
             <div class="field"><label>No. Telefon <span>(pilihan)</span></label><input type="tel" id="p_noTelefon" placeholder="Contoh: 019-1234567"></div>
           </div>
+          <div class="field-row">
+            <div class="field"><label>Skim</label><select id="p_skim"><option value="">-- Pilih Skim --</option><option value="SSM">SSM</option><option value="SSPA">SSPA</option><option value="PSH">PSH (Pekerja Sambilan Harian)</option></select></div>
+            <div class="field" id="p_gredWrap"><label>Gred</label><input type="text" id="p_gred" placeholder="Contoh: 41, N41, Khas C"></div>
+            <div class="field" id="p_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="p_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
+          </div>
+          <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
           <div class="form-section" style="margin-top:8px;">Maklumat Penerbangan</div>
           <div class="field-row">
             <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kuching"></div>
@@ -302,7 +310,6 @@
             <div class="field"><label>Syarikat Penerbangan <span>(pilihan)</span></label><input type="text" id="p_syarikat" placeholder="Contoh: MASwings"></div>
             <div class="field"><label>Kelas</label><select id="p_kelas"><option value="Ekonomi">Ekonomi</option><option value="Bisnes">Bisnes</option></select></div>
           </div>
-          <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Mesyuarat Jawatankuasa di Putrajaya"></textarea></div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" id="p_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
             <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
@@ -343,7 +350,7 @@
   <script>
     // ====================== KONFIGURASI - WAJIB TUKAR ======================
     // URL web app GAS (Deploy > Web app). Mesti berakhir dengan /exec
-    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
+    const API_URL = 'GANTI_DENGAN_URL_WEB_APP_GAS';
     const BAHAGIAN_OPTIONS = ['Pejabat Pengurus Besar','Khidmat Pengurusan','Perancangan dan Pembangunan Strategik','Pembangunan Nelayan','Pembangunan Industri Perikanan'];
     const UNIT_GROUPS = {
       'Pejabat Pengurus Besar': ['Unit Pengurusan Petroleum','Unit Audit Dalam','Unit Pemasaran','Unit Perundangan dan Penguatkuasaan','Unit Komunikasi Korporat','Unit Kejuruteraan'],
@@ -383,18 +390,22 @@
       return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] !== null && r[1] !== undefined && r[1] !== '-'; })
         .map(function (r) { return '<b>' + escapeHtml(r[0]) + '</b><span>' + escapeHtml(r[1]) + '</span>'; }).join('') + '</div>';
     }
+    function skimGred(b) {
+      if (!b.skim) return '';
+      return b.skim + ' ' + (b.skim === 'PSH' ? '(' + (b.akademik || '') + ')' : (b.gred || ''));
+    }
     function butiranPermohonan(b) {
-      if (b.jenis === 'Hotel') return [
-        ['Hotel', b.namaHotel], ['Alamat / kawasan', b.alamat], ['Daerah', b.daerah],
-        ['Tarikh', b.tarikhMasuk + '  →  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)],
-        ['Kadar semalam', rm(b.kadar) || 'Tidak dinyatakan'], ['Tujuan', b.tujuan]
-      ];
-      return [
-        ['Dari → Destinasi', b.dari + '  →  ' + b.destinasi],
+      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
+      if (b.jenis === 'Hotel') return asas.concat([
+        ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+        ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Bil. malam', String(b.bilMalam)]
+      ]);
+      return asas.concat([
+        ['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
         ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
         ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
-        ['Syarikat', b.syarikat], ['Kelas', b.kelas], ['Tujuan', b.tujuan]
-      ];
+        ['Syarikat', b.syarikat], ['Kelas', b.kelas]
+      ]);
     }
     function populateUnitSelect(selectEl, bahagian) {
       if (!bahagian) { selectEl.innerHTML = '<option value="">-- Pilih Bahagian dahulu --</option>'; selectEl.disabled = true; return; }
@@ -483,31 +494,62 @@
       sel.addEventListener('change', function () { populateUnitSelect($(px + '_unit'), this.value); });
     });
     ['h_tarikhMasuk', 'h_tarikhKeluar', 'p_tarikhPergi', 'p_tarikhBalik'].forEach(function (id) { $(id).min = today(); });
-    $('h_tarikhMasuk').addEventListener('change', function () { if (this.value) $('h_tarikhKeluar').min = this.value; ringkasHotel(); });
+    $('h_tarikhMasuk').addEventListener('change', function () { if (this.value) $('h_tarikhKeluar').min = this.value; kiraMalam(); });
     $('p_tarikhPergi').addEventListener('change', function () { if (this.value) $('p_tarikhBalik').min = this.value; });
-    $('h_tarikhKeluar').addEventListener('change', ringkasHotel);
-    $('h_kadar').addEventListener('input', ringkasHotel);
+    $('h_tarikhKeluar').addEventListener('change', kiraMalam);
+    $('h_tarikhMasuk').addEventListener('input', kiraMalam);
+    $('h_tarikhKeluar').addEventListener('input', kiraMalam);
 
-    function ringkasHotel() {
-      var a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), k = parseFloat(v('h_kadar')), el = $('h_ringkasan');
-      if (!a || !b) { el.style.display = 'none'; return; }
+    /** Bil. malam dikira automatik dari tarikh masuk & keluar. */
+    function kiraMalam() {
+      var a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), el = $('h_bilMalam');
+      if (!a || !b) { el.value = ''; el.style.color = ''; return; }
       var malam = Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
-      el.style.display = 'block';
-      if (malam < 1) { el.style.color = 'var(--coral)'; el.textContent = 'Tarikh keluar mesti selepas tarikh masuk.'; return; }
-      el.style.color = 'var(--gold-light)';
-      el.textContent = malam + ' malam' + (k > 0 ? ' × RM' + k.toFixed(2) + ' = RM' + (malam * k).toFixed(2) : '');
+      el.value = malam >= 1 ? malam + ' malam' : 'Tarikh salah';
+      el.style.color = malam >= 1 ? '' : 'var(--coral)';
     }
+
+    /** Skim PSH guna Kelayakan Akademik; skim lain guna Gred. Borang hotel papar kelayakan sewa. */
+    ['h', 'p'].forEach(function (px) {
+      var t = null;
+      function tukar() {
+        var psh = v(px + '_skim') === 'PSH';
+        $(px + '_gredWrap').style.display = psh ? 'none' : '';
+        $(px + '_akadWrap').style.display = psh ? '' : 'none';
+        if (px !== 'h') return;
+        var el = $('h_kelayakan'), skim = v('h_skim'), gred = v('h_gred'), akad = v('h_akademik');
+        clearTimeout(t);
+        if (!skim || (psh ? !akad : !gred)) { el.style.display = 'none'; return; }
+        t = setTimeout(async function () {
+          try {
+            var r = await api('semakKelayakan', { skim: skim, gred: gred, akademik: akad });
+            el.style.display = 'block';
+            if (!r.jumpa) { el.style.color = 'var(--coral)'; el.textContent = 'Gred ini tiada dalam jadual kelayakan. Admin akan menyemak.'; return; }
+            el.style.color = 'var(--gold-light)';
+            el.textContent = 'Kelayakan sewa hotel anda (' + r.label + '): ' + r.teks + (r.lojing ? ' \u00b7 elaun lojing RM' + r.lojing.toFixed(2) : '');
+          } catch (e) { el.style.display = 'none'; }
+        }, 450);
+      }
+      $(px + '_skim').addEventListener('change', tukar);
+      $(px + '_gred').addEventListener('input', tukar);
+      $(px + '_akademik').addEventListener('change', tukar);
+      window['tukarSkim_' + px] = tukar;
+    });
 
     function err(px, msg) { var e = $(px + '_error'); e.textContent = msg; e.classList.add('show'); e.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
     function semakPemohon(px) {
       if (!v(px + '_nama')) return 'Sila isi Nama Pemohon.';
       if (!v(px + '_bahagian')) return 'Sila pilih Bahagian.';
       if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v(px + '_emel'))) return 'Sila isi Emel yang sah.';
+      if (!v(px + '_skim')) return 'Sila pilih Skim.';
+      if (v(px + '_skim') === 'PSH' ? !v(px + '_akademik') : !v(px + '_gred')) return v(px + '_skim') === 'PSH' ? 'Sila pilih Kelayakan Akademik.' : 'Sila isi Gred.';
+      if (!v(px + '_tujuan')) return 'Sila isi Tujuan / Program.';
       return '';
     }
     function dataPemohon(px) {
       return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
-        noTelefon: v(px + '_noTelefon'), tujuan: v(px + '_tujuan') };
+        noTelefon: v(px + '_noTelefon'), skim: v(px + '_skim'), gred: v(px + '_gred'), akademik: v(px + '_akademik'),
+        tujuan: v(px + '_tujuan') };
     }
 
     async function hantar(btn, action, data, px) {
@@ -515,8 +557,9 @@
       try {
         var res = await api(action, data);
         Array.prototype.forEach.call(document.querySelectorAll('#page-' + (px === 'h' ? 'hotel' : 'flight') + ' input, #page-' + (px === 'h' ? 'hotel' : 'flight') + ' textarea'), function (el) { el.value = ''; });
-        $(px + '_bahagian').value = ''; populateUnitSelect($(px + '_unit'), '');
-        $('h_ringkasan').style.display = 'none';
+        Array.prototype.forEach.call(document.querySelectorAll('#page-' + (px === 'h' ? 'hotel' : 'flight') + ' select'), function (el) { el.selectedIndex = 0; });
+        populateUnitSelect($(px + '_unit'), '');
+        window['tukarSkim_' + px]();
         $('doneRef').textContent = res.id;
         $('donePrint').href = 'print.html?id=' + encodeURIComponent(res.id);
         $('doneModal').classList.add('open');
@@ -530,16 +573,14 @@
     $('h_submitBtn').addEventListener('click', function () {
       $('h_error').classList.remove('show');
       var m = semakPemohon('h');
+      if (!m && !v('h_daerah')) m = 'Sila isi Daerah / Destinasi.';
       if (!m && !v('h_namaHotel')) m = 'Sila isi Nama Hotel.';
-      if (!m && !v('h_alamat')) m = 'Sila isi Alamat / Kawasan.';
-      if (!m && !v('h_daerah')) m = 'Sila isi Daerah.';
       if (!m && (!v('h_tarikhMasuk') || !v('h_tarikhKeluar'))) m = 'Sila pilih Tarikh Masuk dan Tarikh Keluar.';
       if (!m && v('h_tarikhKeluar') <= v('h_tarikhMasuk')) m = 'Tarikh Keluar mesti selepas Tarikh Masuk.';
-      if (!m && !v('h_tujuan')) m = 'Sila isi Tujuan / Program.';
       if (m) return err('h', m);
       var d = dataPemohon('h');
-      d.namaHotel = v('h_namaHotel'); d.alamat = v('h_alamat'); d.daerah = v('h_daerah');
-      d.tarikhMasuk = v('h_tarikhMasuk'); d.tarikhKeluar = v('h_tarikhKeluar'); d.kadar = v('h_kadar');
+      d.daerah = v('h_daerah'); d.namaHotel = v('h_namaHotel');
+      d.tarikhMasuk = v('h_tarikhMasuk'); d.tarikhKeluar = v('h_tarikhKeluar');
       hantar(this, 'submitHotel', d, 'h');
     });
 
@@ -552,7 +593,6 @@
       if (!m && (!v('p_tarikhBalik') || !v('p_masaBalik'))) m = 'Sila isi Tarikh dan Masa Bertolak (Balik).';
       if (!m && v('p_tarikhBalik') < v('p_tarikhPergi')) m = 'Tarikh Balik tidak boleh sebelum Tarikh Pergi.';
       if (!m && v('p_tarikhBalik') === v('p_tarikhPergi') && v('p_masaBalik') <= v('p_masaPergi')) m = 'Untuk perjalanan sehari, masa balik mesti selepas masa pergi.';
-      if (!m && !v('p_tujuan')) m = 'Sila isi Tujuan / Program.';
       if (m) return err('p', m);
       var d = dataPemohon('p');
       d.dari = v('p_dari'); d.destinasi = v('p_destinasi');
@@ -576,7 +616,7 @@
         } else {
           var b = r.permohonan;
           var rows = butiranPermohonan(b).concat([
-            ['Kelayakan', b.hadKelayakan || ''], ['Catatan admin', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
+            ['Kelayakan sewa hotel', b.jenis === 'Hotel' ? b.hadKelayakan : ''], ['Catatan admin', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
           ]);
           $('s_hasil').innerHTML = '<div class="card status-card"><div class="status-top"><div>' +
             '<div class="t">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(b.id) + '</div>' +
