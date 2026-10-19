@@ -23,6 +23,9 @@
     table{width:100%;border-collapse:collapse;}
     td{border:1px solid #c9ced8;padding:7px 10px;vertical-align:top;}
     td.k{width:200px;background:#f3f5f9;font-weight:700;color:#333;}
+    table.lulus th{border:1px solid #c9ced8;background:#f3f5f9;padding:6px 8px;text-align:left;font-size:11.5px;}
+    table.lulus td{font-size:12px;}
+    .k-Diluluskan{color:#1e7b34;font-weight:700;} .k-Ditolak{color:#b42318;font-weight:700;} .k-Belum{color:#888;}
     .sign{display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:40px;}
     .sign div{border-top:1px solid #333;padding-top:6px;font-size:12px;color:#444;}
     .foot{margin-top:28px;font-size:10.5px;color:#888;text-align:center;}
@@ -88,9 +91,18 @@
       ];
       var skimGred = !b.skim ? '' : b.skim === 'PSH' ? 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '')
         : b.skim === 'VU' ? 'VU' : (b.skim === 'SSM' || b.skim === 'SSPA') ? b.skim + ' ' + (b.gred || '') : b.skim + (b.gred || '');
-      var keputusan = [['Status', b.status]];
+      var keputusan = [['Status', b.status + (b.peringkat ? ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ': ' + b.pelulusSemasa + ')' : '')]];
       if (hotel) keputusan.push(['Kelayakan sewa hotel', b.status === 'Diluluskan' ? b.hadKelayakan : '']);
       keputusan.push(['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]);
+      // Hotel: jadual kelulusan 4 peringkat
+      var kel = (b.kelulusan || []);
+      var jadualLulus = !kel.length ? '' :
+        '<table class="lulus" style="margin-top:-1px;"><tr><th style="width:32px;">#</th><th>Pelulus</th><th style="width:110px;">Keputusan</th><th>Catatan</th><th style="width:120px;">Tarikh</th></tr>' +
+        kel.map(function (k) {
+          var kp = k.keputusan || 'Belum';
+          return '<tr><td>' + k.peringkat + '</td><td><b>' + esc(k.jawatan) + '</b>' + (k.nama ? '<br>' + esc(k.nama) : '') + '</td>' +
+            '<td class="k-' + esc(kp) + '">' + esc(kp) + '</td><td>' + (esc(k.catatan) || '&nbsp;') + '</td><td>' + (esc(k.tarikh) || '&nbsp;') + '</td></tr>';
+        }).join('') + '</table>';
 
       root.innerHTML =
         '<div class="head"><img src="logo.png" alt=""><div><div class="org">' + esc(b.organisasi) + '</div>' +
@@ -103,6 +115,7 @@
         ]) +
         '<h2>B. Butiran ' + (hotel ? 'Penginapan' : 'Penerbangan') + '</h2>' + jadual(butiran) +
         '<h2>C. Keputusan ' + esc(b.organisasi) + '</h2>' + jadual(keputusan) +
+        (jadualLulus ? '<h2>D. Peringkat Kelulusan</h2>' + jadualLulus : '') +
         '<div class="sign"><div>Tandatangan Pemohon</div><div>Disahkan oleh (Nama, Jawatan &amp; Cop)</div></div>' +
         '<div class="foot">Dijana oleh ' + esc(b.appName) + '</div>';
     }
