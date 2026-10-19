@@ -163,6 +163,15 @@
   .tab{border:1px solid var(--mist);background:var(--paper-2);color:var(--ink-dim);padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;}
   .tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border-color:var(--gold-dark);}
   .history-cards{display:none;flex-direction:column;gap:10px;}
+  .stp-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
+  .stp{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--mist);color:var(--ink-dim);background:var(--mist-2);}
+  .stp i{font-style:normal;font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--mist);color:var(--ink);font-size:10.5px;flex-shrink:0;}
+  .stp.lulus{border-color:rgba(76,175,130,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
+  .stp.tolak{border-color:rgba(224,92,92,.5);color:var(--coral);} .stp.tolak i{background:var(--coral);color:#fff;}
+  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
+  .wait-box{margin-top:12px;padding:10px 14px;border-radius:8px;border:1px dashed var(--gold-dark);font-size:12.5px;color:var(--ink-dim);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
+  .wait-box b{color:var(--gold-light);}
+  .peringkat-kecil{display:block;color:var(--ink-dim);font-size:11px;margin-top:4px;}
   .hist-card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:14px 16px;}
   .pagination-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:16px;}
   .pagination-info{font-size:12px;color:var(--ink-dim);}
@@ -209,6 +218,7 @@
         <a href="#" class="active" id="nav-pending">Menunggu Kelulusan</a>
         <a href="#" id="nav-semua">Semua Permohonan</a>
         <a href="#" id="nav-kelayakan">Kelayakan Hotel</a>
+        <a href="#" id="nav-pelulus">Pelulus</a>
       </nav>
       <div class="topbar-right">
         <button class="btn-admin" id="notifBtn" style="background:var(--paper-2);color:var(--ink-dim);border:1px solid var(--mist);">&#128276; <span id="notifLabel" class="hide-m">Notifikasi</span></button>
@@ -233,10 +243,15 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Kelayakan Hotel
           </button>
+          <button class="sidebar-item" id="sb-pelulus">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Pelulus Hotel
+          </button>
         </div>
         <div class="sidebar-section">
           <div class="sidebar-label">Menunggu</div>
-          <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Hotel</span><b id="countHotel" style="color:var(--gold);">0</b></div>
+          <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Hotel (tindakan anda)</span><b id="countHotel" style="color:var(--gold);">0</b></div>
+          <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Hotel (pelulus lain)</span><b id="countHotelLain" style="color:var(--ink-dim);">0</b></div>
           <div class="sidebar-note" style="display:flex;justify-content:space-between;"><span>Penerbangan</span><b id="countFlight" style="color:var(--gold);">0</b></div>
         </div>
       </aside>
@@ -244,7 +259,7 @@
       <main class="main-content">
         <!-- MENUNGGU -->
         <div id="page-pending">
-          <div class="page-header"><h2>Menunggu Kelulusan</h2><p>Semak permohonan, tetapkan gred pemohon, kemudian lulus atau tolak</p></div>
+          <div class="page-header"><h2>Menunggu Kelulusan</h2><p>Hotel melalui 4 peringkat. Anda (Pegawai Tadbir) meluluskan di peringkat 2: semak gred, kemudian lulus atau tolak.</p></div>
           <div class="tabs" id="pendingTabs">
             <button class="tab active" data-jenis="">Semua</button>
             <button class="tab" data-jenis="Hotel">Hotel</button>
@@ -290,6 +305,20 @@
           <div class="card" style="overflow-x:auto;" id="kelayakanWrap"><div class="empty-state" style="border:none;">Memuatkan...</div></div>
           <div class="note" style="margin-top:14px;">Gred Utama/Khas dikodkan dalam Sheet sebagai nombor: Khas/Utama C = 101, B = 102, A = 103, Turus = 110.
             Gred yang tiada dalam jadual (contoh SSM 27&ndash;28, 49&ndash;51, SSPA 4) tidak boleh diluluskan sehingga barisnya ditambah.</div>
+        </div>
+
+        <!-- PELULUS -->
+        <div id="page-pelulus" style="display:none;">
+          <div class="page-header"><h2>Pelulus Hotel</h2><p>Dibaca dari tab <b>Pelulus</b> dalam Google Sheet. Ubah nama atau emel di Sheet; permohonan baharu terus guna maklumat terkini.</p></div>
+          <div class="card" style="overflow-x:auto;" id="pelulusWrap"><div class="empty-state" style="border:none;">Memuatkan...</div></div>
+          <div class="note" style="margin-top:14px;">
+            <b style="color:var(--ink);">Aliran kelulusan hotel</b><br>
+            1. Pengurus Besar (tempoh lebih 3 hari) atau Penolong Pengurus Besar bahagian pemohon (3 hari ke bawah)<br>
+            2. Pegawai Tadbir (Unit Pentadbiran), di Panel Admin ini<br>
+            3. Ketua Akauntan (semak bajet)<br>
+            4. Penolong Pengurus Besar (Khidmat Pengurusan)<br>
+            Pelulus 1, 3 dan 4 menerima emel dengan pautan untuk lulus atau tolak. Penerbangan kekal satu pelulus.
+          </div>
         </div>
       </main>
     </div>
@@ -428,10 +457,11 @@
     var showPage;
     function mula() {
       setupDrawer();
-      showPage = setupPages(['pending', 'semua', 'kelayakan'], function (p) {
+      showPage = setupPages(['pending', 'semua', 'kelayakan', 'pelulus'], function (p) {
         if (p === 'pending') loadPending();
         if (p === 'semua') loadAll();
         if (p === 'kelayakan') loadKelayakan();
+        if (p === 'pelulus') loadPelulus();
       });
       loadPending();
       pollCounts();
@@ -469,6 +499,7 @@
         var ids = c.hotel.concat(c.penerbangan);
         $('countAll').textContent = ids.length || '';
         $('countHotel').textContent = c.hotel.length;
+        $('countHotelLain').textContent = c.hotelLain || 0;
         $('countFlight').textContent = c.penerbangan.length;
         if (knownIds !== null) {
           var baru = ids.filter(function (id) { return !knownIds.has(id); });
@@ -523,9 +554,32 @@
         AKADEMIK_PSH.map(function (a) { return '<option' + (b.akademik === a ? ' selected' : '') + '>' + escapeHtml(a) + '</option>'; }).join('') + '</select>';
     }
 
+    /** Rantaian peringkat: ✓ lulus, ✗ tolak, nombor = belum. */
+    function rantaian(b) {
+      if (!b.kelulusan || !b.kelulusan.length) return '';
+      return '<div class="stp-row">' + b.kelulusan.map(function (k) {
+        var cls = k.keputusan === 'Diluluskan' ? 'lulus' : k.keputusan === 'Ditolak' ? 'tolak' : (b.peringkat === k.peringkat ? 'kini' : '');
+        var ikon = cls === 'lulus' ? '&#10003;' : cls === 'tolak' ? '&#10007;' : k.peringkat;
+        return '<span class="stp ' + cls + '" title="' + escapeHtml((k.nama ? k.nama + ' · ' : '') + (k.keputusan ? k.keputusan + ' ' + k.tarikh : 'Belum')) + '"><i>' + ikon + '</i>' + escapeHtml(k.jawatan) + '</span>';
+      }).join('') + '</div>';
+    }
+    /** Hotel di peringkat lain: papar siapa yang ditunggu + butang hantar semula emel. */
+    function kotakTunggu(b) {
+      return '<div class="wait-box"><span>Menunggu keputusan <b>' + escapeHtml(b.pelulusSemasa) + '</b>' +
+        (b.pelulusSemasaNama ? ' &middot; ' + escapeHtml(b.pelulusSemasaNama) : '') +
+        (b.pelulusSemasaEmel ? ' &middot; ' + escapeHtml(b.pelulusSemasaEmel) : ' &middot; <span style="color:var(--coral);">emel belum diisi dalam tab Pelulus</span>') +
+        ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ')</span>' +
+        '<button class="btn btn-ghost btn-sm b-resend">&#9993; Hantar semula emel</button></div>';
+    }
+    function giliranSaya(b) { return b.jenis !== 'Hotel' || b.peringkat === 2; }
+
     function kadPending(b) {
       var hotel = b.jenis === 'Hotel';
-      return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rowsHtml(butiranPermohonan(b)) +
+      if (!giliranSaya(b)) {
+        return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '" style="opacity:.85;">' + kepala(b) + rantaian(b) +
+          rowsHtml(butiranPermohonan(b)) + kotakTunggu(b) + '</div>';
+      }
+      return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rantaian(b) + rowsHtml(butiranPermohonan(b)) +
         '<div class="pending-actions">' + pilihGred(b) +
         (hotel ? '' : '<span style="font-size:11.5px;color:var(--ink-dim);">(kelayakan penerbangan belum ditetapkan)</span>') + '</div>' +
         (hotel ? '<div class="kel">Pilih skim dan isi gred untuk semak kelayakan.</div>' : '') +
@@ -535,12 +589,15 @@
     }
 
     function renderPending() {
-      var rows = pendingRows.filter(function (b) { return !pendingJenis || b.jenis === pendingJenis; });
+      var rows = pendingRows.filter(function (b) { return !pendingJenis || b.jenis === pendingJenis; })
+        .sort(function (a, b) { return (giliranSaya(b) ? 1 : 0) - (giliranSaya(a) ? 1 : 0); }); // tindakan anda di atas
       var el = $('pendingList');
       if (!rows.length) { el.innerHTML = '<div class="empty-state">Tiada permohonan menunggu kelulusan.</div>'; return; }
       el.innerHTML = rows.map(kadPending).join('');
       Array.prototype.forEach.call(el.querySelectorAll('.pending-card'), function (card) {
         var b = rows.find(function (x) { return x.id === card.getAttribute('data-id'); });
+        var resend = card.querySelector('.b-resend');
+        if (resend) { resend.addEventListener('click', function () { hantarSemula(b, resend); }); return; }
         pasangGred(card, b);
         card.querySelector('.b-lulus').addEventListener('click', function () { putus(card, b, 'Diluluskan'); });
         card.querySelector('.b-tolak').addEventListener('click', function () { putus(card, b, 'Ditolak'); });
@@ -586,14 +643,25 @@
       var nota = card.querySelector('.note-input').value.trim(), n = nilaiGred(card), hotel = b.jenis === 'Hotel';
       if (keputusan === 'Ditolak' && !nota) { showToast('Sila isi sebab penolakan dalam ruang catatan.', true); return; }
       if (keputusan === 'Diluluskan' && hotel && (!n.skim || (n.skim === 'PSH' ? !n.akademik : (n.skim !== 'VU' && !n.gred)))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
-      if (!confirm(keputusan + ' permohonan ' + b.id + '? Emel akan dihantar kepada pemohon.')) return;
+      var lanjut = hotel && keputusan === 'Diluluskan' ? ' Permohonan akan dimajukan kepada Ketua Akauntan.' : ' Emel akan dihantar kepada pemohon.';
+      if (!confirm(keputusan + ' permohonan ' + b.id + '?' + lanjut)) return;
       kunci(card, true);
       try {
         var res = await adminApi(hotel ? 'decideHotel' : 'decideFlight',
           { id: b.id, keputusan: keputusan, skim: n.skim, gred: n.gred, akademik: n.akademik, catatan: nota });
-        showToast(res.emel ? keputusan + '. Emel dihantar kepada pemohon.' : res.message, !res.emel);
+        showToast(res.message || (keputusan + '. Emel dihantar kepada pemohon.'), !res.emel);
         loadPending(); pollCounts(); allRows = [];
       } catch (e) { showToast('Ralat: ' + e.message, true); kunci(card, false); }
+    }
+
+    async function hantarSemula(b, btn) {
+      btn.disabled = true; btn.textContent = 'Menghantar...';
+      try {
+        var res = await adminApi('resendApproval', { id: b.id });
+        showToast(res.message, !res.emel);
+        if (res.emel) loadPending();
+      } catch (e) { showToast('Ralat: ' + e.message, true); }
+      btn.disabled = false; btn.innerHTML = '&#9993; Hantar semula emel';
     }
 
     // ---------------- Semua permohonan ----------------
@@ -640,14 +708,15 @@
           '<td>' + escapeHtml(b.nama) + '<br><span style="color:var(--ink-dim);font-size:11.5px;">' + escapeHtml(b.bahagian) + '</span></td>' +
           '<td style="min-width:170px;">' + escapeHtml(r.t) + (b.hadKelayakan ? '<br><span style="color:var(--ink-dim);font-size:11.5px;">Kelayakan: ' + escapeHtml(b.hadKelayakan) + '</span>' : '') + '</td>' +
           '<td style="min-width:150px;font-size:12px;">' + escapeHtml(r.d) + '</td>' +
-          '<td><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></td>' +
+          '<td><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span>' +
+          (b.peringkat ? '<span class="peringkat-kecil">' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; ' + escapeHtml(b.pelulusSemasa) + '</span>' : '') + '</td>' +
           '<td style="font-size:12px;">' + escapeHtml(b.catatanAdmin) + '</td><td>' + cetak(b) + '</td><td>' + batal(b) + '</td></tr>';
       }).join('');
       $('historyCards').innerHTML = page.map(function (b) {
         var r = ringkas(b);
         return '<div class="hist-card"><div class="pending-top"><div><div class="pending-name">' + escapeHtml(b.nama) + ' <small>&middot; ' + escapeHtml(b.id) + '</small></div>' +
           '<div class="pending-meta">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(r.t) + '</div><div class="pending-meta">' + escapeHtml(r.d) + '</div></div>' +
-          '<span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
+          '<span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' + rantaian(b) +
           (b.catatanAdmin ? '<div class="note" style="margin:10px 0 0;">' + escapeHtml(b.catatanAdmin) + '</div>' : '') +
           '<div class="pending-actions" style="flex-direction:row;">' + cetak(b) + (boleBatal(b) ? batal(b) : '') + '</div></div>';
       }).join('');
@@ -669,6 +738,18 @@
     $('fCari').addEventListener('input', function () { histPage = 1; renderAll(); });
     $('pagPrev').addEventListener('click', function () { if (histPage > 1) { histPage--; renderAll(); } });
     $('pagNext').addEventListener('click', function () { histPage++; renderAll(); });
+
+    // ---------------- Pelulus ----------------
+    async function loadPelulus() {
+      try {
+        var rows = await adminApi('getPelulus');
+        $('pelulusWrap').innerHTML = '<table class="tbl"><thead><tr><th>Kod</th><th>Jawatan</th><th>Nama</th><th>Emel</th></tr></thead><tbody>' +
+          rows.map(function (r) {
+            return '<tr><td>' + escapeHtml(r.kod) + '</td><td>' + escapeHtml(r.jawatan) + '</td><td>' + (escapeHtml(r.nama) || '<span style="color:var(--ink-dim);">-</span>') + '</td>' +
+              '<td>' + (r.emel ? escapeHtml(r.emel) : '<span style="color:var(--coral);">Belum diisi</span>') + '</td></tr>';
+          }).join('') + '</tbody></table>';
+      } catch (e) { $('pelulusWrap').innerHTML = '<div class="empty-state" style="border:none;">Ralat: ' + escapeHtml(e.message) + '</div>'; }
+    }
 
     // ---------------- Kelayakan ----------------
     async function loadKelayakan() {
