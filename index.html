@@ -223,8 +223,8 @@
         </div>
         <div class="steps">
           <div class="step"><b>1 &middot; Mohon</b>Isi borang hotel atau penerbangan dan hantar.</div>
-          <div class="step"><b>2 &middot; Semakan</b>Unit Pentadbiran semak kelayakan ikut gred anda.</div>
-          <div class="step"><b>3 &middot; Keputusan</b>Emel dihantar sama ada diluluskan atau ditolak.</div>
+          <div class="step"><b>2 &middot; Kelulusan</b>Hotel: PPB / Pengurus Besar &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan). Penerbangan: Unit Pentadbiran.</div>
+          <div class="step"><b>3 &middot; Keputusan</b>Emel dihantar sama ada diluluskan atau ditolak. Semak peringkat terkini di Semak Status.</div>
         </div>
         <div class="card" style="overflow:hidden;">
           <div class="card-head"><h3>Kelayakan Sewa Hotel Ikut Gred</h3><p>Had sewa hotel semalam dan elaun lojing. "Sebenar" = kos sebenar mengikut jenis bilik.</p></div>
@@ -262,6 +262,7 @@
             <div class="field"><label>Tarikh Keluar</label><input type="date" id="h_tarikhKeluar"></div>
             <div class="field" style="max-width:170px;"><label>Tempoh</label><input type="text" id="h_bilMalam" readonly placeholder="Auto" tabindex="-1"></div>
           </div>
+          <div class="summary" id="h_aliran"></div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" id="h_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
             <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
@@ -516,7 +517,26 @@
       var malam = Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000);
       el.value = malam >= 1 ? (malam + 1) + ' hari ' + malam + ' malam' : 'Tarikh salah';
       el.style.color = malam >= 1 ? '' : 'var(--coral)';
+      paparAliran();
     }
+
+    // Pelulus peringkat 1 ikut tempoh & bahagian (mesti sama dengan Code.gs: rantaianHotel_)
+    const HAD_HARI_PENGURUS_BESAR = 3;
+    const PPB_BAHAGIAN = {
+      'Khidmat Pengurusan': 'PPB (Khidmat Pengurusan)',
+      'Perancangan dan Pembangunan Strategik': 'PPB (Perancangan dan Pembangunan Strategik)',
+      'Pembangunan Nelayan': 'PPB (Pembangunan Nelayan)',
+      'Pembangunan Industri Perikanan': 'PPB (Pembangunan Industri Perikanan)'
+    };
+    function paparAliran() {
+      var el = $('h_aliran'), a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), bah = v('h_bahagian');
+      var malam = a && b ? Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000) : 0;
+      if (malam < 1 || !bah) { el.style.display = 'none'; return; }
+      var p1 = (malam + 1) > HAD_HARI_PENGURUS_BESAR ? 'Pengurus Besar' : (PPB_BAHAGIAN[bah] || 'Pengurus Besar');
+      el.style.display = 'block';
+      el.innerHTML = 'Aliran kelulusan: <b>' + escapeHtml(p1) + '</b> &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan)';
+    }
+    $('h_bahagian').addEventListener('change', paparAliran);
 
     /** Skim PSH guna Kelayakan Akademik; skim lain guna Gred. Borang hotel papar kelayakan sewa. */
     ['h', 'p'].forEach(function (px) {
@@ -629,8 +649,13 @@
         } else {
           var b = r.permohonan;
           var rows = butiranPermohonan(b).concat([
-            ['Kelayakan sewa hotel', b.jenis === 'Hotel' ? b.hadKelayakan : ''], ['Catatan admin', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
+            ['Peringkat semasa', b.peringkat ? b.peringkat + ' / ' + b.jumlahPeringkat + ' · menunggu ' + b.pelulusSemasa : ''],
+            ['Kelayakan sewa hotel', b.jenis === 'Hotel' ? b.hadKelayakan : ''], ['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
           ]);
+          (b.kelulusan || []).forEach(function (k) {
+            rows.push(['Peringkat ' + k.peringkat + ': ' + k.jawatan,
+              k.keputusan ? k.keputusan + ' (' + k.tarikh + ')' + (k.catatan ? ' — ' + k.catatan : '') : (b.peringkat === k.peringkat ? 'Sedang disemak' : 'Belum')]);
+          });
           $('s_hasil').innerHTML = '<div class="card status-card"><div class="status-top"><div>' +
             '<div class="t">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(b.id) + '</div>' +
             '<div class="s">' + escapeHtml(b.nama) + ' &middot; dimohon ' + escapeHtml(b.tarikhMohon) + '</div></div>' +
