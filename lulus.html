@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Kelulusan Permohonan Hotel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+  :root{
+    --navy:#0F0E2A; --navy-2:#16213E; --paper:#1E1E3A; --paper-2:#252545; --mist:#2E2E55; --mist-2:#232340;
+    --gold:#D4A843; --gold-dark:#B8891F; --gold-light:#F0C96A;
+    --ink:#F0EDE8; --ink-dim:#9AA5B4; --ok:#4CAF82; --coral:#E05C5C; --radius:12px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:var(--ink);font-family:'Inter',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
+  h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;}
+  .wrap{max-width:640px;margin:0 auto;padding:24px 16px 60px;}
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+  .brand img{width:36px;height:36px;object-fit:contain;}
+  .brand .n{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;line-height:1.2;}
+  .brand .s{font-size:10px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;}
+  .card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:22px 22px 24px;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  .eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
+  .title{font-size:20px;font-weight:700;margin:4px 0 4px;}
+  .sub{font-size:13px;color:var(--ink-dim);}
+  .stp-row{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px;}
+  .stp{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--mist);color:var(--ink-dim);background:var(--mist-2);}
+  .stp i{font-style:normal;font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--mist);color:var(--ink);font-size:10.5px;}
+  .stp.lulus{border-color:rgba(76,175,130,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
+  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
+  .sec{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.07em;text-transform:uppercase;margin:20px 0 8px;}
+  .rows{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:13px;background:var(--mist-2);padding:12px 14px;border-radius:8px;border:1px solid var(--mist);}
+  .rows b{color:var(--ink-dim);font-weight:600;}
+  .rows span{word-break:break-word;}
+  .kel{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(76,175,130,.5);color:var(--ok);font-size:13px;}
+  label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 6px;}
+  label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
+  textarea{width:100%;min-height:80px;resize:vertical;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);}
+  textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.15);}
+  .actions{display:flex;gap:10px;margin-top:16px;}
+  .btn{flex:1;min-height:46px;border-radius:9px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid transparent;}
+  .btn-ok{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);}
+  .btn-no{background:transparent;border-color:var(--coral);color:var(--coral);}
+  .btn-no:hover{background:var(--coral);color:#fff;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  .err{display:none;margin-top:12px;background:rgba(224,92,92,.1);color:var(--coral);border:1px solid rgba(224,92,92,.3);border-radius:8px;padding:10px 14px;font-size:13px;}
+  .err.show{display:block;}
+  .msg{text-align:center;padding:36px 18px;}
+  .msg .ic{width:56px;height:56px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;}
+  .msg h2{font-size:19px;margin-bottom:6px;}
+  .msg p{color:var(--ink-dim);font-size:13.5px;line-height:1.5;}
+  .foot{text-align:center;font-size:11px;color:var(--ink-dim);margin-top:18px;}
+  @media(max-width:520px){ .rows{grid-template-columns:110px 1fr;font-size:12.5px;} .actions{flex-direction:column;} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand"><img src="logo.png" alt=""><div><div class="n">Kelulusan Permohonan</div><div class="s">Penginapan Hotel</div></div></div>
+    <div id="root"><div class="card msg"><p>Memuatkan permohonan...</p></div></div>
+    <div class="foot" id="foot"></div>
+  </div>
+
+  <script>
+    // ====================== KONFIGURASI - WAJIB TUKAR ======================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
+    // =========================================================================
+
+    var TOKEN = new URL(location.href).searchParams.get('t') || '';
+    var DATA = null;
+
+    function $(id) { return document.getElementById(id); }
+    function esc(s) {
+      return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+      });
+    }
+    async function api(action, params) {
+      var url = new URL(API_URL);
+      url.searchParams.set('action', action);
+      Object.keys(params).forEach(function (k) { if (params[k] !== '' && params[k] != null) url.searchParams.set(k, params[k]); });
+      var json = await (await fetch(url.toString())).json();
+      if (!json.success) throw new Error(json.error || 'Ralat tidak diketahui');
+      return json.data;
+    }
+    function rows(list) {
+      return '<div class="rows">' + list.filter(function (r) { return r[1] !== '' && r[1] != null && r[1] !== '-'; })
+        .map(function (r) { return '<b>' + esc(r[0]) + '</b><span>' + esc(r[1]) + '</span>'; }).join('') + '</div>';
+    }
+    function mesej(ikon, warna, tajuk, teks) {
+      $('root').innerHTML = '<div class="card msg"><div class="ic" style="background:' + warna + '22;color:' + warna + ';">' + ikon + '</div>' +
+        '<h2>' + esc(tajuk) + '</h2><p>' + esc(teks) + '</p></div>';
+    }
+    function skimGred(b) {
+      if (!b.skim) return '';
+      if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
+      if (b.skim === 'VU') return 'VU';
+      return b.skim + (b.gred || '');
+    }
+
+    async function muat() {
+      if (!TOKEN) { mesej('!', '#E05C5C', 'Pautan tidak lengkap', 'Sila buka pautan penuh daripada emel kelulusan.'); return; }
+      try {
+        var b = await api('getApprovalView', { t: TOKEN });
+        if (!b.found) { mesej('&#8505;', '#9AA5B4', 'Pautan tidak aktif', b.sebab); return; }
+        DATA = b;
+        lukis(b);
+      } catch (e) { mesej('!', '#E05C5C', 'Ralat', e.message); }
+    }
+
+    function lukis(b) {
+      $('foot').textContent = b.appName || '';
+      var stp = '<div class="stp-row">' + (b.kelulusan || []).map(function (k) {
+        var cls = k.keputusan === 'Diluluskan' ? 'lulus' : (k.peringkat === b.peringkat ? 'kini' : '');
+        return '<span class="stp ' + cls + '"><i>' + (cls === 'lulus' ? '&#10003;' : k.peringkat) + '</i>' + esc(k.jawatan) + '</span>';
+      }).join('') + '</div>';
+      var terdahulu = (b.kelulusan || []).filter(function (k) { return k.keputusan; }).map(function (k) {
+        return [k.peringkat + '. ' + k.jawatan, k.keputusan + ' · ' + k.tarikh + (k.catatan ? ' — ' + k.catatan : '')];
+      });
+      var tempoh = b.bilMalam ? (Number(b.bilMalam) + 1) + ' hari ' + b.bilMalam + ' malam' : '';
+
+      $('root').innerHTML = '<div class="card">' +
+        '<div class="eyebrow">Peringkat ' + b.peringkat + ' daripada ' + b.jumlahPeringkat + '</div>' +
+        '<div class="title">' + esc(b.id) + ' &middot; ' + esc(b.nama) + '</div>' +
+        '<div class="sub">Keputusan anda sebagai <b style="color:var(--ink);">' + esc(b.jawatanAnda) + '</b>' + (b.namaAnda ? ' (' + esc(b.namaAnda) + ')' : '') + '</div>' +
+        stp +
+        '<div class="sec">Pemohon</div>' + rows([
+          ['Nama', b.nama], ['Bahagian / Unit', b.bahagian + (b.unit && b.unit !== '-' ? ' / ' + b.unit : '')],
+          ['Skim / gred', skimGred(b)], ['Emel', b.emel], ['No. telefon', b.noTelefon], ['Dimohon', b.tarikhMohon]
+        ]) +
+        '<div class="sec">Penginapan</div>' + rows([
+          ['Tujuan / program', b.tujuan], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+          ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', tempoh]
+        ]) +
+        (b.hadKelayakan ? '<div class="kel">Kelayakan sewa hotel: ' + esc(b.hadKelayakan) + '</div>' : '') +
+        (terdahulu.length ? '<div class="sec">Kelulusan terdahulu</div>' + rows(terdahulu) : '') +
+        '<label for="catatan">Catatan <span>(wajib jika ditolak)</span></label>' +
+        '<textarea id="catatan" placeholder="Contoh: Bajet mencukupi / sebab penolakan"></textarea>' +
+        '<div class="err" id="err"></div>' +
+        '<div class="actions"><button class="btn btn-ok" id="bLulus">&#10003; Luluskan</button>' +
+        '<button class="btn btn-no" id="bTolak">&#10007; Tolak</button></div>' +
+        '</div>';
+      $('bLulus').addEventListener('click', function () { putus('Diluluskan'); });
+      $('bTolak').addEventListener('click', function () { putus('Ditolak'); });
+    }
+
+    async function putus(keputusan) {
+      var catatan = $('catatan').value.trim(), err = $('err');
+      err.classList.remove('show');
+      if (keputusan === 'Ditolak' && !catatan) { err.textContent = 'Sila isi sebab penolakan dalam ruang catatan.'; err.classList.add('show'); $('catatan').focus(); return; }
+      var soalan = keputusan === 'Diluluskan'
+        ? 'Luluskan permohonan ' + DATA.id + '?' + (DATA.peringkat < DATA.jumlahPeringkat ? ' Ia akan dimajukan ke peringkat seterusnya.' : ' Ini kelulusan muktamad.')
+        : 'Tolak permohonan ' + DATA.id + '? Pemohon akan dimaklumkan melalui emel.';
+      if (!confirm(soalan)) return;
+      $('bLulus').disabled = $('bTolak').disabled = true;
+      try {
+        var r = await api('decideByToken', { t: TOKEN, keputusan: keputusan, catatan: catatan });
+        if (keputusan === 'Diluluskan') mesej('&#10003;', '#4CAF82', 'Diluluskan', r.message + ' Anda boleh tutup halaman ini.');
+        else mesej('&#10007;', '#E05C5C', 'Ditolak', r.message + ' Anda boleh tutup halaman ini.');
+      } catch (e) {
+        err.textContent = 'Ralat: ' + e.message; err.classList.add('show');
+        $('bLulus').disabled = $('bTolak').disabled = false;
+      }
+    }
+    muat();
+  </script>
+</body>
+</html>
