@@ -264,7 +264,7 @@
         </div>
         <div class="steps">
           <div class="step"><b>1 &middot; Mohon</b>Isi borang hotel atau penerbangan dan hantar.</div>
-          <div class="step"><b>2 &middot; Kelulusan</b>Hotel: PPB / Pengurus Besar &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan). Penerbangan: Unit Pentadbiran.</div>
+          <div class="step"><b>2 &middot; Kelulusan</b>Hotel: PPB / Pengurus Besar &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan), kemudian Unit Pentadbiran membuat tempahan. Penerbangan: Unit Pentadbiran.</div>
           <div class="step"><b>3 &middot; Keputusan</b>Emel dihantar sama ada diluluskan atau ditolak. Semak peringkat terkini di Semak Status.</div>
         </div>
         <div class="card" style="overflow:hidden;">
@@ -709,11 +709,20 @@
             rows.push(['Peringkat ' + k.peringkat + ': ' + k.jawatan,
               k.keputusan ? k.keputusan + ' (' + k.tarikh + ')' + (k.catatan ? ' — ' + k.catatan : '') : (b.peringkat === k.peringkat ? 'Sedang disemak' : 'Belum')]);
           });
+          var t = b.tempahan || {};
+          if (t.status === 'Ditempah') {
+            rows.push(['Hotel ditempah', t.hotel], ['No. pengesahan', t.noPengesahan], ['Jenis bilik', t.jenisBilik],
+              ['Kadar semalam', t.kadar !== '' && t.kadar != null ? 'RM' + Number(t.kadar).toFixed(2) : ''], ['Catatan tempahan', t.catatan]);
+          } else if (t.status) {
+            rows.push(['Tempahan hotel', 'Sedang ditempah oleh Unit Pentadbiran']);
+          }
           return '<div class="card status-card"><div class="status-top"><div>' +
             '<div class="t">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(b.id) + '</div>' +
             '<div class="s">' + escapeHtml(b.nama) + ' &middot; ' + escapeHtml(b.bahagian) + (b.unit && b.unit !== '-' ? ' / ' + escapeHtml(b.unit) : '') + '</div>' +
             '<div class="s">' + escapeHtml(ringkasPermohonan(b)) + '</div>' +
             (b.peringkat ? '<div class="s" style="color:var(--gold);font-weight:600;">Peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; menunggu ' + escapeHtml(b.pelulusSemasa) + '</div>' : '') +
+            (b.tempahan && b.tempahan.status ? '<div class="s" style="color:' + (b.tempahan.status === 'Ditempah' ? 'var(--ok)' : 'var(--gold)') + ';font-weight:600;">' +
+              (b.tempahan.status === 'Ditempah' ? 'Hotel telah ditempah: ' + escapeHtml(b.tempahan.hotel) : 'Diluluskan &middot; Unit Pentadbiran sedang membuat tempahan') + '</div>' : '') +
             '</div><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
             '<details class="s-butiran"><summary>Lihat butiran</summary>' + rowsHtml(rows) + '</details></div>';
     }
