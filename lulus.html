@@ -4,60 +4,78 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Kelulusan Permohonan Hotel</title>
+  <title>SPHP · Kelulusan Hotel</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
   :root{
-    --navy:#0F0E2A; --navy-2:#16213E; --paper:#1E1E3A; --paper-2:#252545; --mist:#2E2E55; --mist-2:#232340;
-    --gold:#D4A843; --gold-dark:#B8891F; --gold-light:#F0C96A;
-    --ink:#F0EDE8; --ink-dim:#9AA5B4; --ok:#4CAF82; --coral:#E05C5C; --radius:12px;
+    --navy:#F5F3EE; --navy-2:#FFFFFF; --navy-3:#EDF3F2;
+    --paper:#FFFFFF; --paper-2:#F1F5F4; --mist:#DCE4E2; --mist-2:#F8FAF9;
+    --gold:#0F6E6A; --gold-dark:#0B5652; --gold-light:#0B5652;
+    --ink:#18282B; --ink-dim:#5A686B; --ok:#17803D; --coral:#B42318; --radius:12px;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{background:var(--navy);color:var(--ink);font-family:'Inter',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
-  h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;}
+  body{background:var(--navy);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh;}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;letter-spacing:-.01em;}
   .wrap{max-width:640px;margin:0 auto;padding:24px 16px 60px;}
   .brand{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
   .brand img{width:36px;height:36px;object-fit:contain;}
-  .brand .n{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;line-height:1.2;}
+  .brand .n{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:14px;line-height:1.2;}
   .brand .s{font-size:10px;color:var(--gold);letter-spacing:.06em;text-transform:uppercase;}
-  .card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:22px 22px 24px;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  .card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:22px 22px 24px;box-shadow:0 8px 24px rgba(16,40,40,.07);}
   .eyebrow{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;}
   .title{font-size:20px;font-weight:700;margin:4px 0 4px;}
   .sub{font-size:13px;color:var(--ink-dim);}
   .stp-row{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 4px;}
   .stp{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--mist);color:var(--ink-dim);background:var(--mist-2);}
   .stp i{font-style:normal;font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--mist);color:var(--ink);font-size:10.5px;}
-  .stp.lulus{border-color:rgba(76,175,130,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
-  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
+  .stp.lulus{border-color:rgba(23,128,61,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
+  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(15,110,106,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
   .sec{font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.07em;text-transform:uppercase;margin:20px 0 8px;}
   .rows{display:grid;grid-template-columns:150px 1fr;gap:6px 12px;font-size:13px;background:var(--mist-2);padding:12px 14px;border-radius:8px;border:1px solid var(--mist);}
   .rows b{color:var(--ink-dim);font-weight:600;}
   .rows span{word-break:break-word;}
-  .kel{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(76,175,130,.5);color:var(--ok);font-size:13px;}
+  .kel{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(23,128,61,.5);color:var(--ok);font-size:13px;}
   label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 6px;}
   label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
   textarea{width:100%;min-height:80px;resize:vertical;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);}
-  textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.15);}
+  textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,.15);}
   .actions{display:flex;gap:10px;margin-top:16px;}
   .btn{flex:1;min-height:46px;border-radius:9px;font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid transparent;}
-  .btn-ok{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);}
+  .btn-ok{background:var(--gold);color:var(--navy);}
   .btn-no{background:transparent;border-color:var(--coral);color:var(--coral);}
   .btn-no:hover{background:var(--coral);color:#fff;}
   .btn:disabled{opacity:.4;cursor:not-allowed;}
-  .err{display:none;margin-top:12px;background:rgba(224,92,92,.1);color:var(--coral);border:1px solid rgba(224,92,92,.3);border-radius:8px;padding:10px 14px;font-size:13px;}
+  .err{display:none;margin-top:12px;background:rgba(180,35,24,.1);color:var(--coral);border:1px solid rgba(180,35,24,.3);border-radius:8px;padding:10px 14px;font-size:13px;}
   .err.show{display:block;}
   .msg{text-align:center;padding:36px 18px;}
   .msg .ic{width:56px;height:56px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;}
   .msg h2{font-size:19px;margin-bottom:6px;}
   .msg p{color:var(--ink-dim);font-size:13.5px;line-height:1.5;}
+  /* ---- Identiti SPHP (beza daripada SPP) ---- */
+  .brand-tag{display:inline-block;background:var(--gold);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;margin-right:6px;vertical-align:1px;}
+  /* Dialog dalam halaman (ganti confirm/prompt yang tidak muncul dalam apps Android) */
+  .tdlg{position:fixed;inset:0;background:rgba(16,40,40,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+  .tdlg.open{display:flex;}
+  .tdlg-box{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:22px;box-shadow:0 24px 60px rgba(16,40,40,.25);border-top:4px solid var(--gold);}
+  .tdlg-box.bahaya{border-top-color:var(--coral);}
+  .tdlg-box h3{font-size:16px;margin-bottom:6px;color:var(--ink);}
+  .tdlg-box p{font-size:13.5px;color:var(--ink-dim);line-height:1.5;margin-bottom:12px;}
+  .tdlg-box textarea{width:100%;min-height:76px;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--mist-2);color:var(--ink);resize:vertical;margin-bottom:12px;}
+  .tdlg-box textarea:focus{outline:none;border-color:var(--gold);}
+  .tdlg-act{display:flex;gap:10px;}
+  .tdlg-act button{flex:1;min-height:44px;border-radius:9px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--mist);background:#fff;color:var(--ink);}
+  .tdlg-act .ya{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .tdlg-box.bahaya .tdlg-act .ya{background:var(--coral);border-color:var(--coral);}
+  body{border-top:4px solid var(--gold);}
+  .card{box-shadow:0 1px 2px rgba(16,40,40,.05),0 8px 24px rgba(16,40,40,.07);}
   .foot{text-align:center;font-size:11px;color:var(--ink-dim);margin-top:18px;}
   @media(max-width:520px){ .rows{grid-template-columns:110px 1fr;font-size:12.5px;} .actions{flex-direction:column;} }
   </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="brand"><img src="logo.png" alt=""><div><div class="n">Kelulusan Permohonan</div><div class="s">Penginapan Hotel</div></div></div>
+    <div class="brand"><img src="logo.png" alt=""><div><div class="n"><span class="brand-tag">SPHP</span>Kelulusan Permohonan</div><div class="s">Penginapan Hotel</div></div></div>
     <div id="root"><div class="card msg"><p>Memuatkan permohonan...</p></div></div>
     <div class="foot" id="foot"></div>
   </div>
@@ -99,6 +117,30 @@
       return b.skim + (b.gred || '');
     }
 
+    /**
+     * Dialog dalam halaman. tanya({tajuk, teks, input, placeholder, ya, bahaya})
+     * -> Promise: true/false (tanpa input) atau teks/null (dengan input).
+     */
+    function tanya(o) {
+      return new Promise(function (selesai) {
+        var w = document.createElement('div');
+        w.className = 'tdlg open';
+        w.innerHTML = '<div class="tdlg-box' + (o.bahaya ? ' bahaya' : '') + '" role="dialog" aria-modal="true">' +
+          '<h3></h3><p></p>' + (o.input ? '<textarea></textarea>' : '') +
+          '<div class="tdlg-act"><button type="button" class="ya"></button><button type="button" class="tidak">Batal</button></div></div>';
+        w.querySelector('h3').textContent = o.tajuk || 'Pengesahan';
+        w.querySelector('p').textContent = o.teks || '';
+        w.querySelector('.ya').textContent = o.ya || 'Ya';
+        var ta = w.querySelector('textarea');
+        if (ta) ta.placeholder = o.placeholder || '';
+        document.body.appendChild(w);
+        (ta || w.querySelector('.ya')).focus();
+        function tutup(v) { document.body.removeChild(w); selesai(v); }
+        w.querySelector('.ya').addEventListener('click', function () { tutup(o.input ? ta.value.trim() : true); });
+        w.querySelector('.tidak').addEventListener('click', function () { tutup(o.input ? null : false); });
+        w.addEventListener('click', function (e) { if (e.target === w) tutup(o.input ? null : false); });
+      });
+    }
     async function muat() {
       if (!TOKEN) { mesej('!', '#E05C5C', 'Pautan tidak lengkap', 'Sila buka pautan penuh daripada emel kelulusan.'); return; }
       try {
@@ -130,7 +172,7 @@
           ['Skim / gred', skimGred(b)], ['Emel', b.emel], ['No. telefon', b.noTelefon], ['Dimohon', b.tarikhMohon]
         ]) +
         '<div class="sec">Penginapan</div>' + rows([
-          ['Tujuan / program', b.tujuan], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+          ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
           ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', tempoh]
         ]) +
         (b.hadKelayakan ? '<div class="kel">Kelayakan sewa hotel: ' + esc(b.hadKelayakan) + '</div>' : '') +
@@ -152,7 +194,8 @@
       var soalan = keputusan === 'Diluluskan'
         ? 'Luluskan permohonan ' + DATA.id + '?' + (DATA.peringkat < DATA.jumlahPeringkat ? ' Ia akan dimajukan ke peringkat seterusnya.' : ' Ini kelulusan muktamad.')
         : 'Tolak permohonan ' + DATA.id + '? Pemohon akan dimaklumkan melalui emel.';
-      if (!confirm(soalan)) return;
+      if (!(await tanya({ tajuk: keputusan === 'Diluluskan' ? 'Luluskan?' : 'Tolak?', teks: soalan,
+        ya: keputusan === 'Diluluskan' ? 'Ya, Luluskan' : 'Ya, Tolak', bahaya: keputusan !== 'Diluluskan' }))) return;
       $('bLulus').disabled = $('bTolak').disabled = true;
       try {
         var r = await api('decideByToken', { t: TOKEN, keputusan: keputusan, catatan: catatan });
