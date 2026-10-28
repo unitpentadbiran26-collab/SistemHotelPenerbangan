@@ -132,6 +132,7 @@
   }
   /* ---- Identiti SPHP (beza daripada SPP) ---- */
   .topbar{border-top:3px solid var(--gold);}
+  .topbar-nav a{white-space:nowrap;}
   .brand-tag{display:inline-block;background:var(--gold);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;margin-right:6px;vertical-align:1px;}
   .card,.stat-card,.start-card,.step{box-shadow:0 1px 2px rgba(16,40,40,.05),0 4px 14px rgba(16,40,40,.05);}
   .field label{letter-spacing:.04em;}
@@ -233,9 +234,10 @@
         <div><div class="brand-name"><span class="brand-tag">SPHP</span>Panel Admin</div><div class="brand-sub">Hotel &amp; Penerbangan</div></div>
       </div>
       <nav class="topbar-nav">
-        <a href="#" class="active" id="nav-pending">Menunggu Kelulusan</a>
-        <a href="#" id="nav-semua">Semua Permohonan</a>
-        <a href="#" id="nav-kelayakan">Kelayakan Hotel</a>
+        <a href="#" class="active" id="nav-pending">Menunggu</a>
+        <a href="#" id="nav-tempah">Perlu Ditempah</a>
+        <a href="#" id="nav-semua">Semua</a>
+        <a href="#" id="nav-kelayakan">Kelayakan</a>
         <a href="#" id="nav-pelulus">Pelulus</a>
       </nav>
       <div class="topbar-right">
@@ -252,6 +254,10 @@
           <button class="sidebar-item active" id="sb-pending">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 6v6l4 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
             Menunggu Kelulusan <span class="count" id="countAll"></span>
+          </button>
+          <button class="sidebar-item" id="sb-tempah">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 20V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12M3 14h18M7 10h3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            Perlu Ditempah <span class="count" id="countTempah"></span>
           </button>
           <button class="sidebar-item" id="sb-semua">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke="currentColor" stroke-width="1.8"/><rect x="9" y="3" width="6" height="4" rx="1" stroke="currentColor" stroke-width="1.8"/></svg>
@@ -284,6 +290,16 @@
             <button class="tab" data-jenis="Penerbangan">Penerbangan</button>
           </div>
           <div id="pendingList"><div class="empty-state">Memuatkan...</div></div>
+        </div>
+
+        <!-- PERLU DITEMPAH -->
+        <div id="page-tempah" style="display:none;">
+          <div class="page-header"><h2>Perlu Ditempah</h2><p>Permohonan hotel yang sudah diluluskan sepenuhnya (4 peringkat). Buat tempahan hotel sebenar, kemudian rekodkan butirannya di sini. Pemohon akan dimaklumkan melalui emel.</p></div>
+          <div class="tabs" id="tempahTabs">
+            <button class="tab active" data-t="belum">Belum ditempah</button>
+            <button class="tab" data-t="siap">Sudah ditempah</button>
+          </div>
+          <div id="tempahList"><div class="empty-state">Memuatkan...</div></div>
         </div>
 
         <!-- SEMUA -->
@@ -520,8 +536,9 @@
     var showPage;
     function mula() {
       setupDrawer();
-      showPage = setupPages(['pending', 'semua', 'kelayakan', 'pelulus'], function (p) {
+      showPage = setupPages(['pending', 'tempah', 'semua', 'kelayakan', 'pelulus'], function (p) {
         if (p === 'pending') loadPending();
+        if (p === 'tempah') loadTempah();
         if (p === 'semua') loadAll();
         if (p === 'kelayakan') loadKelayakan();
         if (p === 'pelulus') loadPelulus();
@@ -559,8 +576,9 @@
     async function pollCounts() {
       try {
         var c = await adminApi('getPendingCounts');
-        var ids = c.hotel.concat(c.penerbangan);
-        $('countAll').textContent = ids.length || '';
+        var ids = c.hotel.concat(c.penerbangan, c.tempah || []);
+        $('countAll').textContent = (c.hotel.length + c.penerbangan.length) || '';
+        $('countTempah').textContent = (c.tempah || []).length || '';
         $('countHotel').textContent = c.hotel.length;
         $('countHotelLain').textContent = c.hotelLain || 0;
         $('countFlight').textContent = c.penerbangan.length;
@@ -568,11 +586,12 @@
           var baru = ids.filter(function (id) { return !knownIds.has(id); });
           if (baru.length) {
             unread += baru.length; document.title = '(' + unread + ') ' + TITLE; bunyi();
-            showToast(baru.length + ' permohonan baharu diterima.');
+            showToast(baru.length + ' permohonan baharu perlu tindakan anda.');
             if ('Notification' in window && Notification.permission === 'granted') {
               try { new Notification('Permohonan Baharu', { body: baru.join(', '), tag: baru.join(',') }); } catch (e) {}
             }
             if ($('page-pending').style.display !== 'none') loadPending();
+            if ($('page-tempah').style.display !== 'none') loadTempah();
           }
         }
         knownIds = new Set(ids);
@@ -624,7 +643,9 @@
         var cls = k.keputusan === 'Diluluskan' ? 'lulus' : k.keputusan === 'Ditolak' ? 'tolak' : (b.peringkat === k.peringkat ? 'kini' : '');
         var ikon = cls === 'lulus' ? '&#10003;' : cls === 'tolak' ? '&#10007;' : k.peringkat;
         return '<span class="stp ' + cls + '" title="' + escapeHtml((k.nama ? k.nama + ' · ' : '') + (k.keputusan ? k.keputusan + ' ' + k.tarikh : 'Belum')) + '"><i>' + ikon + '</i>' + escapeHtml(k.jawatan) + '</span>';
-      }).join('') + '</div>';
+      }).join('') + (b.tempahan && b.tempahan.status
+        ? '<span class="stp ' + (b.tempahan.status === 'Ditempah' ? 'lulus' : 'kini') + '"><i>' + (b.tempahan.status === 'Ditempah' ? '&#10003;' : '&#9998;') + '</i>Tempahan hotel (Unit Pentadbiran)</span>'
+        : '') + '</div>';
     }
     /** Hotel di peringkat lain: papar siapa yang ditunggu + butang hantar semula emel. */
     function kotakTunggu(b) {
@@ -729,6 +750,64 @@
       btn.disabled = false; btn.innerHTML = '&#9993; Hantar semula emel';
     }
 
+    // ---------------- Perlu ditempah ----------------
+    var tempahRows = [], tempahTab = 'belum';
+    Array.prototype.forEach.call(document.querySelectorAll('#tempahTabs .tab'), function (t) {
+      t.addEventListener('click', function () {
+        tempahTab = t.getAttribute('data-t');
+        Array.prototype.forEach.call(document.querySelectorAll('#tempahTabs .tab'), function (x) { x.classList.toggle('active', x === t); });
+        renderTempah();
+      });
+    });
+    async function loadTempah() {
+      try {
+        tempahRows = (await adminApi('getRequests', { jenis: 'Hotel', status: 'Diluluskan' })).filter(function (b) { return b.tempahan && b.tempahan.status; });
+        renderTempah();
+      } catch (e) { $('tempahList').innerHTML = '<div class="empty-state">Ralat: ' + escapeHtml(e.message) + '</div>'; }
+    }
+    function medan(id, label, nilai, attr) {
+      return '<div class="field" style="margin-bottom:10px;"><label for="' + id + '">' + label + '</label><input id="' + id + '" value="' + escapeHtml(nilai) + '" ' + (attr || '') + '></div>';
+    }
+    function kadTempah(b) {
+      var t = b.tempahan, k = 'tp-' + escapeHtml(b.id);
+      return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rantaian(b) +
+        rowsHtml([['Hotel dipohon', b.namaHotel + ', ' + b.daerah], ['Tarikh', b.tarikhMasuk + '  →  ' + b.tarikhKeluar],
+          ['Tempoh', tempoh(b.bilMalam)], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
+          ['Kelayakan sewa hotel', b.hadKelayakan], ['Skim / gred', skimGred(b)]]) +
+        (t.status === 'Ditempah' ? '<div class="kel ok">Ditempah pada ' + escapeHtml(t.tarikh) + '. Ubah di bawah jika perlu; pemohon akan dimaklumkan semula.</div>' : '') +
+        '<div class="form-section" style="margin-top:14px;">Butiran Tempahan</div>' +
+        medan(k + '-hotel', 'Hotel ditempah', t.hotel || b.namaHotel, 'type="text"') +
+        '<div class="field-row">' + medan(k + '-alamat', 'Alamat / no. telefon hotel <span>(pilihan)</span>', t.alamat, 'type="text"') +
+        medan(k + '-no', 'No. pengesahan <span>(pilihan)</span>', t.noPengesahan, 'type="text"') + '</div>' +
+        '<div class="field-row">' + medan(k + '-kadar', 'Kadar semalam (RM) <span>(pilihan)</span>', t.kadar, 'type="number" min="0" step="0.01" inputmode="decimal"') +
+        medan(k + '-bilik', 'Jenis bilik <span>(pilihan)</span>', t.jenisBilik, 'type="text"') + '</div>' +
+        medan(k + '-catatan', 'Catatan kepada pemohon <span>(pilihan)</span>', t.catatan, 'type="text" placeholder="Contoh: Daftar masuk selepas 2 petang"') +
+        '<div class="pending-actions"><button class="btn btn-primary btn-sm b-simpan">' + (t.status === 'Ditempah' ? 'Kemas Kini &amp; Maklum Pemohon' : 'Simpan Tempahan &amp; Maklum Pemohon') + '</button>' +
+        '<a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak</a></div></div>';
+    }
+    function renderTempah() {
+      var rows = tempahRows.filter(function (b) { return tempahTab === 'siap' ? b.tempahan.status === 'Ditempah' : b.tempahan.status !== 'Ditempah'; });
+      var el = $('tempahList');
+      if (!rows.length) { el.innerHTML = '<div class="empty-state">' + (tempahTab === 'siap' ? 'Belum ada tempahan direkod.' : 'Tiada permohonan menunggu tempahan.') + '</div>'; return; }
+      el.innerHTML = rows.map(kadTempah).join('');
+      Array.prototype.forEach.call(el.querySelectorAll('.pending-card'), function (card) {
+        var b = rows.find(function (x) { return x.id === card.getAttribute('data-id'); });
+        card.querySelector('.b-simpan').addEventListener('click', function () { simpanTempahan(card, b); });
+      });
+    }
+    async function simpanTempahan(card, b) {
+      var k = 'tp-' + b.id, g = function (n) { return document.getElementById(k + '-' + n).value.trim(); };
+      if (!g('hotel')) { showToast('Sila isi nama hotel yang ditempah.', true); return; }
+      var ok = await tanya({ tajuk: 'Rekod tempahan ' + b.id + '?', teks: 'Butiran tempahan akan dihantar kepada pemohon (' + b.emel + ').', ya: 'Ya, Simpan' });
+      if (!ok) return;
+      kunci(card, true);
+      try {
+        var res = await adminApi('saveBooking', { id: b.id, hotel: g('hotel'), alamat: g('alamat'), noPengesahan: g('no'), kadar: g('kadar'), jenisBilik: g('bilik'), catatan: g('catatan') });
+        showToast(res.message, !res.emel || !!res.amaran);
+        loadTempah(); pollCounts(); allRows = [];
+      } catch (e) { showToast('Ralat: ' + e.message, true); kunci(card, false); }
+    }
+
     // ---------------- Semua permohonan ----------------
     async function loadAll() {
       try { allRows = await adminApi('getRequests'); renderAll(); }
@@ -771,7 +850,9 @@
         var r = ringkas(b);
         return '<tr><td><b>' + escapeHtml(b.id) + '</b><br><span style="color:var(--ink-dim);font-size:11.5px;">' + escapeHtml(b.jenis) + '</span></td>' +
           '<td>' + escapeHtml(b.nama) + '<br><span style="color:var(--ink-dim);font-size:11.5px;">' + escapeHtml(b.bahagian) + '</span></td>' +
-          '<td style="min-width:170px;">' + escapeHtml(r.t) + (b.hadKelayakan ? '<br><span style="color:var(--ink-dim);font-size:11.5px;">Kelayakan: ' + escapeHtml(b.hadKelayakan) + '</span>' : '') + '</td>' +
+          '<td style="min-width:170px;">' + escapeHtml(r.t) + (b.hadKelayakan ? '<br><span style="color:var(--ink-dim);font-size:11.5px;">Kelayakan: ' + escapeHtml(b.hadKelayakan) + '</span>' : '') +
+          (b.tempahan && b.tempahan.status ? '<br><span style="font-size:11.5px;font-weight:600;color:' + (b.tempahan.status === 'Ditempah' ? 'var(--ok)' : 'var(--gold)') + ';">' +
+            (b.tempahan.status === 'Ditempah' ? 'Ditempah: ' + escapeHtml(b.tempahan.hotel) : 'Belum ditempah') + '</span>' : '') + '</td>' +
           '<td style="min-width:150px;font-size:12px;">' + escapeHtml(r.d) + '</td>' +
           '<td><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span>' +
           (b.peringkat ? '<span class="peringkat-kecil">' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; ' + escapeHtml(b.pelulusSemasa) + '</span>' : '') + '</td>' +
