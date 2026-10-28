@@ -3,42 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Panel Admin — Hotel &amp; Penerbangan</title>
+  <title>SPHP · Panel Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
   :root{
-    --navy:#0F0E2A; --navy-2:#16213E; --navy-3:#1A1A3E;
-    --paper:#1E1E3A; --paper-2:#252545; --mist:#2E2E55; --mist-2:#232340;
-    --gold:#D4A843; --gold-dark:#B8891F; --gold-light:#F0C96A;
-    --ink:#F0EDE8; --ink-dim:#9AA5B4; --ok:#4CAF82; --coral:#E05C5C;
+    --navy:#F5F3EE; --navy-2:#FFFFFF; --navy-3:#EDF3F2;
+    --paper:#FFFFFF; --paper-2:#F1F5F4; --mist:#DCE4E2; --mist-2:#F8FAF9;
+    --gold:#0F6E6A; --gold-dark:#0B5652; --gold-light:#0B5652;
+    --ink:#18282B; --ink-dim:#5A686B; --ok:#17803D; --coral:#B42318;
     --radius:10px; --sidebar-w:220px; --topbar-h:58px;
-    --shadow:0 2px 8px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    --shadow:0 2px 8px rgba(16,40,40,.07),0 8px 24px rgba(16,40,40,.07);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{height:100%;}
-  body{background:var(--navy);color:var(--ink);font-family:'Inter',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;color:var(--ink);}
+  body{background:var(--navy);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;letter-spacing:-.01em;color:var(--ink);}
   a{color:var(--gold);text-decoration:none;}
-  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--navy-2);border-bottom:1px solid var(--mist);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--navy-2);border-bottom:1px solid var(--mist);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;box-shadow:0 2px 12px rgba(16,40,40,.07);}
   .topbar-brand{display:flex;align-items:center;gap:10px;width:var(--sidebar-w);flex-shrink:0;}
   .brand-mark{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
-  .brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
+  .brand-name{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
   .brand-sub{font-size:10px;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;}
   .topbar-nav{display:flex;align-items:center;gap:4px;flex:1;}
   .topbar-nav a{padding:7px 14px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--ink-dim);transition:all .15s;}
   .topbar-nav a:hover{background:var(--mist);color:var(--ink);}
-  .topbar-nav a.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;}
+  .topbar-nav a.active{background:rgba(15,110,106,0.12);color:var(--gold);font-weight:600;}
   .topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
-  .btn-admin{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;}
-  .btn-admin:hover{box-shadow:0 4px 12px rgba(212,168,67,0.4);}
+  .btn-admin{background:var(--gold);color:var(--navy);border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;}
+  .btn-admin:hover{box-shadow:0 4px 12px rgba(15,110,106,0.4);}
   .app-layout{display:flex;margin-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h));}
   .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-2);border-right:1px solid var(--mist);padding:24px 12px;position:fixed;top:var(--topbar-h);bottom:0;overflow-y:auto;}
   .sidebar-section{margin-bottom:24px;}
   .sidebar-label{font-size:10.5px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;padding:0 10px;margin-bottom:6px;}
   .sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink-dim);cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
   .sidebar-item:hover{background:var(--mist);color:var(--ink);}
-  .sidebar-item.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;border-left:3px solid var(--gold);padding-left:9px;}
+  .sidebar-item.active{background:rgba(15,110,106,0.12);color:var(--gold);font-weight:600;border-left:3px solid var(--gold);padding-left:9px;}
   .sidebar-item svg{flex-shrink:0;opacity:.7;}
   .sidebar-item.active svg{opacity:1;}
   .sidebar-note{font-size:12px;color:var(--ink-dim);padding:0 10px;line-height:1.5;}
@@ -52,10 +52,10 @@
   .btn{border:1px solid var(--mist);background:var(--paper-2);color:var(--ink);padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;text-align:center;}
   .btn:hover{border-color:var(--gold);color:var(--gold);}
   .btn:active{transform:translateY(1px);}
-  .btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-color:var(--gold-dark);color:var(--navy);font-weight:700;}
-  .btn-primary:hover{box-shadow:0 4px 14px rgba(212,168,67,0.4);color:var(--navy);}
+  .btn-primary{background:var(--gold);border-color:var(--gold-dark);color:var(--navy);font-weight:700;}
+  .btn-primary:hover{box-shadow:0 4px 14px rgba(15,110,106,0.4);color:var(--navy);}
   .btn-ghost{background:transparent;border-color:transparent;color:var(--gold);}
-  .btn-ghost:hover{background:rgba(212,168,67,0.08);border-color:transparent;color:var(--gold);}
+  .btn-ghost:hover{background:rgba(15,110,106,0.08);border-color:transparent;color:var(--gold);}
   .btn-danger{background:transparent;border-color:var(--coral);color:var(--coral);}
   .btn-danger:hover{background:var(--coral);color:#fff;}
   .btn:disabled{opacity:.35;cursor:not-allowed;}
@@ -64,7 +64,7 @@
   .field label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
   .field label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
   .field input,.field select,.field textarea{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);transition:border-color .15s,box-shadow .15s;}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.12);}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,0.12);}
   .field textarea{resize:vertical;min-height:70px;}
   .field select:disabled,.sel:disabled{opacity:.4;cursor:not-allowed;}
   .field select option{background:var(--paper-2);}
@@ -72,14 +72,14 @@
   .field-row .field{flex:1;min-width:0;}
   .form-card{max-width:620px;padding:28px 30px;}
   .form-section{font-size:12px;font-weight:700;color:var(--ink);margin:6px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--mist);}
-  .form-error{background:rgba(224,92,92,0.1);color:var(--coral);border:1px solid rgba(224,92,92,0.3);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+  .form-error{background:rgba(180,35,24,0.1);color:var(--coral);border:1px solid rgba(180,35,24,0.3);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
   .form-error.show{display:block;}
   .note{background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:var(--ink-dim);}
   .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:100px;text-transform:uppercase;white-space:nowrap;}
-  .badge-Menunggu{background:rgba(212,168,67,0.15);color:var(--gold);border:1px solid rgba(212,168,67,0.3);}
-  .badge-Diluluskan{background:rgba(76,175,130,0.15);color:var(--ok);border:1px solid rgba(76,175,130,0.3);}
-  .badge-Ditolak{background:rgba(224,92,92,0.15);color:var(--coral);border:1px solid rgba(224,92,92,0.3);}
-  .badge-Dibatalkan{background:rgba(154,165,180,0.15);color:var(--ink-dim);border:1px solid rgba(154,165,180,0.3);}
+  .badge-Menunggu{background:rgba(15,110,106,0.15);color:var(--gold);border:1px solid rgba(15,110,106,0.3);}
+  .badge-Diluluskan{background:rgba(23,128,61,0.15);color:var(--ok);border:1px solid rgba(23,128,61,0.3);}
+  .badge-Ditolak{background:rgba(180,35,24,0.15);color:var(--coral);border:1px solid rgba(180,35,24,0.3);}
+  .badge-Dibatalkan{background:rgba(90,104,107,0.15);color:var(--ink-dim);border:1px solid rgba(90,104,107,0.3);}
   .badge-jenis{background:var(--mist-2);color:var(--ink-dim);border:1px solid var(--mist);}
   .rows{display:grid;grid-template-columns:150px 1fr;gap:5px 12px;font-size:12.5px;margin-top:12px;background:var(--mist-2);padding:10px 12px;border-radius:8px;border:1px solid var(--mist);}
   .rows b{color:var(--ink-dim);font-weight:600;}
@@ -89,26 +89,26 @@
   table.tbl td{padding:9px 12px;border-bottom:1px solid var(--mist);color:var(--ink);vertical-align:top;}
   table.tbl tr:last-child td{border-bottom:none;}
   .empty-state{text-align:center;color:var(--ink-dim);padding:40px 20px;border:1px dashed var(--mist);border-radius:var(--radius);font-size:13.5px;}
-  .modal-overlay{position:fixed;inset:0;background:rgba(10,10,30,.8);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(16,40,40,.45);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
   .modal-overlay.open{display:flex;}
-  .modal{background:var(--paper);border-radius:14px;max-width:420px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.7);border:1px solid var(--mist);}
+  .modal{background:var(--paper);border-radius:14px;max-width:420px;width:100%;box-shadow:0 32px 80px rgba(16,40,40,.2);border:1px solid var(--mist);}
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--mist);background:var(--paper-2);border-radius:14px 14px 0 0;}
   .modal-head h2{font-size:16px;color:var(--gold);}
   .modal-close{cursor:pointer;color:var(--ink-dim);font-size:22px;background:none;border:none;}
   .modal-close:hover{color:var(--coral);}
   .modal-body{padding:22px 24px 26px;}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--paper-2);color:var(--ink);padding:12px 22px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid var(--mist);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:300;max-width:90vw;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--paper-2);color:var(--ink);padding:12px 22px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 32px rgba(16,40,40,.12);border:1px solid var(--mist);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:300;max-width:90vw;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast.error{background:#3a1f2b;border-color:var(--coral);color:var(--coral);}
+  .toast.error{background:#FEF3F2;border-color:var(--coral);color:var(--coral);}
   .hamburger-btn{display:none;background:none;border:none;color:var(--ink);padding:6px;cursor:pointer;border-radius:7px;align-items:center;justify-content:center;}
   .hamburger-btn:hover{background:var(--mist);}
-  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:149;}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(16,40,40,.35);z-index:149;}
   .sidebar-backdrop.open{display:block;}
-  svg{color:#fff;}
+  svg{color:inherit;}
   @media(max-width:768px){
     :root{--topbar-h:48px;}
     .hamburger-btn{display:flex;}
-    .sidebar{display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .22s ease;z-index:150;box-shadow:0 0 30px rgba(0,0,0,.5);width:250px;}
+    .sidebar{display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .22s ease;z-index:150;box-shadow:0 0 30px rgba(16,40,40,.12);width:250px;}
     .sidebar.open{transform:translateX(0);}
     .topbar-nav{display:none;}
     .topbar{padding:0 8px 0 4px;gap:6px;}
@@ -130,45 +130,63 @@
     table.tbl{font-size:11.5px;}
     table.tbl th,table.tbl td{padding:7px 8px;}
   }
+  /* ---- Identiti SPHP (beza daripada SPP) ---- */
+  .topbar{border-top:3px solid var(--gold);}
+  .brand-tag{display:inline-block;background:var(--gold);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;margin-right:6px;vertical-align:1px;}
+  .card,.stat-card,.start-card,.step{box-shadow:0 1px 2px rgba(16,40,40,.05),0 4px 14px rgba(16,40,40,.05);}
+  .field label{letter-spacing:.04em;}
+  /* Dialog dalam halaman (ganti confirm/prompt yang tidak muncul dalam apps Android) */
+  .tdlg{position:fixed;inset:0;background:rgba(16,40,40,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+  .tdlg.open{display:flex;}
+  .tdlg-box{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:22px;box-shadow:0 24px 60px rgba(16,40,40,.25);border-top:4px solid var(--gold);}
+  .tdlg-box.bahaya{border-top-color:var(--coral);}
+  .tdlg-box h3{font-size:16px;margin-bottom:6px;color:var(--ink);}
+  .tdlg-box p{font-size:13.5px;color:var(--ink-dim);line-height:1.5;margin-bottom:12px;}
+  .tdlg-box textarea{width:100%;min-height:76px;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--mist-2);color:var(--ink);resize:vertical;margin-bottom:12px;}
+  .tdlg-box textarea:focus{outline:none;border-color:var(--gold);}
+  .tdlg-act{display:flex;gap:10px;}
+  .tdlg-act button{flex:1;min-height:44px;border-radius:9px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--mist);background:#fff;color:var(--ink);}
+  .tdlg-act .ya{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .tdlg-box.bahaya .tdlg-act .ya{background:var(--coral);border-color:var(--coral);}
   .pin-gate{min-height:100vh;padding:40px 20px;display:flex;align-items:flex-start;justify-content:center;}
   .pin-card{max-width:360px;width:100%;padding:36px 32px;text-align:center;margin-top:6vh;}
   .pin-card h2{font-size:20px;margin-bottom:6px;color:var(--gold);}
   .pin-card p{font-size:13px;color:var(--ink-dim);margin:0 0 20px;}
   .pin-card input{width:100%;border:1px solid var(--mist);border-radius:10px;padding:12px;font-size:18px;text-align:center;letter-spacing:.15em;margin-bottom:14px;background:var(--mist-2);color:var(--ink);}
-  .pin-card input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.15);}
+  .pin-card input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,0.15);}
   .pin-error{color:var(--coral);font-size:12.5px;margin-bottom:10px;min-height:16px;}
   .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px;}
   .stat-card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:16px 18px;}
   .stat-label{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
-  .stat-value{font-size:24px;font-weight:700;font-family:'Space Grotesk',sans-serif;color:var(--gold);}
+  .stat-value{font-size:24px;font-weight:700;font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;color:var(--gold);}
   .filters{display:flex;gap:8px;margin:0 0 14px;flex-wrap:wrap;}
   .filters select,.filters input{border:1px solid var(--mist);border-radius:8px;padding:7px 10px;font-size:13px;font-family:inherit;background:var(--paper-2);color:var(--ink);}
   .filters select:focus,.filters input:focus{outline:none;border-color:var(--gold);}
   .filters select option{background:var(--paper-2);}
   .pending-card{padding:18px 20px;margin-bottom:12px;}
   .pending-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
-  .pending-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--ink);}
+  .pending-name{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:15px;color:var(--ink);}
   .pending-name small{font-size:12px;color:var(--ink-dim);font-weight:500;}
   .pending-meta{font-size:12.5px;color:var(--ink-dim);margin-top:3px;}
   .pending-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center;}
   .sel{border:1px solid var(--gold);border-radius:8px;padding:7px 12px;font-size:13px;font-family:inherit;background:var(--mist-2);color:var(--ink);}
-  .sel:focus{outline:none;box-shadow:0 0 0 3px rgba(212,168,67,0.2);}
+  .sel:focus{outline:none;box-shadow:0 0 0 3px rgba(15,110,106,0.2);}
   .sel option{background:var(--paper-2);}
   .kel{font-size:12.5px;margin-top:10px;padding:8px 12px;border-radius:8px;border:1px dashed var(--mist);color:var(--ink-dim);}
-  .kel.ok{border-color:rgba(76,175,130,.5);color:var(--ok);}
+  .kel.ok{border-color:rgba(23,128,61,.5);color:var(--ok);}
   .kel.lebih{border-color:var(--coral);color:var(--coral);}
   .note-input{width:100%;border:1px solid var(--mist);border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;background:var(--mist-2);color:var(--ink);margin-top:10px;}
   .note-input:focus{outline:none;border-color:var(--gold);}
   .tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
   .tab{border:1px solid var(--mist);background:var(--paper-2);color:var(--ink-dim);padding:6px 14px;border-radius:7px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;}
-  .tab.active{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border-color:var(--gold-dark);}
+  .tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold-dark);}
   .history-cards{display:none;flex-direction:column;gap:10px;}
   .stp-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;}
   .stp{display:flex;align-items:center;gap:6px;font-size:11.5px;padding:5px 10px;border-radius:100px;border:1px solid var(--mist);color:var(--ink-dim);background:var(--mist-2);}
   .stp i{font-style:normal;font-weight:700;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--mist);color:var(--ink);font-size:10.5px;flex-shrink:0;}
-  .stp.lulus{border-color:rgba(76,175,130,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
-  .stp.tolak{border-color:rgba(224,92,92,.5);color:var(--coral);} .stp.tolak i{background:var(--coral);color:#fff;}
-  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(212,168,67,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
+  .stp.lulus{border-color:rgba(23,128,61,.45);color:var(--ok);} .stp.lulus i{background:var(--ok);color:var(--navy);}
+  .stp.tolak{border-color:rgba(180,35,24,.5);color:var(--coral);} .stp.tolak i{background:var(--coral);color:#fff;}
+  .stp.kini{border-color:var(--gold);color:var(--gold);background:rgba(15,110,106,.1);} .stp.kini i{background:var(--gold);color:var(--navy);}
   .wait-box{margin-top:12px;padding:10px 14px;border-radius:8px;border:1px dashed var(--gold-dark);font-size:12.5px;color:var(--ink-dim);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}
   .wait-box b{color:var(--gold-light);}
   .peringkat-kecil{display:block;color:var(--ink-dim);font-size:11px;margin-top:4px;}
@@ -197,8 +215,8 @@
     <div class="card pin-card">
       <a href="index.html" style="display:inline-flex;align-items:center;gap:6px;color:var(--ink-dim);font-size:13px;margin-bottom:16px">&#8592; kembali ke laman permohonan</a>
       <div class="brand-mark" style="margin:0 auto 16px;"><img src="logo.png" width="34" height="34" style="object-fit:contain;" alt=""></div>
-      <h2>Panel Admin</h2>
-      <p>Masukkan PIN admin untuk teruskan</p>
+      <h2><span class="brand-tag">SPHP</span>Panel Admin</h2>
+      <p>Tempahan Hotel &amp; Penerbangan. Masukkan PIN admin untuk teruskan.</p>
       <div class="pin-error" id="pinError"></div>
       <input type="password" id="pinInput" inputmode="numeric" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password">
       <button class="btn btn-primary" id="pinSubmit" style="width:100%;padding:12px;font-size:14px;">Masuk</button>
@@ -212,7 +230,7 @@
       </button>
       <div class="topbar-brand">
         <div class="brand-mark"><img src="logo.png" width="34" height="34" style="object-fit:contain;" alt=""></div>
-        <div><div class="brand-name">Panel Admin</div><div class="brand-sub">Hotel &amp; Penerbangan</div></div>
+        <div><div class="brand-name"><span class="brand-tag">SPHP</span>Panel Admin</div><div class="brand-sub">Hotel &amp; Penerbangan</div></div>
       </div>
       <nav class="topbar-nav">
         <a href="#" class="active" id="nav-pending">Menunggu Kelulusan</a>
@@ -309,11 +327,32 @@
 
         <!-- PELULUS -->
         <div id="page-pelulus" style="display:none;">
-          <div class="page-header"><h2>Pelulus Hotel</h2><p>Dibaca dari tab <b>Pelulus</b> dalam Google Sheet. Ubah nama atau emel di Sheet; permohonan baharu terus guna maklumat terkini.</p></div>
+          <div class="page-header"><h2>Pelulus Hotel</h2><p>Nama dan emel diubah dalam tab <b>Pelulus</b> di Google Sheet. Cuti pelulus ditetapkan di sini.</p></div>
+          <div class="note"><b style="color:var(--ink);">Pelulus bercuti?</b> Tekan <b>Tetapkan cuti</b>, pilih pemangku (contoh: Pengurus Besar &rarr; Timbalan Pengurus Besar) dan tarikh cuti.
+            Sepanjang tempoh itu, permohonan dihantar terus kepada pemangku. Permohonan yang sedang menunggu pelulus itu juga dipindahkan secara automatik.</div>
           <div class="card" style="overflow-x:auto;" id="pelulusWrap"><div class="empty-state" style="border:none;">Memuatkan...</div></div>
+
+          <div class="modal-overlay" id="cutiModal">
+            <div class="modal" role="dialog" aria-modal="true" aria-labelledby="cutiTitle">
+              <div class="modal-head"><h2 id="cutiTitle">Tetapkan Cuti</h2><button class="modal-close" id="cutiClose" aria-label="Tutup">&times;</button></div>
+              <div class="modal-body">
+                <p style="font-size:13px;color:var(--ink-dim);margin-bottom:14px;" id="cutiInfo"></p>
+                <div class="field"><label for="cutiPemangku">Kuasa melulus diberi kepada (pemangku)</label><select id="cutiPemangku"></select></div>
+                <div class="field-row">
+                  <div class="field"><label for="cutiMula">Cuti dari</label><input type="date" id="cutiMula"></div>
+                  <div class="field"><label for="cutiTamat">Hingga</label><input type="date" id="cutiTamat"></div>
+                </div>
+                <div class="form-error" id="cutiErr"></div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                  <button class="btn btn-primary" id="cutiSimpan" style="flex:1;">Simpan</button>
+                  <button class="btn btn-danger" id="cutiTamatkan" style="display:none;">Tamatkan cuti</button>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="note" style="margin-top:14px;">
             <b style="color:var(--ink);">Aliran kelulusan hotel</b><br>
-            1. Pengurus Besar (tempoh lebih 3 hari) atau Penolong Pengurus Besar bahagian pemohon (3 hari ke bawah)<br>
+            1. Pengurus Besar (tempoh lebih 3 hari) atau Penolong Pengurus Besar bahagian pemohon (3 hari ke bawah). Jika bercuti, pemangku.<br>
             2. Pegawai Tadbir (Unit Pentadbiran), di Panel Admin ini<br>
             3. Ketua Akauntan (semak bajet)<br>
             4. Penolong Pengurus Besar (Khidmat Pengurusan)<br>
@@ -357,6 +396,30 @@
         return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
       });
     }
+    /**
+     * Dialog dalam halaman. tanya({tajuk, teks, input, placeholder, ya, bahaya})
+     * -> Promise: true/false (tanpa input) atau teks/null (dengan input).
+     */
+    function tanya(o) {
+      return new Promise(function (selesai) {
+        var w = document.createElement('div');
+        w.className = 'tdlg open';
+        w.innerHTML = '<div class="tdlg-box' + (o.bahaya ? ' bahaya' : '') + '" role="dialog" aria-modal="true">' +
+          '<h3></h3><p></p>' + (o.input ? '<textarea></textarea>' : '') +
+          '<div class="tdlg-act"><button type="button" class="ya"></button><button type="button" class="tidak">Batal</button></div></div>';
+        w.querySelector('h3').textContent = o.tajuk || 'Pengesahan';
+        w.querySelector('p').textContent = o.teks || '';
+        w.querySelector('.ya').textContent = o.ya || 'Ya';
+        var ta = w.querySelector('textarea');
+        if (ta) ta.placeholder = o.placeholder || '';
+        document.body.appendChild(w);
+        (ta || w.querySelector('.ya')).focus();
+        function tutup(v) { document.body.removeChild(w); selesai(v); }
+        w.querySelector('.ya').addEventListener('click', function () { tutup(o.input ? ta.value.trim() : true); });
+        w.querySelector('.tidak').addEventListener('click', function () { tutup(o.input ? null : false); });
+        w.addEventListener('click', function (e) { if (e.target === w) tutup(o.input ? null : false); });
+      });
+    }
     function showToast(msg, isError) {
       var t = document.getElementById('toast');
       t.textContent = msg;
@@ -382,7 +445,7 @@
       return b.skim + (b.gred || '');
     }
     function butiranPermohonan(b) {
-      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
+      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : '']];
       if (b.jenis === 'Hotel') return asas.concat([
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
         ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Tempoh', tempoh(b.bilMalam)]
@@ -644,7 +707,9 @@
       if (keputusan === 'Ditolak' && !nota) { showToast('Sila isi sebab penolakan dalam ruang catatan.', true); return; }
       if (keputusan === 'Diluluskan' && hotel && (!n.skim || (n.skim === 'PSH' ? !n.akademik : (n.skim !== 'VU' && !n.gred)))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
       var lanjut = hotel && keputusan === 'Diluluskan' ? ' Permohonan akan dimajukan kepada Ketua Akauntan.' : ' Emel akan dihantar kepada pemohon.';
-      if (!confirm(keputusan + ' permohonan ' + b.id + '?' + lanjut)) return;
+      var ok = await tanya({ tajuk: (keputusan === 'Diluluskan' ? 'Luluskan ' : 'Tolak ') + b.id + '?', teks: lanjut.trim(),
+        ya: keputusan === 'Diluluskan' ? 'Ya, Luluskan' : 'Ya, Tolak', bahaya: keputusan !== 'Diluluskan' });
+      if (!ok) return;
       kunci(card, true);
       try {
         var res = await adminApi(hotel ? 'decideHotel' : 'decideFlight',
@@ -725,7 +790,8 @@
       });
     }
     async function batalkan(id, btn) {
-      var reason = prompt('Sebab pembatalan untuk ' + id + ' (pilihan):');
+      var reason = await tanya({ tajuk: 'Batalkan ' + id + '?', teks: 'Pemohon akan dimaklumkan melalui emel. Sebab pembatalan (pilihan):',
+        input: true, placeholder: 'Contoh: Program ditangguhkan', ya: 'Ya, Batalkan', bahaya: true });
       if (reason === null) return;
       btn.disabled = true; btn.textContent = 'Membatalkan...';
       try {
@@ -740,16 +806,58 @@
     $('pagNext').addEventListener('click', function () { histPage++; renderAll(); });
 
     // ---------------- Pelulus ----------------
+    var pelulusRows = [], cutiKod = '';
     async function loadPelulus() {
       try {
-        var rows = await adminApi('getPelulus');
-        $('pelulusWrap').innerHTML = '<table class="tbl"><thead><tr><th>Kod</th><th>Jawatan</th><th>Nama</th><th>Emel</th></tr></thead><tbody>' +
-          rows.map(function (r) {
-            return '<tr><td>' + escapeHtml(r.kod) + '</td><td>' + escapeHtml(r.jawatan) + '</td><td>' + (escapeHtml(r.nama) || '<span style="color:var(--ink-dim);">-</span>') + '</td>' +
-              '<td>' + (r.emel ? escapeHtml(r.emel) : '<span style="color:var(--coral);">Belum diisi</span>') + '</td></tr>';
+        pelulusRows = await adminApi('getPelulus');
+        $('pelulusWrap').innerHTML = '<table class="tbl"><thead><tr><th>Jawatan</th><th>Nama</th><th>Emel</th><th>Cuti / Pemangku</th><th></th></tr></thead><tbody>' +
+          pelulusRows.map(function (r) {
+            var cuti = !r.cutiMula ? '<span style="color:var(--ink-dim);">Bertugas</span>'
+              : (r.sedangCuti ? '<span class="badge badge-Ditolak">Sedang cuti</span>' : '<span class="badge badge-Menunggu">Cuti akan datang</span>') +
+                '<br><span style="font-size:11.5px;color:var(--ink-dim);">' + escapeHtml(r.cutiMula) + ' &rarr; ' + escapeHtml(r.cutiTamat) + '<br>Pemangku: ' + escapeHtml(r.pemangkuJawatan || '-') + '</span>';
+            return '<tr><td><b>' + escapeHtml(r.jawatan) + '</b><br><span style="font-size:11px;color:var(--ink-dim);">' + escapeHtml(r.kod) + '</span></td>' +
+              '<td>' + (escapeHtml(r.nama) || '<span style="color:var(--ink-dim);">-</span>') + '</td>' +
+              '<td>' + (r.emel ? escapeHtml(r.emel) : '<span style="color:var(--coral);">Belum diisi</span>') + '</td>' +
+              '<td style="min-width:150px;">' + cuti + '</td>' +
+              '<td><button class="btn btn-ghost btn-sm b-cuti" style="white-space:nowrap;" data-kod="' + escapeHtml(r.kod) + '">' + (r.cutiMula ? 'Ubah cuti' : 'Tetapkan cuti') + '</button></td></tr>';
           }).join('') + '</tbody></table>';
+        Array.prototype.forEach.call(document.querySelectorAll('.b-cuti'), function (b) {
+          b.addEventListener('click', function () { bukaCuti(b.getAttribute('data-kod')); });
+        });
       } catch (e) { $('pelulusWrap').innerHTML = '<div class="empty-state" style="border:none;">Ralat: ' + escapeHtml(e.message) + '</div>'; }
     }
+    function bukaCuti(kod) {
+      var r = pelulusRows.find(function (x) { return x.kod === kod; });
+      cutiKod = kod;
+      $('cutiTitle').textContent = 'Cuti: ' + r.jawatan;
+      $('cutiInfo').textContent = 'Sepanjang cuti, permohonan untuk ' + r.jawatan + ' dihantar kepada pemangku. Tandatangan dalam rekod akan tertulis "bagi pihak ' + r.jawatan + '".';
+      $('cutiPemangku').innerHTML = pelulusRows.filter(function (x) { return x.kod !== kod; }).map(function (x) {
+        return '<option value="' + escapeHtml(x.kod) + '"' + (x.kod === r.pemangku ? ' selected' : '') + '>' + escapeHtml(x.jawatan) + (x.nama ? ' (' + escapeHtml(x.nama) + ')' : '') + '</option>';
+      }).join('');
+      var hariIni = new Date(); var iso = hariIni.getFullYear() + '-' + ('0' + (hariIni.getMonth() + 1)).slice(-2) + '-' + ('0' + hariIni.getDate()).slice(-2);
+      $('cutiMula').value = r.cutiMula || iso; $('cutiTamat').value = r.cutiTamat || '';
+      $('cutiTamatkan').style.display = r.cutiMula ? '' : 'none';
+      $('cutiErr').classList.remove('show');
+      $('cutiModal').classList.add('open');
+    }
+    async function simpanCuti(tamatkan) {
+      var data = tamatkan ? { kod: cutiKod } : { kod: cutiKod, pemangku: $('cutiPemangku').value, mula: $('cutiMula').value, tamat: $('cutiTamat').value };
+      if (!tamatkan && (!data.mula || !data.tamat)) { $('cutiErr').textContent = 'Sila isi tarikh cuti dari dan hingga.'; $('cutiErr').classList.add('show'); return; }
+      $('cutiSimpan').disabled = $('cutiTamatkan').disabled = true;
+      try {
+        var res = await adminApi('setCutiPelulus', data);
+        $('cutiModal').classList.remove('open');
+        showToast(res.message);
+        loadPelulus(); pollCounts();
+      } catch (e) { $('cutiErr').textContent = e.message; $('cutiErr').classList.add('show'); }
+      $('cutiSimpan').disabled = $('cutiTamatkan').disabled = false;
+    }
+    $('cutiSimpan').addEventListener('click', function () { simpanCuti(false); });
+    $('cutiTamatkan').addEventListener('click', async function () {
+      if (await tanya({ tajuk: 'Tamatkan cuti?', teks: 'Permohonan baharu akan kembali kepada pelulus asal.', ya: 'Ya, Tamatkan' })) simpanCuti(true);
+    });
+    $('cutiClose').addEventListener('click', function () { $('cutiModal').classList.remove('open'); });
+    $('cutiModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
 
     // ---------------- Kelayakan ----------------
     async function loadKelayakan() {
