@@ -41,7 +41,7 @@
 </head>
 <body>
   <div class="toolbar">
-    <a href="index.html">&larr; Kembali</a>
+    <a href="index.html" onclick="if (history.length > 1) { history.back(); return false; }">&larr; Kembali</a>
     <button onclick="window.print()">Cetak / Simpan PDF</button>
   </div>
   <div class="sheet" id="root"><div class="msg">Memuatkan borang...</div></div>
