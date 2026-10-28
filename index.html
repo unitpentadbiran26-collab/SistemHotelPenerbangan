@@ -3,6 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
   <title>SPHP · Tempahan Hotel &amp; Penerbangan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -225,7 +227,7 @@
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Maklumat</div>
-        <p class="sidebar-note">Keputusan permohonan akan dihantar ke emel anda. Simpan No. Rujukan untuk semak status atau cetak borang.</p>
+        <p class="sidebar-note">Keputusan permohonan akan dihantar ke emel anda. Simpan No. Rujukan untuk semak status. Borang boleh dicetak melalui pautan dalam emel keputusan.</p>
       </div>
     </aside>
 
@@ -257,7 +259,7 @@
           </button>
           <button class="start-card" id="go-status">
             <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#0F6E6A" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="#0F6E6A" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-            <h3>Semak Status</h3><p>Cari ikut No. Rujukan, nama, bahagian atau unit. Lihat status dan cetak borang.</p>
+            <h3>Semak Status</h3><p>Cari ikut No. Rujukan, nama, bahagian atau unit untuk lihat status terkini.</p>
           </button>
         </div>
         <div class="steps">
@@ -713,8 +715,7 @@
             '<div class="s">' + escapeHtml(ringkasPermohonan(b)) + '</div>' +
             (b.peringkat ? '<div class="s" style="color:var(--gold);font-weight:600;">Peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; menunggu ' + escapeHtml(b.pelulusSemasa) + '</div>' : '') +
             '</div><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
-            '<details class="s-butiran"><summary>Lihat butiran</summary>' + rowsHtml(rows) + '</details>' +
-            '<div style="margin-top:12px;"><a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak Borang</a></div></div>';
+            '<details class="s-butiran"><summary>Lihat butiran</summary>' + rowsHtml(rows) + '</details></div>';
     }
     async function cariStatus() {
       $('s_error').classList.remove('show');
