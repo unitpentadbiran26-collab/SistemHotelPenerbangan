@@ -168,7 +168,9 @@
   .card-head p{font-size:12px;color:var(--ink-dim);margin-top:3px;}
   .field input[readonly]{background:var(--navy-3);color:var(--gold-light);font-weight:700;cursor:default;}
   .summary{display:none;background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--gold-light);}
-  .status-card{padding:20px 22px;margin-top:16px;}
+  .status-card{padding:20px 22px;margin-top:12px;}
+  .s-butiran{margin-top:10px;}
+  .s-butiran summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--gold);padding:4px 0;}
   .status-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
   .status-top .t{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:16px;}
   .status-top .s{font-size:12px;color:var(--ink-dim);margin-top:3px;}
@@ -255,7 +257,7 @@
           </button>
           <button class="start-card" id="go-status">
             <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#0F6E6A" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="#0F6E6A" stroke-width="1.8" stroke-linecap="round"/></svg></div>
-            <h3>Semak Status</h3><p>Guna No. Rujukan dan emel untuk lihat status atau cetak borang.</p>
+            <h3>Semak Status</h3><p>Cari ikut No. Rujukan, nama, bahagian atau unit. Lihat status dan cetak borang.</p>
           </button>
         </div>
         <div class="steps">
@@ -360,14 +362,21 @@
 
       <!-- SEMAK STATUS -->
       <div id="page-status" style="display:none;">
-        <div class="page-header"><h2>Semak Status</h2><p>Masukkan No. Rujukan dan emel yang digunakan semasa memohon</p></div>
+        <div class="page-header"><h2>Semak Status</h2><p>Cari guna <b>mana-mana satu</b> maklumat di bawah. Isi lebih banyak untuk carian yang lebih tepat.</p></div>
         <div class="card form-card">
           <div class="form-error" id="s_error"></div>
           <div class="field-row">
-            <div class="field"><label>No. Rujukan</label><input type="text" id="s_id" placeholder="Contoh: HTL-2026-0001" style="text-transform:uppercase;"></div>
-            <div class="field"><label>Emel</label><input type="email" id="s_emel" placeholder="Emel semasa memohon"></div>
+            <div class="field"><label for="s_id">No. Rujukan</label><input type="text" id="s_id" placeholder="Contoh: HTL-2026-0001" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="s_nama">Nama Pemohon</label><input type="text" id="s_nama" placeholder="Sebahagian nama pun boleh"></div>
           </div>
-          <button class="btn btn-primary" id="s_btn" style="width:100%;padding:11px;">Semak</button>
+          <div class="field-row">
+            <div class="field"><label for="s_bahagian">Bahagian</label><select id="s_bahagian"><option value="">-- Semua Bahagian --</option></select></div>
+            <div class="field"><label for="s_unit">Unit</label><select id="s_unit"><option value="">-- Pilih Bahagian dahulu --</option></select></div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" id="s_btn" style="flex:1;padding:11px;">Cari</button>
+            <button class="btn" id="s_reset" style="padding:11px 18px;">Kosongkan</button>
+          </div>
         </div>
         <div id="s_hasil" style="max-width:620px;"></div>
       </div>
@@ -677,18 +686,19 @@
     });
 
     // ---------- Semak status ----------
-    $('s_btn').addEventListener('click', async function () {
-      $('s_error').classList.remove('show');
-      var id = v('s_id').toUpperCase(), emel = v('s_emel');
-      if (!id || !emel) return err('s', 'Sila isi No. Rujukan dan Emel.');
-      var btn = this; btn.disabled = true; btn.textContent = 'Menyemak...';
-      $('s_hasil').innerHTML = '';
-      try {
-        var r = await api('semakStatus', { id: id, emel: emel });
-        if (!r.found) {
-          $('s_hasil').innerHTML = '<div class="empty-state" style="margin-top:16px;">Tiada permohonan dijumpai untuk No. Rujukan dan emel ini.</div>';
-        } else {
-          var b = r.permohonan;
+    (function () {
+      var sel = $('s_bahagian');
+      sel.innerHTML = '<option value="">-- Semua Bahagian --</option>' +
+        BAHAGIAN_OPTIONS.map(function (b) { return '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + '</option>'; }).join('');
+      populateUnitSelect($('s_unit'), '');
+      sel.addEventListener('change', function () { populateUnitSelect($('s_unit'), this.value); });
+    })();
+    function ringkasPermohonan(b) {
+      return b.jenis === 'Hotel'
+        ? (b.namaHotel || '') + ', ' + (b.daerah || '') + ' \u00b7 ' + b.tarikhMasuk + ' \u2192 ' + b.tarikhKeluar
+        : (b.dari || '') + ' \u2192 ' + (b.destinasi || '') + ' \u00b7 ' + b.tarikhPergi;
+    }
+    function kadStatus(b) {
           var rows = butiranPermohonan(b).concat([
             ['Peringkat semasa', b.peringkat ? b.peringkat + ' / ' + b.jumlahPeringkat + ' · menunggu ' + b.pelulusSemasa : ''],
             ['Kelayakan sewa hotel', b.jenis === 'Hotel' ? b.hadKelayakan : ''], ['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]
@@ -697,17 +707,40 @@
             rows.push(['Peringkat ' + k.peringkat + ': ' + k.jawatan,
               k.keputusan ? k.keputusan + ' (' + k.tarikh + ')' + (k.catatan ? ' — ' + k.catatan : '') : (b.peringkat === k.peringkat ? 'Sedang disemak' : 'Belum')]);
           });
-          $('s_hasil').innerHTML = '<div class="card status-card"><div class="status-top"><div>' +
+          return '<div class="card status-card"><div class="status-top"><div>' +
             '<div class="t">' + escapeHtml(b.jenis) + ' &middot; ' + escapeHtml(b.id) + '</div>' +
-            '<div class="s">' + escapeHtml(b.nama) + ' &middot; dimohon ' + escapeHtml(b.tarikhMohon) + '</div></div>' +
-            '<span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
-            rowsHtml(rows) +
-            '<div style="margin-top:14px;"><a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak Borang</a></div></div>';
+            '<div class="s">' + escapeHtml(b.nama) + ' &middot; ' + escapeHtml(b.bahagian) + (b.unit && b.unit !== '-' ? ' / ' + escapeHtml(b.unit) : '') + '</div>' +
+            '<div class="s">' + escapeHtml(ringkasPermohonan(b)) + '</div>' +
+            (b.peringkat ? '<div class="s" style="color:var(--gold);font-weight:600;">Peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; menunggu ' + escapeHtml(b.pelulusSemasa) + '</div>' : '') +
+            '</div><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
+            '<details class="s-butiran"><summary>Lihat butiran</summary>' + rowsHtml(rows) + '</details>' +
+            '<div style="margin-top:12px;"><a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak Borang</a></div></div>';
+    }
+    async function cariStatus() {
+      $('s_error').classList.remove('show');
+      var q = { id: v('s_id').toUpperCase(), nama: v('s_nama'), bahagian: v('s_bahagian'), unit: v('s_unit') };
+      if (!q.id && !q.nama && !q.bahagian && !q.unit) return err('s', 'Sila isi sekurang-kurangnya satu: No. Rujukan, Nama, Bahagian atau Unit.');
+      if (q.nama && q.nama.length < 3) return err('s', 'Sila taip sekurang-kurangnya 3 huruf nama.');
+      var btn = $('s_btn'); btn.disabled = true; btn.textContent = 'Mencari...';
+      $('s_hasil').innerHTML = '';
+      try {
+        var r = await api('cariPermohonan', q);
+        if (!r.jumlah) {
+          $('s_hasil').innerHTML = '<div class="empty-state" style="margin-top:16px;">Tiada permohonan dijumpai. Cuba semak ejaan atau kurangkan maklumat carian.</div>';
+        } else {
+          $('s_hasil').innerHTML = '<div style="font-size:12.5px;color:var(--ink-dim);margin:16px 0 0;">' + r.jumlah + ' permohonan dijumpai' +
+            (r.jumlah > r.hasil.length ? ' (memaparkan ' + r.hasil.length + ' terbaru; tambah maklumat untuk carian lebih tepat)' : '') + '</div>' +
+            r.hasil.map(kadStatus).join('');
         }
       } catch (e) { err('s', 'Ralat: ' + e.message); }
-      btn.disabled = false; btn.textContent = 'Semak';
+      btn.disabled = false; btn.textContent = 'Cari';
+    }
+    $('s_btn').addEventListener('click', cariStatus);
+    ['s_id', 's_nama'].forEach(function (id) { $(id).addEventListener('keydown', function (e) { if (e.key === 'Enter') cariStatus(); }); });
+    $('s_reset').addEventListener('click', function () {
+      $('s_id').value = ''; $('s_nama').value = ''; $('s_bahagian').value = ''; populateUnitSelect($('s_unit'), '');
+      $('s_hasil').innerHTML = ''; $('s_error').classList.remove('show');
     });
-    $('s_emel').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('s_btn').click(); });
 
     $('doneClose').addEventListener('click', function () { $('doneModal').classList.remove('open'); });
     $('doneModal').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('open'); });
