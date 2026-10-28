@@ -117,6 +117,11 @@
         '<h2>B. Butiran ' + (hotel ? 'Penginapan' : 'Penerbangan') + '</h2>' + jadual(butiran) +
         '<h2>C. Keputusan ' + esc(b.organisasi) + '</h2>' + jadual(keputusan) +
         (jadualLulus ? '<h2>D. Peringkat Kelulusan</h2>' + jadualLulus : '') +
+        (b.tempahan && b.tempahan.status ? '<h2>E. Tempahan Hotel (Unit Pentadbiran)</h2>' + jadual(b.tempahan.status === 'Ditempah' ? [
+          ['Hotel ditempah', b.tempahan.hotel], ['Alamat / no. telefon', b.tempahan.alamat], ['No. pengesahan', b.tempahan.noPengesahan],
+          ['Jenis bilik', b.tempahan.jenisBilik], ['Kadar semalam', b.tempahan.kadar !== '' && b.tempahan.kadar != null ? 'RM' + Number(b.tempahan.kadar).toFixed(2) : ''],
+          ['Catatan', b.tempahan.catatan], ['Tarikh direkod', b.tempahan.tarikh]
+        ] : [['Status', 'Belum ditempah']]) : '') +
         '<div class="sign"><div>Tandatangan Pemohon</div><div>Disahkan oleh (Nama, Jawatan &amp; Cop)</div></div>' +
         '<div class="foot">Dijana oleh ' + esc(b.appName) + '</div>';
     }
