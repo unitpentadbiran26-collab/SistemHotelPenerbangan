@@ -3,42 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sistem Penempahan Hotel &amp; Penerbangan</title>
+  <title>SPHP · Tempahan Hotel &amp; Penerbangan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
   :root{
-    --navy:#0F0E2A; --navy-2:#16213E; --navy-3:#1A1A3E;
-    --paper:#1E1E3A; --paper-2:#252545; --mist:#2E2E55; --mist-2:#232340;
-    --gold:#D4A843; --gold-dark:#B8891F; --gold-light:#F0C96A;
-    --ink:#F0EDE8; --ink-dim:#9AA5B4; --ok:#4CAF82; --coral:#E05C5C;
+    --navy:#F5F3EE; --navy-2:#FFFFFF; --navy-3:#EDF3F2;
+    --paper:#FFFFFF; --paper-2:#F1F5F4; --mist:#DCE4E2; --mist-2:#F8FAF9;
+    --gold:#0F6E6A; --gold-dark:#0B5652; --gold-light:#0B5652;
+    --ink:#18282B; --ink-dim:#5A686B; --ok:#17803D; --coral:#B42318;
     --radius:10px; --sidebar-w:220px; --topbar-h:58px;
-    --shadow:0 2px 8px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.3);
+    --shadow:0 2px 8px rgba(16,40,40,.07),0 8px 24px rgba(16,40,40,.07);
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html,body{height:100%;}
-  body{background:var(--navy);color:var(--ink);font-family:'Inter',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3{font-family:'Space Grotesk','Inter',sans-serif;color:var(--ink);}
+  body{background:var(--navy);color:var(--ink);font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;letter-spacing:-.01em;color:var(--ink);}
   a{color:var(--gold);text-decoration:none;}
-  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--navy-2);border-bottom:1px solid var(--mist);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+  .topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar-h);background:var(--navy-2);border-bottom:1px solid var(--mist);display:flex;align-items:center;padding:0 24px;gap:16px;z-index:100;box-shadow:0 2px 12px rgba(16,40,40,.07);}
   .topbar-brand{display:flex;align-items:center;gap:10px;width:var(--sidebar-w);flex-shrink:0;}
   .brand-mark{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;}
-  .brand-name{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
+  .brand-name{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
   .brand-sub{font-size:10px;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;}
   .topbar-nav{display:flex;align-items:center;gap:4px;flex:1;}
   .topbar-nav a{padding:7px 14px;border-radius:7px;font-size:13.5px;font-weight:500;color:var(--ink-dim);transition:all .15s;}
   .topbar-nav a:hover{background:var(--mist);color:var(--ink);}
-  .topbar-nav a.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;}
+  .topbar-nav a.active{background:rgba(15,110,106,0.12);color:var(--gold);font-weight:600;}
   .topbar-right{display:flex;align-items:center;gap:10px;margin-left:auto;}
-  .btn-admin{background:linear-gradient(135deg,var(--gold),var(--gold-dark));color:var(--navy);border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;}
-  .btn-admin:hover{box-shadow:0 4px 12px rgba(212,168,67,0.4);}
+  .btn-admin{background:var(--gold);color:var(--navy);border:none;padding:7px 16px;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;}
+  .btn-admin:hover{box-shadow:0 4px 12px rgba(15,110,106,0.4);}
   .app-layout{display:flex;margin-top:var(--topbar-h);min-height:calc(100vh - var(--topbar-h));}
   .sidebar{width:var(--sidebar-w);flex-shrink:0;background:var(--navy-2);border-right:1px solid var(--mist);padding:24px 12px;position:fixed;top:var(--topbar-h);bottom:0;overflow-y:auto;}
   .sidebar-section{margin-bottom:24px;}
   .sidebar-label{font-size:10.5px;font-weight:700;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;padding:0 10px;margin-bottom:6px;}
   .sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink-dim);cursor:pointer;transition:all .15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;font-family:inherit;}
   .sidebar-item:hover{background:var(--mist);color:var(--ink);}
-  .sidebar-item.active{background:rgba(212,168,67,0.12);color:var(--gold);font-weight:600;border-left:3px solid var(--gold);padding-left:9px;}
+  .sidebar-item.active{background:rgba(15,110,106,0.12);color:var(--gold);font-weight:600;border-left:3px solid var(--gold);padding-left:9px;}
   .sidebar-item svg{flex-shrink:0;opacity:.7;}
   .sidebar-item.active svg{opacity:1;}
   .sidebar-note{font-size:12px;color:var(--ink-dim);padding:0 10px;line-height:1.5;}
@@ -52,10 +52,10 @@
   .btn{border:1px solid var(--mist);background:var(--paper-2);color:var(--ink);padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;font-family:inherit;display:inline-block;text-align:center;}
   .btn:hover{border-color:var(--gold);color:var(--gold);}
   .btn:active{transform:translateY(1px);}
-  .btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold-dark));border-color:var(--gold-dark);color:var(--navy);font-weight:700;}
-  .btn-primary:hover{box-shadow:0 4px 14px rgba(212,168,67,0.4);color:var(--navy);}
+  .btn-primary{background:var(--gold);border-color:var(--gold-dark);color:var(--navy);font-weight:700;}
+  .btn-primary:hover{box-shadow:0 4px 14px rgba(15,110,106,0.4);color:var(--navy);}
   .btn-ghost{background:transparent;border-color:transparent;color:var(--gold);}
-  .btn-ghost:hover{background:rgba(212,168,67,0.08);border-color:transparent;color:var(--gold);}
+  .btn-ghost:hover{background:rgba(15,110,106,0.08);border-color:transparent;color:var(--gold);}
   .btn-danger{background:transparent;border-color:var(--coral);color:var(--coral);}
   .btn-danger:hover{background:var(--coral);color:#fff;}
   .btn:disabled{opacity:.35;cursor:not-allowed;}
@@ -64,7 +64,7 @@
   .field label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;}
   .field label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
   .field input,.field select,.field textarea{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);transition:border-color .15s,box-shadow .15s;}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,0.12);}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,0.12);}
   .field textarea{resize:vertical;min-height:70px;}
   .field select:disabled,.sel:disabled{opacity:.4;cursor:not-allowed;}
   .field select option{background:var(--paper-2);}
@@ -72,14 +72,14 @@
   .field-row .field{flex:1;min-width:0;}
   .form-card{max-width:620px;padding:28px 30px;}
   .form-section{font-size:12px;font-weight:700;color:var(--ink);margin:6px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--mist);}
-  .form-error{background:rgba(224,92,92,0.1);color:var(--coral);border:1px solid rgba(224,92,92,0.3);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
+  .form-error{background:rgba(180,35,24,0.1);color:var(--coral);border:1px solid rgba(180,35,24,0.3);border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:none;}
   .form-error.show{display:block;}
   .note{background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12.5px;color:var(--ink-dim);}
   .badge{display:inline-flex;align-items:center;font-size:11px;font-weight:700;letter-spacing:.04em;padding:3px 10px;border-radius:100px;text-transform:uppercase;white-space:nowrap;}
-  .badge-Menunggu{background:rgba(212,168,67,0.15);color:var(--gold);border:1px solid rgba(212,168,67,0.3);}
-  .badge-Diluluskan{background:rgba(76,175,130,0.15);color:var(--ok);border:1px solid rgba(76,175,130,0.3);}
-  .badge-Ditolak{background:rgba(224,92,92,0.15);color:var(--coral);border:1px solid rgba(224,92,92,0.3);}
-  .badge-Dibatalkan{background:rgba(154,165,180,0.15);color:var(--ink-dim);border:1px solid rgba(154,165,180,0.3);}
+  .badge-Menunggu{background:rgba(15,110,106,0.15);color:var(--gold);border:1px solid rgba(15,110,106,0.3);}
+  .badge-Diluluskan{background:rgba(23,128,61,0.15);color:var(--ok);border:1px solid rgba(23,128,61,0.3);}
+  .badge-Ditolak{background:rgba(180,35,24,0.15);color:var(--coral);border:1px solid rgba(180,35,24,0.3);}
+  .badge-Dibatalkan{background:rgba(90,104,107,0.15);color:var(--ink-dim);border:1px solid rgba(90,104,107,0.3);}
   .badge-jenis{background:var(--mist-2);color:var(--ink-dim);border:1px solid var(--mist);}
   .rows{display:grid;grid-template-columns:150px 1fr;gap:5px 12px;font-size:12.5px;margin-top:12px;background:var(--mist-2);padding:10px 12px;border-radius:8px;border:1px solid var(--mist);}
   .rows b{color:var(--ink-dim);font-weight:600;}
@@ -89,26 +89,26 @@
   table.tbl td{padding:9px 12px;border-bottom:1px solid var(--mist);color:var(--ink);vertical-align:top;}
   table.tbl tr:last-child td{border-bottom:none;}
   .empty-state{text-align:center;color:var(--ink-dim);padding:40px 20px;border:1px dashed var(--mist);border-radius:var(--radius);font-size:13.5px;}
-  .modal-overlay{position:fixed;inset:0;background:rgba(10,10,30,.8);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(16,40,40,.45);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
   .modal-overlay.open{display:flex;}
-  .modal{background:var(--paper);border-radius:14px;max-width:420px;width:100%;box-shadow:0 32px 80px rgba(0,0,0,.7);border:1px solid var(--mist);}
+  .modal{background:var(--paper);border-radius:14px;max-width:420px;width:100%;box-shadow:0 32px 80px rgba(16,40,40,.2);border:1px solid var(--mist);}
   .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--mist);background:var(--paper-2);border-radius:14px 14px 0 0;}
   .modal-head h2{font-size:16px;color:var(--gold);}
   .modal-close{cursor:pointer;color:var(--ink-dim);font-size:22px;background:none;border:none;}
   .modal-close:hover{color:var(--coral);}
   .modal-body{padding:22px 24px 26px;}
-  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--paper-2);color:var(--ink);padding:12px 22px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 32px rgba(0,0,0,.5);border:1px solid var(--mist);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:300;max-width:90vw;}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--paper-2);color:var(--ink);padding:12px 22px;border-radius:10px;font-size:13.5px;box-shadow:0 8px 32px rgba(16,40,40,.12);border:1px solid var(--mist);opacity:0;transition:opacity .25s ease,transform .25s ease;pointer-events:none;z-index:300;max-width:90vw;}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast.error{background:#3a1f2b;border-color:var(--coral);color:var(--coral);}
+  .toast.error{background:#FEF3F2;border-color:var(--coral);color:var(--coral);}
   .hamburger-btn{display:none;background:none;border:none;color:var(--ink);padding:6px;cursor:pointer;border-radius:7px;align-items:center;justify-content:center;}
   .hamburger-btn:hover{background:var(--mist);}
-  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:149;}
+  .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(16,40,40,.35);z-index:149;}
   .sidebar-backdrop.open{display:block;}
-  svg{color:#fff;}
+  svg{color:inherit;}
   @media(max-width:768px){
     :root{--topbar-h:48px;}
     .hamburger-btn{display:flex;}
-    .sidebar{display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .22s ease;z-index:150;box-shadow:0 0 30px rgba(0,0,0,.5);width:250px;}
+    .sidebar{display:flex;flex-direction:column;transform:translateX(-100%);transition:transform .22s ease;z-index:150;box-shadow:0 0 30px rgba(16,40,40,.12);width:250px;}
     .sidebar.open{transform:translateX(0);}
     .topbar-nav{display:none;}
     .topbar{padding:0 8px 0 4px;gap:6px;}
@@ -130,10 +130,34 @@
     table.tbl{font-size:11.5px;}
     table.tbl th,table.tbl td{padding:7px 8px;}
   }
+  /* ---- Identiti SPHP (beza daripada SPP) ---- */
+  .topbar{border-top:3px solid var(--gold);}
+  .brand-tag{display:inline-block;background:var(--gold);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;margin-right:6px;vertical-align:1px;}
+  .card,.stat-card,.start-card,.step{box-shadow:0 1px 2px rgba(16,40,40,.05),0 4px 14px rgba(16,40,40,.05);}
+  .field label{letter-spacing:.04em;}
+  /* Dialog dalam halaman (ganti confirm/prompt yang tidak muncul dalam apps Android) */
+  .tdlg{position:fixed;inset:0;background:rgba(16,40,40,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
+  .tdlg.open{display:flex;}
+  .tdlg-box{background:#fff;border-radius:14px;max-width:420px;width:100%;padding:22px;box-shadow:0 24px 60px rgba(16,40,40,.25);border-top:4px solid var(--gold);}
+  .tdlg-box.bahaya{border-top-color:var(--coral);}
+  .tdlg-box h3{font-size:16px;margin-bottom:6px;color:var(--ink);}
+  .tdlg-box p{font-size:13.5px;color:var(--ink-dim);line-height:1.5;margin-bottom:12px;}
+  .tdlg-box textarea{width:100%;min-height:76px;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;background:var(--mist-2);color:var(--ink);resize:vertical;margin-bottom:12px;}
+  .tdlg-box textarea:focus{outline:none;border-color:var(--gold);}
+  .tdlg-act{display:flex;gap:10px;}
+  .tdlg-act button{flex:1;min-height:44px;border-radius:9px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;border:1px solid var(--mist);background:#fff;color:var(--ink);}
+  .tdlg-act .ya{background:var(--gold);border-color:var(--gold);color:#fff;}
+  .tdlg-box.bahaya .tdlg-act .ya{background:var(--coral);border-color:var(--coral);}
+  .hero{display:flex;align-items:center;justify-content:space-between;gap:20px;background:var(--gold);color:#fff;border-radius:16px;padding:26px 28px;margin-bottom:22px;overflow:hidden;position:relative;}
+  .hero-kicker{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85;}
+  .hero h2{color:#fff;font-size:26px;font-weight:800;margin:6px 0 6px;line-height:1.15;}
+  .hero p{font-size:13.5px;opacity:.9;max-width:460px;line-height:1.5;}
+  .hero-art{flex-shrink:0;opacity:.95;}
+  @media(max-width:768px){ .hero{padding:20px;} .hero h2{font-size:20px;} .hero-art{display:none;} }
   .start-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin-bottom:24px;}
   .start-card{background:var(--paper);border:1px solid var(--mist);border-radius:var(--radius);padding:20px 22px;cursor:pointer;transition:border-color .15s,transform .15s;text-align:left;font-family:inherit;color:var(--ink);}
   .start-card:hover{border-color:var(--gold);transform:translateY(-1px);}
-  .start-card .ic{width:40px;height:40px;border-radius:10px;background:rgba(212,168,67,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
+  .start-card .ic{width:40px;height:40px;border-radius:10px;background:rgba(15,110,106,0.12);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}
   .start-card h3{font-size:16px;margin-bottom:4px;}
   .start-card p{font-size:12.5px;color:var(--ink-dim);line-height:1.5;}
   .steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:24px;}
@@ -146,9 +170,9 @@
   .summary{display:none;background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--gold-light);}
   .status-card{padding:20px 22px;margin-top:16px;}
   .status-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
-  .status-top .t{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;}
+  .status-top .t{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:16px;}
   .status-top .s{font-size:12px;color:var(--ink-dim);margin-top:3px;}
-  .ref-box{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.04em;background:var(--mist-2);border:1px dashed var(--gold-dark);border-radius:10px;padding:12px;margin:6px 0 14px;}
+  .ref-box{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:.04em;background:var(--mist-2);border:1px dashed var(--gold-dark);border-radius:10px;padding:12px;margin:6px 0 14px;}
   </style>
 </head>
 <body>
@@ -160,7 +184,7 @@
     <div class="topbar-brand">
       <div class="brand-mark"><img src="logo.png" width="34" height="34" style="object-fit:contain;" alt=""></div>
       <div>
-        <div class="brand-name">Sistem Penempahan</div>
+        <div class="brand-name"><span class="brand-tag">SPHP</span>Tempahan</div>
         <div class="brand-sub">Hotel &amp; Penerbangan</div>
       </div>
     </div>
@@ -206,18 +230,31 @@
     <main class="main-content">
       <!-- UTAMA -->
       <div id="page-utama">
-        <div class="page-header"><h2>Selamat Datang</h2><p>Mohon penginapan hotel atau tiket penerbangan untuk urusan rasmi</p></div>
+        <div class="hero">
+          <div>
+            <div class="hero-kicker">SPHP &middot; Unit Pentadbiran</div>
+            <h2>Tempahan Hotel &amp; Penerbangan</h2>
+            <p>Mohon penginapan hotel atau tiket penerbangan untuk urusan rasmi. Keputusan dihantar terus ke emel anda.</p>
+          </div>
+          <svg class="hero-art" width="150" height="96" viewBox="0 0 150 96" fill="none" aria-hidden="true">
+            <path d="M8 86h134" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-linecap="round"/>
+            <rect x="18" y="34" width="40" height="52" rx="3" stroke="#fff" stroke-width="2.5"/>
+            <path d="M28 46h6M42 46h6M28 58h6M42 58h6M28 70h6M42 70h6M34 86V78h8v8" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M70 52l64-22-8-6-26 6-22-18-7 3 14 22-15 5-8-4-4 3 12 11z" stroke="#fff" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M84 70c14 0 26-4 40-12" stroke="#fff" stroke-opacity=".6" stroke-width="2" stroke-dasharray="4 6" stroke-linecap="round"/>
+          </svg>
+        </div>
         <div class="start-grid">
           <button class="start-card" id="go-hotel">
-            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12M3 14h18M7 10h3" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 20V8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12M3 14h18M7 10h3" stroke="#0F6E6A" stroke-width="1.8" stroke-linecap="round"/></svg></div>
             <h3>Mohon Hotel</h3><p>Penginapan untuk kursus, mesyuarat atau tugasan luar. Had sewa ikut gred.</p>
           </button>
           <button class="start-card" id="go-flight">
-            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M2 16l20-6-3-2-7 2-6-5-2 1 4 6-4 1-2-1-1 1 3 3z" stroke="#D4A843" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M2 16l20-6-3-2-7 2-6-5-2 1 4 6-4 1-2-1-1 1 3 3z" stroke="#0F6E6A" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
             <h3>Mohon Penerbangan</h3><p>Tiket pergi dan balik dengan tarikh serta masa bertolak.</p>
           </button>
           <button class="start-card" id="go-status">
-            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#D4A843" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="#D4A843" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#0F6E6A" stroke-width="1.8"/><path d="M20 20l-4-4" stroke="#0F6E6A" stroke-width="1.8" stroke-linecap="round"/></svg></div>
             <h3>Semak Status</h3><p>Guna No. Rujukan dan emel untuk lihat status atau cetak borang.</p>
           </button>
         </div>
@@ -253,6 +290,7 @@
             <div class="field" id="h_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="h_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
+          <div class="field"><label for="h_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="h_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
           <div class="summary" id="h_kelayakan"></div>
           <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
           <div class="field"><label>Daerah / Destinasi</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
@@ -291,6 +329,7 @@
             <div class="field" id="p_akadWrap" style="display:none;"><label>Kelayakan Akademik</label><select id="p_akademik"><option value="">-- Pilih --</option><option>Ijazah Sarjana Muda</option><option>STPM / Diploma</option><option>SPM / PMR dan ke bawah</option></select></div>
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
+          <div class="field"><label for="p_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="p_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
           <div class="form-section" style="margin-top:8px;">Maklumat Penerbangan</div>
           <div class="field-row">
             <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kuching"></div>
@@ -405,7 +444,7 @@
       return b.skim + (b.gred || '');
     }
     function butiranPermohonan(b) {
-      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan]];
+      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : '']];
       if (b.jenis === 'Hotel') return asas.concat([
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
         ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Tempoh', tempoh(b.bilMalam)]
@@ -577,12 +616,14 @@
       if (v(px + '_skim') === 'PSH' && !v(px + '_akademik')) return 'Sila pilih Kelayakan Akademik.';
       if (v(px + '_skim') !== 'PSH' && v(px + '_skim') !== 'VU' && !v(px + '_gred')) return 'Sila pilih Gred.';
       if (!v(px + '_tujuan')) return 'Sila isi Tujuan / Program.';
+      var bil = parseInt(v(px + '_bilOrang'), 10);
+      if (!bil || bil < 1 || bil > 200) return 'Sila isi Bilangan Orang (tidak termasuk PKA / pemandu).';
       return '';
     }
     function dataPemohon(px) {
       return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
         noTelefon: v(px + '_noTelefon'), skim: v(px + '_skim'), gred: v(px + '_gred'), akademik: v(px + '_akademik'),
-        tujuan: v(px + '_tujuan') };
+        tujuan: v(px + '_tujuan'), bilOrang: v(px + '_bilOrang') };
     }
 
     async function hantar(btn, action, data, px) {
