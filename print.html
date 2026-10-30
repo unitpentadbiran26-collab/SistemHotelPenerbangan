@@ -112,7 +112,8 @@
         '<h2>A. Maklumat Pemohon</h2>' + jadual([
           ['Nama', b.nama], ['Bahagian', b.bahagian], ['Unit', b.unit === '-' ? '' : b.unit], ['Emel', b.emel], ['No. telefon', b.noTelefon],
           ['Skim / gred', skimGred], ['Tujuan / program', b.tujuan],
-          ['Bilangan orang (tidak termasuk PKA)', b.bilOrang ? b.bilOrang + ' orang' : '']
+          ['Bilangan orang (tidak termasuk PKA)', b.bilOrang ? b.bilOrang + ' orang' : ''],
+          ['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Lampiran', b.lampiran ? b.lampiran.nama : 'Tiada']
         ]) +
         '<h2>B. Butiran ' + (hotel ? 'Penginapan' : 'Penerbangan') + '</h2>' + jadual(butiran) +
         '<h2>C. Keputusan ' + esc(b.organisasi) + '</h2>' + jadual(keputusan) +
