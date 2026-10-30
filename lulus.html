@@ -172,10 +172,11 @@
           ['Skim / gred', skimGred(b)], ['Emel', b.emel], ['No. telefon', b.noTelefon], ['Dimohon', b.tarikhMohon]
         ]) +
         '<div class="sec">Penginapan</div>' + rows([
-          ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+          ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''], ['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
           ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', tempoh]
         ]) +
         (b.hadKelayakan ? '<div class="kel">Kelayakan sewa hotel: ' + esc(b.hadKelayakan) + '</div>' : '') +
+        (b.lampiran && b.lampiran.url ? '<div class="kel" style="border-color:var(--mist);color:var(--ink);">&#128206; Lampiran: <a href="' + esc(b.lampiran.url) + '" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">' + esc(b.lampiran.nama || 'Buka fail') + '</a></div>' : '') +
         (terdahulu.length ? '<div class="sec">Kelulusan terdahulu</div>' + rows(terdahulu) : '') +
         '<label for="catatan">Catatan <span>(wajib jika ditolak)</span></label>' +
         '<textarea id="catatan" placeholder="Contoh: Bajet mencukupi / sebab penolakan"></textarea>' +
