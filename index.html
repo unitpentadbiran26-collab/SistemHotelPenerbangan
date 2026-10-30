@@ -172,6 +172,8 @@
   .summary{display:none;background:var(--mist-2);border:1px solid var(--mist);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--gold-light);}
   .status-card{padding:20px 22px;margin-top:12px;}
   .s-butiran{margin-top:10px;}
+  .field .hint{font-size:11.5px;color:var(--ink-dim);margin-top:5px;}
+  .field input[type=file]{padding:8px 10px;background:var(--paper);cursor:pointer;}
   .s-butiran summary{cursor:pointer;font-size:12.5px;font-weight:600;color:var(--gold);padding:4px 0;}
   .status-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;}
   .status-top .t{font-family:'Plus Jakarta Sans',-apple-system,Segoe UI,sans-serif;font-weight:700;font-size:16px;}
@@ -295,6 +297,15 @@
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="h_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
           <div class="field"><label for="h_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="h_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
+          <div class="field"><label for="h_peruntukan">Peruntukan</label><select id="h_peruntukan"><option value="">-- Pilih Peruntukan --</option><option>Pembangunan</option><option>Dalaman</option></select></div>
+          <div class="field-row" id="h_kodWrap" style="display:none;">
+            <div class="field"><label for="h_projectCode">Project Code <span id="h_kodNota">(wajib untuk Pembangunan)</span></label><input type="text" id="h_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="h_votHead">Vot Head</label><input type="text" id="h_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
+          </div>
+          <div class="field"><label for="h_lampiran">Lampiran <span>(pilihan)</span></label>
+            <input type="file" id="h_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+            <div class="hint">Sila upload fail yang telah diluluskan (jika perlu). JPG, PNG, PDF atau Word, maksimum 5 MB.</div>
+          </div>
           <div class="summary" id="h_kelayakan"></div>
           <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
           <div class="field"><label>Daerah / Destinasi</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
@@ -334,6 +345,15 @@
           </div>
           <div class="field"><label>Tujuan / Program</label><textarea id="p_tujuan" placeholder="Contoh: Menghadiri Kursus Pengurusan Aset"></textarea></div>
           <div class="field"><label for="p_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="p_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
+          <div class="field"><label for="p_peruntukan">Peruntukan</label><select id="p_peruntukan"><option value="">-- Pilih Peruntukan --</option><option>Pembangunan</option><option>Dalaman</option></select></div>
+          <div class="field-row" id="p_kodWrap" style="display:none;">
+            <div class="field"><label for="p_projectCode">Project Code <span id="p_kodNota">(wajib untuk Pembangunan)</span></label><input type="text" id="p_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="p_votHead">Vot Head</label><input type="text" id="p_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
+          </div>
+          <div class="field"><label for="p_lampiran">Lampiran <span>(pilihan)</span></label>
+            <input type="file" id="p_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+            <div class="hint">Sila upload fail yang telah diluluskan (jika perlu). JPG, PNG, PDF atau Word, maksimum 5 MB.</div>
+          </div>
           <div class="form-section" style="margin-top:8px;">Maklumat Penerbangan</div>
           <div class="field-row">
             <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kuching"></div>
@@ -455,7 +475,8 @@
       return b.skim + (b.gred || '');
     }
     function butiranPermohonan(b) {
-      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : '']];
+      var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
+        ['Peruntukan', teksPeruntukan(b)], ['Lampiran', b.lampiran ? b.lampiran.nama : '']];
       if (b.jenis === 'Hotel') return asas.concat([
         ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
         ['Tarikh', b.tarikhMasuk + '  \u2192  ' + b.tarikhKeluar], ['Tempoh', tempoh(b.bilMalam)]
@@ -467,6 +488,16 @@
         ['Syarikat', b.syarikat], ['Kelas', b.kelas]
       ]);
     }
+    function teksPeruntukan(b) {
+      return [b.peruntukan, b.projectCode ? 'Project Code ' + b.projectCode : '', b.votHead ? 'Vot Head ' + b.votHead : ''].filter(function (x) { return x; }).join(' \u00b7 ');
+    }
+    // Project Code & Vot Head muncul selepas Peruntukan dipilih
+    ['h', 'p'].forEach(function (px) {
+      document.getElementById(px + '_peruntukan').addEventListener('change', function () {
+        document.getElementById(px + '_kodWrap').style.display = this.value ? '' : 'none';
+        document.getElementById(px + '_kodNota').textContent = this.value === 'Pembangunan' ? '(wajib)' : '(jika ada)';
+      });
+    });
     function populateUnitSelect(selectEl, bahagian) {
       if (!bahagian) { selectEl.innerHTML = '<option value="">-- Pilih Bahagian dahulu --</option>'; selectEl.disabled = true; return; }
       var units = UNIT_GROUPS[bahagian] || [];
@@ -629,23 +660,54 @@
       if (!v(px + '_tujuan')) return 'Sila isi Tujuan / Program.';
       var bil = parseInt(v(px + '_bilOrang'), 10);
       if (!bil || bil < 1 || bil > 200) return 'Sila isi Bilangan Orang (tidak termasuk PKA / pemandu).';
+      if (!v(px + '_peruntukan')) return 'Sila pilih Peruntukan (Pembangunan atau Dalaman).';
+      if (v(px + '_peruntukan') === 'Pembangunan' && !v(px + '_projectCode')) return 'Sila isi Project Code untuk peruntukan Pembangunan.';
+      if (!v(px + '_votHead')) return 'Sila isi Vot Head.';
+      var f = $(px + '_lampiran').files[0];
+      if (f) {
+        if (!/\.(jpe?g|png|pdf|docx?)$/i.test(f.name)) return 'Lampiran mesti fail JPG, PNG, PDF atau Word (DOC/DOCX).';
+        if (f.size > 5 * 1024 * 1024) return 'Saiz lampiran melebihi 5 MB.';
+      }
       return '';
     }
     function dataPemohon(px) {
       return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
         noTelefon: v(px + '_noTelefon'), skim: v(px + '_skim'), gred: v(px + '_gred'), akademik: v(px + '_akademik'),
-        tujuan: v(px + '_tujuan'), bilOrang: v(px + '_bilOrang') };
+        tujuan: v(px + '_tujuan'), bilOrang: v(px + '_bilOrang'), peruntukan: v(px + '_peruntukan'),
+        projectCode: v(px + '_projectCode').toUpperCase(), votHead: v(px + '_votHead').toUpperCase() };
     }
 
+    /** Baca fail sebagai base64 (tanpa awalan data:...). */
+    function bacaFail(f) {
+      return new Promise(function (ok, gagal) {
+        var r = new FileReader();
+        r.onload = function () { ok(String(r.result).split(',')[1] || ''); };
+        r.onerror = function () { gagal(new Error('Fail tidak dapat dibaca.')); };
+        r.readAsDataURL(f);
+      });
+    }
+    /** POST JSON sebagai text/plain (tanpa semakan CORS) untuk data besar seperti lampiran. */
+    async function apiPost(action, data) {
+      if (API_URL.indexOf('GANTI') === 0) throw new Error('API_URL belum ditetapkan. Sila kemas kini bahagian KONFIGURASI.');
+      const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(Object.assign({ action: action }, data)) });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error || 'Ralat tidak diketahui');
+      return json.data;
+    }
     async function hantar(btn, action, data, px) {
       btn.disabled = true; btn.textContent = 'Menghantar...';
       try {
-        var res = await api(action, data);
+        var f = $(px + '_lampiran').files[0];
+        if (f) { btn.textContent = 'Memuat naik lampiran...'; data.lampiranNama = f.name; data.lampiranData = await bacaFail(f); }
+        var res = await (f ? apiPost : api)(action, data);
         Array.prototype.forEach.call(document.querySelectorAll('#page-' + (px === 'h' ? 'hotel' : 'flight') + ' input, #page-' + (px === 'h' ? 'hotel' : 'flight') + ' textarea'), function (el) { el.value = ''; });
         Array.prototype.forEach.call(document.querySelectorAll('#page-' + (px === 'h' ? 'hotel' : 'flight') + ' select'), function (el) { el.selectedIndex = 0; });
         populateUnitSelect($(px + '_unit'), '');
         window['tukarSkim_' + px]();
+        $(px + '_kodWrap').style.display = 'none';
         $('doneRef').textContent = res.id;
+        if (/Lampiran gagal/.test(res.message || '')) showToast(res.message, true);
         $('donePrint').href = 'print.html?id=' + encodeURIComponent(res.id);
         $('doneModal').classList.add('open');
         showPage('utama');
