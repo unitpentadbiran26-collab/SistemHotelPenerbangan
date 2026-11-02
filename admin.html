@@ -762,7 +762,13 @@
         renderTempah();
       });
     });
+    var SENARAI_HOTEL = null;
+    function alamatHotel(nama) {
+      var n = String(nama || '').toUpperCase().trim(), x = (SENARAI_HOTEL || []).find(function (h) { return h.hotel.toUpperCase() === n; });
+      return x ? x.alamat : '';
+    }
     async function loadTempah() {
+      if (!SENARAI_HOTEL) { try { SENARAI_HOTEL = await api('getSenaraiHotel'); } catch (e) { SENARAI_HOTEL = []; } }
       try {
         tempahRows = (await adminApi('getRequests', { jenis: 'Hotel', status: 'Diluluskan' })).filter(function (b) { return b.tempahan && b.tempahan.status; });
         renderTempah();
@@ -780,8 +786,8 @@
         (b.disunting ? '<div class="lamp">&#9998; Pernah disunting oleh admin.</div>' : '') +
         (t.status === 'Ditempah' ? '<div class="kel ok">Ditempah pada ' + escapeHtml(t.tarikh) + '. Ubah di bawah jika perlu; pemohon akan dimaklumkan semula.</div>' : '') +
         '<div class="form-section" style="margin-top:14px;">Butiran Tempahan</div>' +
-        medan(k + '-hotel', 'Hotel ditempah', t.hotel || b.namaHotel, 'type="text"') +
-        '<div class="field-row">' + medan(k + '-alamat', 'Alamat / no. telefon hotel <span>(pilihan)</span>', t.alamat, 'type="text"') +
+        medan(k + '-hotel', 'Hotel ditempah', t.hotel || b.namaHotel, 'type="text" list="dlHotel"') +
+        '<div class="field-row">' + medan(k + '-alamat', 'Alamat / no. telefon hotel <span>(pilihan)</span>', t.alamat || alamatHotel(t.hotel || b.namaHotel), 'type="text"') +
         medan(k + '-no', 'No. pengesahan <span>(pilihan)</span>', t.noPengesahan, 'type="text"') + '</div>' +
         '<div class="field-row">' + medan(k + '-kadar', 'Kadar semalam (RM) <span>(pilihan)</span>', t.kadar, 'type="number" min="0" step="0.01" inputmode="decimal"') +
         medan(k + '-bilik', 'Jenis bilik <span>(pilihan)</span>', t.jenisBilik, 'type="text"') + '</div>' +
@@ -794,9 +800,13 @@
       var rows = tempahRows.filter(function (b) { return tempahTab === 'siap' ? b.tempahan.status === 'Ditempah' : b.tempahan.status !== 'Ditempah'; });
       var el = $('tempahList');
       if (!rows.length) { el.innerHTML = '<div class="empty-state">' + (tempahTab === 'siap' ? 'Belum ada tempahan direkod.' : 'Tiada permohonan menunggu tempahan.') + '</div>'; return; }
-      el.innerHTML = rows.map(kadTempah).join('');
+      el.innerHTML = '<datalist id="dlHotel">' + (SENARAI_HOTEL || []).map(function (h) { return '<option value="' + escapeHtml(h.hotel) + '">' + escapeHtml(h.daerah) + '</option>'; }).join('') + '</datalist>' +
+        rows.map(kadTempah).join('');
       Array.prototype.forEach.call(el.querySelectorAll('.pending-card'), function (card) {
         var b = rows.find(function (x) { return x.id === card.getAttribute('data-id'); });
+        // Pilih hotel dari senarai -> alamat diisi automatik (jika ada dalam tab Senarai_Hotel)
+        var inHotel = card.querySelector('[id$="-hotel"]'), inAlamat = card.querySelector('[id$="-alamat"]');
+        inHotel.addEventListener('change', function () { var a = alamatHotel(inHotel.value); if (a && !inAlamat.value) inAlamat.value = a; });
         card.querySelector('.b-simpan').addEventListener('click', function () { simpanTempahan(card, b); });
         card.querySelector('.b-sunting').addEventListener('click', function () { bukaSunting(b); });
       });
@@ -841,8 +851,11 @@
         '<div class="field-row"><div class="field"><label>Project Code <span>(wajib untuk Pembangunan)</span></label><input data-k="projectCode" value="' + escapeHtml(b.projectCode) + '" style="text-transform:uppercase;"></div>' +
         '<div class="field"><label>Vot Head</label><input data-k="votHead" value="' + escapeHtml(b.votHead) + '" style="text-transform:uppercase;"></div></div>' +
         '<div class="field"><label>Tujuan / program</label><textarea data-k="tujuan">' + escapeHtml(b.tujuan) + '</textarea></div>' +
-        '<div class="field-row"><div class="field"><label>Daerah / destinasi</label><input data-k="daerah" value="' + escapeHtml(b.daerah) + '"></div>' +
-        '<div class="field"><label>Nama hotel</label><input data-k="namaHotel" value="' + escapeHtml(b.namaHotel) + '"></div></div>' +
+        '<div class="field-row"><div class="field"><label>Daerah / destinasi</label><input data-k="daerah" list="dlDaerahS" value="' + escapeHtml(b.daerah) + '"></div>' +
+        '<div class="field"><label>Nama hotel</label><input data-k="namaHotel" list="dlHotelS" value="' + escapeHtml(b.namaHotel) + '"></div></div>' +
+        '<datalist id="dlDaerahS">' + (SENARAI_HOTEL || []).map(function (h) { return h.daerah; }).filter(function (d, i, a) { return a.indexOf(d) === i; })
+          .map(function (d) { return '<option value="' + escapeHtml(d) + '">'; }).join('') + '</datalist>' +
+        '<datalist id="dlHotelS">' + (SENARAI_HOTEL || []).map(function (h) { return '<option value="' + escapeHtml(h.hotel) + '">' + escapeHtml(h.daerah) + '</option>'; }).join('') + '</datalist>' +
         '<div class="field-row"><div class="field"><label>Tarikh masuk</label><input type="date" data-k="tarikhMasuk" value="' + escapeHtml(b.tarikhMasukIso) + '"></div>' +
         '<div class="field"><label>Tarikh keluar</label><input type="date" data-k="tarikhKeluar" value="' + escapeHtml(b.tarikhKeluarIso) + '"></div></div>' +
         '<label style="display:flex;gap:8px;align-items:center;font-size:13px;margin:4px 0 14px;cursor:pointer;"><input type="checkbox" data-k="maklum" checked style="width:18px;height:18px;"> Maklumkan pemohon melalui emel (senarai perubahan)</label>' +
