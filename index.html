@@ -308,8 +308,14 @@
           </div>
           <div class="summary" id="h_kelayakan"></div>
           <div class="form-section" style="margin-top:8px;">Maklumat Hotel</div>
-          <div class="field"><label>Daerah / Destinasi</label><input type="text" id="h_daerah" placeholder="Contoh: Kuching"></div>
-          <div class="field"><label>Nama Hotel</label><input type="text" id="h_namaHotel" placeholder="Contoh: Hotel Pullman"></div>
+          <div class="field-row">
+            <div class="field"><label for="h_daerahPilih">Daerah / Destinasi</label><select id="h_daerahPilih"><option value="">Memuatkan senarai...</option></select></div>
+            <div class="field"><label for="h_hotelPilih">Nama Hotel</label><select id="h_hotelPilih" disabled><option value="">-- Pilih destinasi dahulu --</option></select></div>
+          </div>
+          <div class="field-row">
+            <div class="field" id="h_daerahLainWrap" style="display:none;"><label for="h_daerah">Nyatakan destinasi</label><input type="text" id="h_daerah" placeholder="Contoh: Ranau"></div>
+            <div class="field" id="h_hotelLainWrap" style="display:none;"><label for="h_namaHotel">Nyatakan nama hotel</label><input type="text" id="h_namaHotel" placeholder="Nama hotel yang tiada dalam senarai"></div>
+          </div>
           <div class="field-row">
             <div class="field"><label>Tarikh Masuk</label><input type="date" id="h_tarikhMasuk"></div>
             <div class="field"><label>Tarikh Keluar</label><input type="date" id="h_tarikhKeluar"></div>
@@ -706,6 +712,7 @@
         populateUnitSelect($(px + '_unit'), '');
         window['tukarSkim_' + px]();
         $(px + '_kodWrap').style.display = 'none';
+        if (px === 'h') isiDaerah();
         $('doneRef').textContent = res.id;
         if (/Lampiran gagal/.test(res.message || '')) showToast(res.message, true);
         $('donePrint').href = 'print.html?id=' + encodeURIComponent(res.id);
@@ -720,13 +727,13 @@
     $('h_submitBtn').addEventListener('click', function () {
       $('h_error').classList.remove('show');
       var m = semakPemohon('h');
-      if (!m && !v('h_daerah')) m = 'Sila isi Daerah / Destinasi.';
-      if (!m && !v('h_namaHotel')) m = 'Sila isi Nama Hotel.';
+      if (!m && !nilaiDaerah()) m = 'Sila pilih atau nyatakan Daerah / Destinasi.';
+      if (!m && !nilaiHotel()) m = 'Sila pilih atau nyatakan Nama Hotel.';
       if (!m && (!v('h_tarikhMasuk') || !v('h_tarikhKeluar'))) m = 'Sila pilih Tarikh Masuk dan Tarikh Keluar.';
       if (!m && v('h_tarikhKeluar') <= v('h_tarikhMasuk')) m = 'Tarikh Keluar mesti selepas Tarikh Masuk.';
       if (m) return err('h', m);
       var d = dataPemohon('h');
-      d.daerah = v('h_daerah'); d.namaHotel = v('h_namaHotel');
+      d.daerah = nilaiDaerah(); d.namaHotel = nilaiHotel();
       d.tarikhMasuk = v('h_tarikhMasuk'); d.tarikhKeluar = v('h_tarikhKeluar');
       hantar(this, 'submitHotel', d, 'h');
     });
@@ -748,6 +755,42 @@
       d.syarikat = v('p_syarikat'); d.kelas = v('p_kelas');
       hantar(this, 'submitPenerbangan', d, 'p');
     });
+
+    // ---------- Senarai hotel ikut destinasi (tab Senarai_Hotel dalam Google Sheet) ----------
+    var LAIN = '__LAIN__', SENARAI_HOTEL = [];
+    function nilaiDaerah() { var d = $('h_daerahPilih').value; return d === LAIN ? v('h_daerah') : d; }
+    function nilaiHotel() { var h = $('h_hotelPilih').value; return h === LAIN ? v('h_namaHotel') : h; }
+    function isiDaerah() {
+      var senarai = [];
+      SENARAI_HOTEL.forEach(function (x) { if (senarai.indexOf(x.daerah) < 0) senarai.push(x.daerah); });
+      $('h_daerahPilih').innerHTML = '<option value="">-- Pilih Destinasi --</option>' +
+        senarai.map(function (d) { return '<option value="' + escapeHtml(d) + '">' + escapeHtml(d) + '</option>'; }).join('') +
+        '<option value="' + LAIN + '">Lain-lain (nyatakan)</option>';
+      tukarDaerah();
+    }
+    function tukarDaerah() {
+      var d = $('h_daerahPilih').value, sel = $('h_hotelPilih');
+      $('h_daerahLainWrap').style.display = d === LAIN ? '' : 'none';
+      if (!d) {
+        sel.innerHTML = '<option value="">-- Pilih destinasi dahulu --</option>'; sel.disabled = true;
+      } else if (d === LAIN) {
+        sel.innerHTML = '<option value="' + LAIN + '">Lain-lain (nyatakan)</option>'; sel.disabled = true;
+      } else {
+        sel.disabled = false;
+        sel.innerHTML = '<option value="">-- Pilih Hotel --</option>' +
+          SENARAI_HOTEL.filter(function (x) { return x.daerah === d; })
+            .map(function (x) { return '<option value="' + escapeHtml(x.hotel) + '">' + escapeHtml(x.hotel) + '</option>'; }).join('') +
+          '<option value="' + LAIN + '">Lain-lain (nyatakan)</option>';
+      }
+      tukarHotel();
+    }
+    function tukarHotel() { $('h_hotelLainWrap').style.display = $('h_hotelPilih').value === LAIN ? '' : 'none'; }
+    $('h_daerahPilih').addEventListener('change', tukarDaerah);
+    $('h_hotelPilih').addEventListener('change', tukarHotel);
+    (async function () {
+      try { SENARAI_HOTEL = await api('getSenaraiHotel'); } catch (e) { SENARAI_HOTEL = []; }
+      isiDaerah(); // senarai gagal dimuat -> hanya pilihan "Lain-lain"
+    })();
 
     // ---------- Semak status ----------
     (function () {
