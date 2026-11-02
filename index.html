@@ -299,8 +299,12 @@
           <div class="field"><label for="h_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="h_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
           <div class="field"><label for="h_peruntukan">Peruntukan</label><select id="h_peruntukan"><option value="">-- Pilih Peruntukan --</option><option>Pembangunan</option><option>Dalaman</option></select></div>
           <div class="field-row" id="h_kodWrap" style="display:none;">
-            <div class="field"><label for="h_projectCode">Project Code <span id="h_kodNota">(wajib untuk Pembangunan)</span></label><input type="text" id="h_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
-            <div class="field"><label for="h_votHead">Vot Head</label><input type="text" id="h_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="h_projectCode">Project Code <span id="h_kodNota">(wajib untuk Pembangunan)</span></label>
+              <select id="h_projectCodePilih" style="display:none;"></select>
+              <input type="text" id="h_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="h_votHead">Vot Head</label>
+              <select id="h_votHeadPilih" style="display:none;"></select>
+              <input type="text" id="h_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
           </div>
           <div class="field"><label for="h_lampiran">Lampiran <span>(pilihan)</span></label>
             <input type="file" id="h_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
@@ -353,8 +357,12 @@
           <div class="field"><label for="p_bilOrang">Bilangan Orang <span>(tidak termasuk PKA / pemandu)</span></label><input type="number" id="p_bilOrang" min="1" max="200" step="1" inputmode="numeric" placeholder="Termasuk pemohon, contoh: 3"></div>
           <div class="field"><label for="p_peruntukan">Peruntukan</label><select id="p_peruntukan"><option value="">-- Pilih Peruntukan --</option><option>Pembangunan</option><option>Dalaman</option></select></div>
           <div class="field-row" id="p_kodWrap" style="display:none;">
-            <div class="field"><label for="p_projectCode">Project Code <span id="p_kodNota">(wajib untuk Pembangunan)</span></label><input type="text" id="p_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
-            <div class="field"><label for="p_votHead">Vot Head</label><input type="text" id="p_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="p_projectCode">Project Code <span id="p_kodNota">(wajib untuk Pembangunan)</span></label>
+              <select id="p_projectCodePilih" style="display:none;"></select>
+              <input type="text" id="p_projectCode" placeholder="Contoh: P12345" style="text-transform:uppercase;"></div>
+            <div class="field"><label for="p_votHead">Vot Head</label>
+              <select id="p_votHeadPilih" style="display:none;"></select>
+              <input type="text" id="p_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
           </div>
           <div class="field"><label for="p_lampiran">Lampiran <span>(pilihan)</span></label>
             <input type="file" id="p_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
@@ -667,8 +675,8 @@
       var bil = parseInt(v(px + '_bilOrang'), 10);
       if (!bil || bil < 1 || bil > 200) return 'Sila isi Bilangan Orang (tidak termasuk PKA / pemandu).';
       if (!v(px + '_peruntukan')) return 'Sila pilih Peruntukan (Pembangunan atau Dalaman).';
-      if (v(px + '_peruntukan') === 'Pembangunan' && !v(px + '_projectCode')) return 'Sila isi Project Code untuk peruntukan Pembangunan.';
-      if (!v(px + '_votHead')) return 'Sila isi Vot Head.';
+      if (v(px + '_peruntukan') === 'Pembangunan' && !nilaiKod(px, 'projectCode')) return 'Sila pilih atau isi Project Code untuk peruntukan Pembangunan.';
+      if (!nilaiKod(px, 'votHead')) return 'Sila pilih atau isi Vot Head.';
       var f = $(px + '_lampiran').files[0];
       if (f) {
         if (!/\.(jpe?g|png|pdf|docx?)$/i.test(f.name)) return 'Lampiran mesti fail JPG, PNG, PDF atau Word (DOC/DOCX).';
@@ -680,7 +688,7 @@
       return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
         noTelefon: v(px + '_noTelefon'), skim: v(px + '_skim'), gred: v(px + '_gred'), akademik: v(px + '_akademik'),
         tujuan: v(px + '_tujuan'), bilOrang: v(px + '_bilOrang'), peruntukan: v(px + '_peruntukan'),
-        projectCode: v(px + '_projectCode').toUpperCase(), votHead: v(px + '_votHead').toUpperCase() };
+        projectCode: nilaiKod(px, 'projectCode'), votHead: nilaiKod(px, 'votHead') };
     }
 
     /** Baca fail sebagai base64 (tanpa awalan data:...). */
@@ -712,6 +720,7 @@
         populateUnitSelect($(px + '_unit'), '');
         window['tukarSkim_' + px]();
         $(px + '_kodWrap').style.display = 'none';
+        kemasKod(px);
         if (px === 'h') isiDaerah();
         $('doneRef').textContent = res.id;
         if (/Lampiran gagal/.test(res.message || '')) showToast(res.message, true);
@@ -756,6 +765,46 @@
       hantar(this, 'submitPenerbangan', d, 'p');
     });
 
+    // ---------- Project Code & Vot Head: dropdown dari tab Senarai_ProjectCode / Senarai_VotHead ----------
+    // Ditapis ikut Peruntukan + Bahagian (+ Unit jika diisi). Tiada padanan / tab tiada -> kotak taip biasa.
+    var SENARAI_PERUNTUKAN = { projectCode: [], votHead: [] }, LAIN_K = '__LAIN__';
+    function normal(s) { return String(s || '').toUpperCase().replace(/^BAHAGIAN\s+/, '').replace(/\s+/g, ' ').trim(); }
+    function padanKod(senarai, px) {
+      var per = normal(v(px + '_peruntukan')), bah = normal(v(px + '_bahagian')), unit = normal(v(px + '_unit'));
+      return senarai.filter(function (x) {
+        return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit);
+      });
+    }
+    function isiKod(px, jenis) {
+      var sel = $(px + '_' + jenis + 'Pilih'), inp = $(px + '_' + jenis);
+      var list = padanKod(SENARAI_PERUNTUKAN[jenis], px), lama = sel.value;
+      if (!list.length) { sel.style.display = 'none'; sel.innerHTML = ''; inp.style.display = ''; inp.placeholder = jenis === 'projectCode' ? 'Contoh: P12345' : 'Contoh: B21000'; return; }
+      sel.style.display = '';
+      sel.innerHTML = '<option value="">-- Pilih ' + (jenis === 'projectCode' ? 'Project Code' : 'Vot Head') + ' --</option>' +
+        list.map(function (x) { return '<option value="' + escapeHtml(x.kod) + '">' + escapeHtml(x.kod + (x.nama ? ' — ' + x.nama : '')) + '</option>'; }).join('') +
+        '<option value="' + LAIN_K + '">Lain-lain (nyatakan)</option>';
+      if (lama && Array.prototype.some.call(sel.options, function (o) { return o.value === lama; })) sel.value = lama;
+      tukarKod(px, jenis);
+    }
+    function tukarKod(px, jenis) {
+      var sel = $(px + '_' + jenis + 'Pilih'), inp = $(px + '_' + jenis);
+      inp.style.display = sel.value === LAIN_K ? '' : 'none';
+      if (sel.value === LAIN_K) { inp.placeholder = 'Nyatakan ' + (jenis === 'projectCode' ? 'Project Code' : 'Vot Head'); inp.style.marginTop = '8px'; }
+    }
+    function nilaiKod(px, jenis) {
+      var sel = $(px + '_' + jenis + 'Pilih');
+      return (sel.style.display !== 'none' && sel.value !== LAIN_K ? sel.value : v(px + '_' + jenis)).toUpperCase();
+    }
+    function kemasKod(px) { isiKod(px, 'projectCode'); isiKod(px, 'votHead'); }
+    ['h', 'p'].forEach(function (px) {
+      ['projectCode', 'votHead'].forEach(function (j) { $(px + '_' + j + 'Pilih').addEventListener('change', function () { tukarKod(px, j); }); });
+      ['_peruntukan', '_bahagian', '_unit'].forEach(function (id) { $(px + id).addEventListener('change', function () { kemasKod(px); }); });
+    });
+    (async function () {
+      try { SENARAI_PERUNTUKAN = await api('getSenaraiPeruntukan'); } catch (e) { /* tab belum wujud: kotak taip */ }
+      kemasKod('h'); kemasKod('p');
+    })();
+
     // ---------- Senarai hotel ikut destinasi (tab Senarai_Hotel dalam Google Sheet) ----------
     var LAIN = '__LAIN__', SENARAI_HOTEL = [];
     function nilaiDaerah() { var d = $('h_daerahPilih').value; return d === LAIN ? v('h_daerah') : d; }
@@ -787,9 +836,48 @@
     function tukarHotel() { $('h_hotelLainWrap').style.display = $('h_hotelPilih').value === LAIN ? '' : 'none'; }
     $('h_daerahPilih').addEventListener('change', tukarDaerah);
     $('h_hotelPilih').addEventListener('change', tukarHotel);
+    // Sandaran: digunakan jika senarai dari Google Sheet gagal dimuat (cth. Code.gs belum di-deploy).
+    // Senarai utama tetap tab Senarai_Hotel dalam Sheet.
+    var SENARAI_HOTEL_SANDARAN = [
+      { daerah: "TAWAU", hotel: "LA HOTEL", alamat: '' },
+      { daerah: "TAWAU", hotel: "BORNEO ROYALE HOTEL", alamat: '' },
+      { daerah: "TAWAU", hotel: "HERITAGE HOTEL", alamat: '' },
+      { daerah: "TAWAU", hotel: "KING PARK HOTEL", alamat: '' },
+      { daerah: "SEMPORNA", hotel: "SEAFEST HOTEL", alamat: '' },
+      { daerah: "LAHAD DATU", hotel: "DE LEON HOTEL", alamat: '' },
+      { daerah: "LAHAD DATU", hotel: "MY INN HOTEL", alamat: '' },
+      { daerah: "SANDAKAN", hotel: "EULOPURA HOTEL", alamat: '' },
+      { daerah: "SANDAKAN", hotel: "SABAH HOTEL", alamat: '' },
+      { daerah: "KUDAT", hotel: "RIA HOTEL", alamat: '' },
+      { daerah: "KOTA MARUDU", hotel: "MARUDU INN", alamat: '' },
+      { daerah: "KOTA MARUDU", hotel: "RAJAWALI HOMES", alamat: '' },
+      { daerah: "KUNDASANG", hotel: "PERKASA HOTEL KUNDASANG", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "PROMENADE HOTEL", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "GOLDEN HOTEL", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "HOLIDAY INN EXPRESS HOTEL", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "SEVEN SURIA HOTEL", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "SABAH ORIENTAL HOTEL", alamat: '' },
+      { daerah: "KOTA KINABALU", hotel: "THE DAILY HOTEL", alamat: '' },
+      { daerah: "SIPITANG", hotel: "MOTEL AND REST HOUSE KAKA SIPITANG", alamat: '' },
+      { daerah: "BEAUFORT", hotel: "THE GEM HOTEL", alamat: '' },
+      { daerah: "BEAUFORT", hotel: "RIVERPARK HOTEL", alamat: '' },
+      { daerah: "KENINGAU", hotel: "JUTA HOTEL", alamat: '' },
+      { daerah: "KENINGAU", hotel: "PERKASA HOTEL KENINGAU", alamat: '' },
+      { daerah: "TENOM", hotel: "PERKASA HOTEL TENOM", alamat: '' },
+      { daerah: "KUALA LUMPUR", hotel: "CAPITOL HOTEL BUKIT BINTANG", alamat: '' },
+      { daerah: "KUALA LUMPUR", hotel: "FEDERAL HOTEL BUKIT BINTANG", alamat: '' },
+      { daerah: "KUALA LUMPUR", hotel: "ZENITH HOTEL PUTRAJAYA", alamat: '' }
+    ];
     (async function () {
-      try { SENARAI_HOTEL = await api('getSenaraiHotel'); } catch (e) { SENARAI_HOTEL = []; }
-      isiDaerah(); // senarai gagal dimuat -> hanya pilihan "Lain-lain"
+      try {
+        SENARAI_HOTEL = await api('getSenaraiHotel');
+        if (!SENARAI_HOTEL || !SENARAI_HOTEL.length) throw new Error('Senarai kosong');
+      } catch (e) {
+        console.warn('Senarai_Hotel gagal dimuat, guna senarai sandaran: ' + e.message);
+        $('h_daerahPilih').setAttribute('data-ralat', e.message); // untuk semakan
+        SENARAI_HOTEL = SENARAI_HOTEL_SANDARAN;
+      }
+      isiDaerah();
     })();
 
     // ---------- Semak status ----------
