@@ -437,13 +437,15 @@
     // ====================== KONFIGURASI - WAJIB TUKAR ======================
     // URL web app GAS (Deploy > Web app). Mesti berakhir dengan /exec
     const API_URL = 'https://script.google.com/macros/s/AKfycbyEwpuhwYUSzjXIXdtzObAGg1aG1QZt_wypu5b6EzTmMeNBwEvjF7iN7jtU-CWqvmVoJg/exec';
-    const BAHAGIAN_OPTIONS = ['Pejabat Pengurus Besar','Khidmat Pengurusan','Perancangan dan Pembangunan Strategik','Pembangunan Nelayan','Pembangunan Industri Perikanan'];
+    // Senarai LALAI (sandaran). Senarai sebenar dibaca dari tab "Senarai_Unit" dalam Google Sheet jika ada.
+    const BAHAGIAN_OPTIONS = ['Pejabat Pengurus Besar','Khidmat Pengurusan','Perancangan dan Pembangunan Strategik','Pembangunan Nelayan','Pembangunan Industri Perikanan','Board Of Director (BOD)'];
     const UNIT_GROUPS = {
       'Pejabat Pengurus Besar': ['Unit Pengurusan Petroleum','Unit Audit Dalam','Unit Pemasaran','Unit Perundangan dan Penguatkuasaan','Unit Komunikasi Korporat','Unit Kejuruteraan'],
       'Khidmat Pengurusan': ['Unit Pentadbiran','Unit Akaun dan Kewangan','Unit Sumber Manusia','Unit Teknologi Maklumat','Unit Pengurusan Harta'],
       'Perancangan dan Pembangunan Strategik': ['Unit Perancangan Pembangunan','Unit Pelaburan','Unit Pemantauan'],
       'Pembangunan Nelayan': ['Unit Pengurusan Kredit','Unit Pengurusan Kompleks'],
-      'Pembangunan Industri Perikanan': [] // tiada unit di Ibu Pejabat
+      'Pembangunan Industri Perikanan': [], // tiada unit di Ibu Pejabat
+      'Board Of Director (BOD)': []
     };
     // =========================================================================
 
@@ -515,7 +517,7 @@
     function populateUnitSelect(selectEl, bahagian) {
       if (!bahagian) { selectEl.innerHTML = '<option value="">-- Pilih Bahagian dahulu --</option>'; selectEl.disabled = true; return; }
       var units = UNIT_GROUPS[bahagian] || [];
-      if (!units.length) { selectEl.innerHTML = '<option value="">(Tiada unit di Ibu Pejabat)</option>'; selectEl.disabled = true; return; }
+      if (!units.length) { selectEl.innerHTML = '<option value="">(Tiada unit)</option>'; selectEl.disabled = true; return; }
       selectEl.innerHTML = '<option value="">-- Pilih Unit --</option>' + units.map(function (u) { return '<option value="' + escapeHtml(u) + '">' + escapeHtml(u) + '</option>'; }).join('');
       selectEl.disabled = false;
     }
@@ -591,6 +593,16 @@
     }
 
     // ---------- Borang ----------
+    /** Isi dropdown Bahagian (borang hotel, penerbangan & Semak Status); kekalkan pilihan semasa jika masih ada. */
+    function isiBahagian() {
+      [['h', '-- Pilih Bahagian --'], ['p', '-- Pilih Bahagian --'], ['s', '-- Semua Bahagian --']].forEach(function (x) {
+        var sel = $(x[0] + '_bahagian'), lama = sel.value;
+        sel.innerHTML = '<option value="">' + x[1] + '</option>' +
+          BAHAGIAN_OPTIONS.map(function (b) { return '<option value="' + escapeHtml(b) + '">' + escapeHtml(b) + '</option>'; }).join('');
+        sel.value = BAHAGIAN_OPTIONS.indexOf(lama) >= 0 ? lama : '';
+        if (sel.value !== lama) populateUnitSelect($(x[0] + '_unit'), sel.value);
+      });
+    }
     ['h', 'p'].forEach(function (px) {
       var sel = $(px + '_bahagian');
       sel.innerHTML = '<option value="">-- Pilih Bahagian --</option>' +
@@ -598,6 +610,17 @@
       populateUnitSelect($(px + '_unit'), '');
       sel.addEventListener('change', function () { populateUnitSelect($(px + '_unit'), this.value); });
     });
+    // Senarai sebenar dari tab Senarai_Unit (jika ada); jika tiada, senarai lalai di atas kekal.
+    (async function () {
+      try {
+        var s = await api('getSenaraiUnit');
+        if (!s || !s.bahagian || !s.bahagian.length) return;
+        BAHAGIAN_OPTIONS.length = 0; Array.prototype.push.apply(BAHAGIAN_OPTIONS, s.bahagian);
+        Object.keys(UNIT_GROUPS).forEach(function (k) { delete UNIT_GROUPS[k]; });
+        Object.keys(s.unit).forEach(function (k) { UNIT_GROUPS[k] = s.unit[k]; });
+        isiBahagian();
+      } catch (e) { /* guna senarai lalai */ }
+    })();
     ['h_tarikhMasuk', 'h_tarikhKeluar', 'p_tarikhPergi', 'p_tarikhBalik'].forEach(function (id) { $(id).min = today(); });
     $('h_tarikhMasuk').addEventListener('change', function () { if (this.value) $('h_tarikhKeluar').min = this.value; kiraMalam(); });
     $('p_tarikhPergi').addEventListener('change', function () { if (this.value) $('p_tarikhBalik').min = this.value; });
