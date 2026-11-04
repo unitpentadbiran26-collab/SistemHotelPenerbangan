@@ -266,7 +266,7 @@
         </div>
         <div class="steps">
           <div class="step"><b>1 &middot; Mohon</b>Isi borang hotel atau penerbangan dan hantar.</div>
-          <div class="step"><b>2 &middot; Kelulusan</b>Hotel: PPB / Pengurus Besar &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan), kemudian Unit Pentadbiran membuat tempahan. Penerbangan: Unit Pentadbiran.</div>
+          <div class="step"><b>2 &middot; Kelulusan</b>Hotel &amp; penerbangan: PPB / Pengurus Besar &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan), kemudian Unit Pentadbiran membuat tempahan hotel / tiket.</div>
           <div class="step"><b>3 &middot; Keputusan</b>Emel dihantar sama ada diluluskan atau ditolak. Semak peringkat terkini di Semak Status.</div>
         </div>
         <div class="card" style="overflow:hidden;">
@@ -306,6 +306,9 @@
               <select id="h_votHeadPilih" style="display:none;"></select>
               <input type="text" id="h_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
           </div>
+          <div class="field" id="h_bakiWrap" style="display:none;"><label for="h_bakiPeruntukan">Baki Peruntukan (RM)</label>
+            <input type="text" id="h_bakiPeruntukan" inputmode="decimal" placeholder="Contoh: 15000.00">
+            <div class="hint">Baki peruntukan semasa sebelum permohonan ini.</div></div>
           <div class="field"><label for="h_lampiran">Lampiran <span>(pilihan)</span></label>
             <input type="file" id="h_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
             <div class="hint">Sila upload fail yang telah diluluskan (jika perlu). JPG, PNG, PDF atau Word, maksimum 5 MB.</div>
@@ -364,6 +367,9 @@
               <select id="p_votHeadPilih" style="display:none;"></select>
               <input type="text" id="p_votHead" placeholder="Contoh: B21000" style="text-transform:uppercase;"></div>
           </div>
+          <div class="field" id="p_bakiWrap" style="display:none;"><label for="p_bakiPeruntukan">Baki Peruntukan (RM)</label>
+            <input type="text" id="p_bakiPeruntukan" inputmode="decimal" placeholder="Contoh: 15000.00">
+            <div class="hint">Baki peruntukan semasa sebelum permohonan ini.</div></div>
           <div class="field"><label for="p_lampiran">Lampiran <span>(pilihan)</span></label>
             <input type="file" id="p_lampiran" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
             <div class="hint">Sila upload fail yang telah diluluskan (jika perlu). JPG, PNG, PDF atau Word, maksimum 5 MB.</div>
@@ -387,8 +393,10 @@
           </div>
           <div class="field-row">
             <div class="field"><label>Syarikat Penerbangan <span>(pilihan)</span></label><input type="text" id="p_syarikat" placeholder="Contoh: MASwings"></div>
-            <div class="field"><label>Kelas</label><select id="p_kelas"><option value="Ekonomi">Ekonomi</option><option value="Bisnes">Bisnes</option></select></div>
+            <div class="field"><label>Kelas</label><select id="p_kelas"><option value="Ekonomi">Ekonomi</option><option value="Bisnes">Bisnes</option></select>
+              <div class="hint" id="p_kelasNota" style="display:none;">Dikunci: VU7 / Gred 14 layak kelas Bisnes.</div></div>
           </div>
+          <div class="summary" id="p_aliran"></div>
           <div style="display:flex;gap:10px;">
             <button class="btn btn-primary" id="p_submitBtn" style="flex:1;padding:11px;">Hantar Permohonan</button>
             <button class="btn btn-batal" style="padding:11px 18px;">Batal</button>
@@ -486,10 +494,11 @@
     function skimGred(b) {
       if (!b.skim) return '';
       if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
-      if (b.skim === 'VU') return 'VU';
+      if (b.skim === 'VU') return 'VU' + (b.gred || '');
       if (b.skim === 'SSM' || b.skim === 'SSPA') return b.skim + ' ' + (b.gred || '');
       return b.skim + (b.gred || '');
     }
+    function fmtRM(n) { return n === '' || n == null || isNaN(Number(n)) ? '' : 'RM' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     function butiranPermohonan(b) {
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
         ['Peruntukan', teksPeruntukan(b)], ['Lampiran', b.lampiran ? b.lampiran.nama : '']];
@@ -505,12 +514,14 @@
       ]);
     }
     function teksPeruntukan(b) {
-      return [b.peruntukan, b.projectCode ? 'Project Code ' + b.projectCode : '', b.votHead ? 'Vot Head ' + b.votHead : ''].filter(function (x) { return x; }).join(' \u00b7 ');
+      return [b.peruntukan, b.projectCode ? 'Project Code ' + b.projectCode : '', b.votHead ? 'Vot Head ' + b.votHead : '',
+        fmtRM(b.bakiPeruntukan) ? 'Baki ' + fmtRM(b.bakiPeruntukan) : ''].filter(function (x) { return x; }).join(' \u00b7 ');
     }
     // Project Code & Vot Head muncul selepas Peruntukan dipilih
     ['h', 'p'].forEach(function (px) {
       document.getElementById(px + '_peruntukan').addEventListener('change', function () {
         document.getElementById(px + '_kodWrap').style.display = this.value ? '' : 'none';
+        document.getElementById(px + '_bakiWrap').style.display = this.value ? '' : 'none';
         document.getElementById(px + '_kodNota').textContent = this.value === 'Pembangunan' ? '(wajib)' : '(jika ada)';
       });
     });
@@ -638,7 +649,7 @@
       paparAliran();
     }
 
-    // Pelulus peringkat 1 ikut tempoh & bahagian (mesti sama dengan Code.gs: rantaianHotel_)
+    // Pelulus peringkat 1 ikut tempoh & bahagian (mesti sama dengan Code.gs: rantaian_)
     const HAD_HARI_PENGURUS_BESAR = 3;
     const PPB_BAHAGIAN = {
       'Khidmat Pengurusan': 'PPB (Khidmat Pengurusan)',
@@ -646,15 +657,18 @@
       'Pembangunan Nelayan': 'PPB (Pembangunan Nelayan)',
       'Pembangunan Industri Perikanan': 'PPB (Pembangunan Industri Perikanan)'
     };
+    // Hotel: hari = malam + 1. Penerbangan: tarikh pergi hingga balik (termasuk kedua-dua).
     function paparAliran() {
-      var el = $('h_aliran'), a = v('h_tarikhMasuk'), b = v('h_tarikhKeluar'), bah = v('h_bahagian');
-      var malam = a && b ? Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000) : 0;
-      if (malam < 1 || !bah) { el.style.display = 'none'; return; }
-      var p1 = (malam + 1) > HAD_HARI_PENGURUS_BESAR ? 'Pengurus Besar' : (PPB_BAHAGIAN[bah] || 'Pengurus Besar');
-      el.style.display = 'block';
-      el.innerHTML = 'Aliran kelulusan: <b>' + escapeHtml(p1) + '</b> &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan)';
+      [['h', 'h_tarikhMasuk', 'h_tarikhKeluar', 1], ['p', 'p_tarikhPergi', 'p_tarikhBalik', 0]].forEach(function (x) {
+        var el = $(x[0] + '_aliran'), a = v(x[1]), b = v(x[2]), bah = v(x[0] + '_bahagian');
+        var beza = a && b ? Math.round((new Date(b + 'T00:00:00') - new Date(a + 'T00:00:00')) / 86400000) : -1;
+        if (beza < x[3] || !bah) { el.style.display = 'none'; return; }
+        var p1 = (beza + 1) > HAD_HARI_PENGURUS_BESAR ? 'Pengurus Besar' : (PPB_BAHAGIAN[bah] || 'Pengurus Besar');
+        el.style.display = 'block';
+        el.innerHTML = 'Aliran kelulusan: <b>' + escapeHtml(p1) + '</b> &rarr; Pegawai Tadbir &rarr; Ketua Akauntan &rarr; PPB (Khidmat Pengurusan)';
+      });
     }
-    $('h_bahagian').addEventListener('change', paparAliran);
+    ['h_bahagian', 'p_bahagian', 'p_tarikhPergi', 'p_tarikhBalik'].forEach(function (id) { $(id).addEventListener('change', paparAliran); });
 
     /** Skim PSH guna Kelayakan Akademik; skim lain guna Gred. Borang hotel papar kelayakan sewa. */
     ['h', 'p'].forEach(function (px) {
@@ -663,10 +677,17 @@
         var psh = v(px + '_skim') === 'PSH', vu = v(px + '_skim') === 'VU', g = $(px + '_gred');
         $(px + '_gredWrap').style.display = psh ? 'none' : '';
         $(px + '_akadWrap').style.display = psh ? '' : 'none';
-        // VU = paling tinggi, tiada gred: ruang Gred dikelabukan
-        g.disabled = vu;
-        if (vu) { g.value = ''; g.options[0].textContent = 'Tiada gred (VU)'; } else { g.options[0].textContent = '-- Pilih Gred --'; }
-        if (px !== 'h') return;
+        // VU: ruang Gred dikelabukan dan dikunci kepada 7 (VU7)
+        if (vu) { g.value = '7'; g.disabled = true; }
+        else if (g.disabled) { g.disabled = false; g.value = ''; }
+        if (px === 'p') {
+          // VU7 atau Gred 14 -> kelas Bisnes dikunci
+          var bisnes = vu || v('p_gred') === '14', k = $('p_kelas');
+          if (bisnes) { k.value = 'Bisnes'; k.disabled = true; }
+          else if (k.disabled) { k.disabled = false; k.value = 'Ekonomi'; }
+          $('p_kelasNota').style.display = bisnes ? '' : 'none';
+          return;
+        }
         var el = $('h_kelayakan'), skim = v('h_skim'), gred = v('h_gred'), akad = v('h_akademik');
         clearTimeout(t);
         if (!skim || (psh ? !akad : (!vu && !gred))) { el.style.display = 'none'; return; }
@@ -700,6 +721,8 @@
       if (!v(px + '_peruntukan')) return 'Sila pilih Peruntukan (Pembangunan atau Dalaman).';
       if (v(px + '_peruntukan') === 'Pembangunan' && !nilaiKod(px, 'projectCode')) return 'Sila pilih atau isi Project Code untuk peruntukan Pembangunan.';
       if (!nilaiKod(px, 'votHead')) return 'Sila pilih atau isi Vot Head.';
+      var baki = v(px + '_bakiPeruntukan').replace(/^RM\s*/i, '').replace(/[,\s]/g, '');
+      if (!baki || isNaN(Number(baki)) || Number(baki) < 0) return 'Sila isi Baki Peruntukan (RM) dengan nombor, contoh 15000.00';
       var f = $(px + '_lampiran').files[0];
       if (f) {
         if (!/\.(jpe?g|png|pdf|docx?)$/i.test(f.name)) return 'Lampiran mesti fail JPG, PNG, PDF atau Word (DOC/DOCX).';
@@ -711,7 +734,7 @@
       return { nama: v(px + '_nama'), bahagian: v(px + '_bahagian'), unit: v(px + '_unit') || '-', emel: v(px + '_emel'),
         noTelefon: v(px + '_noTelefon'), skim: v(px + '_skim'), gred: v(px + '_gred'), akademik: v(px + '_akademik'),
         tujuan: v(px + '_tujuan'), bilOrang: v(px + '_bilOrang'), peruntukan: v(px + '_peruntukan'),
-        projectCode: nilaiKod(px, 'projectCode'), votHead: nilaiKod(px, 'votHead') };
+        projectCode: nilaiKod(px, 'projectCode'), votHead: nilaiKod(px, 'votHead'), bakiPeruntukan: v(px + '_bakiPeruntukan') };
     }
 
     /** Baca fail sebagai base64 (tanpa awalan data:...). */
@@ -743,6 +766,8 @@
         populateUnitSelect($(px + '_unit'), '');
         window['tukarSkim_' + px]();
         $(px + '_kodWrap').style.display = 'none';
+        $(px + '_bakiWrap').style.display = 'none';
+        $(px + '_aliran').style.display = 'none';
         kemasKod(px);
         if (px === 'h') isiDaerah();
         $('doneRef').textContent = res.id;
@@ -926,7 +951,10 @@
               k.keputusan ? k.keputusan + ' (' + k.tarikh + ')' + (k.catatan ? ' — ' + k.catatan : '') : (b.peringkat === k.peringkat ? 'Sedang disemak' : 'Belum')]);
           });
           var t = b.tempahan || {};
-          if (t.status === 'Ditempah') {
+          if (b.jenis !== 'Hotel') {
+            if (t.status === 'Ditempah') rows.push(['Tiket ditempah', [t.syarikat, t.penerbangan].filter(Boolean).join(' · ')], ['No. pengesahan / PNR', t.noPengesahan], ['Catatan tempahan', t.catatan]);
+            else if (t.status) rows.push(['Tiket penerbangan', 'Sedang ditempah oleh Unit Pentadbiran']);
+          } else if (t.status === 'Ditempah') {
             rows.push(['Hotel ditempah', t.hotel], ['No. pengesahan', t.noPengesahan], ['Jenis bilik', t.jenisBilik],
               ['Kadar semalam', t.kadar !== '' && t.kadar != null ? 'RM' + Number(t.kadar).toFixed(2) : ''], ['Catatan tempahan', t.catatan]);
           } else if (t.status) {
@@ -938,7 +966,8 @@
             '<div class="s">' + escapeHtml(ringkasPermohonan(b)) + '</div>' +
             (b.peringkat ? '<div class="s" style="color:var(--gold);font-weight:600;">Peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ' &middot; menunggu ' + escapeHtml(b.pelulusSemasa) + '</div>' : '') +
             (b.tempahan && b.tempahan.status ? '<div class="s" style="color:' + (b.tempahan.status === 'Ditempah' ? 'var(--ok)' : 'var(--gold)') + ';font-weight:600;">' +
-              (b.tempahan.status === 'Ditempah' ? 'Hotel telah ditempah: ' + escapeHtml(b.tempahan.hotel) : 'Diluluskan &middot; Unit Pentadbiran sedang membuat tempahan') + '</div>' : '') +
+              (b.tempahan.status === 'Ditempah' ? (b.jenis === 'Hotel' ? 'Hotel telah ditempah: ' + escapeHtml(b.tempahan.hotel) : 'Tiket telah ditempah' + (b.tempahan.noPengesahan ? ': ' + escapeHtml(b.tempahan.noPengesahan) : ''))
+                : 'Diluluskan &middot; Unit Pentadbiran sedang membuat tempahan') + '</div>' : '') +
             '</div><span class="badge badge-' + escapeHtml(b.status) + '">' + escapeHtml(b.status) + '</span></div>' +
             '<details class="s-butiran"><summary>Lihat butiran</summary>' + rowsHtml(rows) + '</details></div>';
     }
