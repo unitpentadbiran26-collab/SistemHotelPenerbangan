@@ -375,12 +375,12 @@
             </div>
           </div>
           <div class="note" style="margin-top:14px;">
-            <b style="color:var(--ink);">Aliran kelulusan hotel</b><br>
-            1. Pengurus Besar (tempoh lebih 3 hari) atau Penolong Pengurus Besar bahagian pemohon (3 hari ke bawah). Jika bercuti, pemangku.<br>
+            <b style="color:var(--ink);">Aliran kelulusan hotel &amp; penerbangan</b><br>
+            1. Pengurus Besar (tempoh lebih 3 hari) atau Penolong Pengurus Besar bahagian pemohon (3 hari ke bawah). Jika bercuti, pemangku: PB &rarr; TPB &rarr; PPB (Khidmat Pengurusan).<br>
             2. Pegawai Tadbir (Unit Pentadbiran), di Panel Admin ini<br>
             3. Ketua Akauntan (semak bajet)<br>
             4. Penolong Pengurus Besar (Khidmat Pengurusan)<br>
-            Pelulus 1, 3 dan 4 menerima emel dengan pautan untuk lulus atau tolak. Penerbangan kekal satu pelulus.
+            Pelulus 1, 3 dan 4 menerima emel dengan pautan untuk lulus atau tolak. Pelulus tidak boleh meluluskan permohonan sendiri: permohonan PB ke TPB, pelulus lain ke PB.
           </div>
         </div>
       </main>
@@ -1052,7 +1052,7 @@
       $('cutiTitle').textContent = 'Cuti: ' + r.jawatan;
       $('cutiInfo').textContent = 'Sepanjang cuti, permohonan untuk ' + r.jawatan + ' dihantar kepada pemangku. Tandatangan dalam rekod akan tertulis "bagi pihak ' + r.jawatan + '".';
       $('cutiPemangku').innerHTML = pelulusRows.filter(function (x) { return x.kod !== kod; }).map(function (x) {
-        return '<option value="' + escapeHtml(x.kod) + '"' + (x.kod === r.pemangku ? ' selected' : '') + '>' + escapeHtml(x.jawatan) + (x.nama ? ' (' + escapeHtml(x.nama) + ')' : '') + '</option>';
+        return '<option value="' + escapeHtml(x.kod) + '"' + (x.kod === (r.pemangku || r.pemangkuLalai) ? ' selected' : '') + '>' + escapeHtml(x.jawatan) + (x.nama ? ' (' + escapeHtml(x.nama) + ')' : '') + '</option>';
       }).join('');
       var hariIni = new Date(); var iso = hariIni.getFullYear() + '-' + ('0' + (hariIni.getMonth() + 1)).slice(-2) + '-' + ('0' + hariIni.getDate()).slice(-2);
       $('cutiMula').value = r.cutiMula || iso; $('cutiTamat').value = r.cutiTamat || '';
