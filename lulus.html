@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>SPHP · Kelulusan Hotel</title>
+  <title>SPHP · Kelulusan Permohonan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -38,6 +38,14 @@
   .kel{margin-top:10px;padding:10px 14px;border-radius:8px;border:1px dashed rgba(23,128,61,.5);color:var(--ok);font-size:13px;}
   label{display:block;font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:.07em;margin:20px 0 6px;}
   label span{text-transform:none;font-weight:400;color:var(--ink-dim);letter-spacing:0;}
+  .ka-box{margin-top:16px;border:1px solid rgba(15,110,106,.35);background:rgba(15,110,106,.05);border-radius:10px;padding:12px 14px;}
+  .ka-box summary{cursor:pointer;font-weight:700;color:var(--gold);font-size:13.5px;}
+  .ka-box label{margin:12px 0 5px;}
+  .ka-box .row2{display:flex;gap:10px;} .ka-box .row2>div{flex:1;min-width:0;}
+  .ka-box input,.ka-box select{width:100%;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:#fff;}
+  .ka-box input:focus,.ka-box select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,.15);}
+  .ka-box .nota{font-size:12px;color:var(--ink-dim);margin-top:6px;}
+  @media(max-width:520px){ .ka-box .row2{flex-direction:column;gap:0;} }
   textarea{width:100%;min-height:80px;resize:vertical;border:1px solid var(--mist);border-radius:8px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--mist-2);}
   textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(15,110,106,.15);}
   .actions{display:flex;gap:10px;margin-top:16px;}
@@ -75,7 +83,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="brand"><img src="logo.png" alt=""><div><div class="n"><span class="brand-tag">SPHP</span>Kelulusan Permohonan</div><div class="s">Penginapan Hotel</div></div></div>
+    <div class="brand"><img src="logo.png" alt=""><div><div class="n"><span class="brand-tag">SPHP</span>Kelulusan Permohonan</div><div class="s" id="subJenis">Hotel &amp; Penerbangan</div></div></div>
     <div id="root"><div class="card msg"><p>Memuatkan permohonan...</p></div></div>
     <div class="foot" id="foot"></div>
   </div>
@@ -113,8 +121,22 @@
     function skimGred(b) {
       if (!b.skim) return '';
       if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
-      if (b.skim === 'VU') return 'VU';
+      if (b.skim === 'VU') return 'VU' + (b.gred || '');
       return b.skim + (b.gred || '');
+    }
+    function fmtRM(n) { return n === '' || n == null || isNaN(Number(n)) ? '' : 'RM' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+    var SENARAI_KOD = { projectCode: [], votHead: [] };
+    function normal(s) { return String(s || '').toUpperCase().replace(/^BAHAGIAN\s+/, '').replace(/\s+/g, ' ').trim(); }
+    /** Cadangan kod (datalist) ikut peruntukan & bahagian/unit pemohon. KA masih boleh taip kod lain. */
+    function isiCadangan() {
+      var per = normal($('kaPer').value), bah = normal(DATA.bahagian), unit = normal(DATA.unit);
+      ['projectCode', 'votHead'].forEach(function (j) {
+        var list = (SENARAI_KOD[j] || []).filter(function (x) {
+          return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit);
+        });
+        $('dl_' + j).innerHTML = list.map(function (x) { return '<option value="' + esc(x.kod) + '">' + esc(x.nama || '') + '</option>'; }).join('');
+      });
+      $('kaKodNota').textContent = $('kaPer').value === 'Pembangunan' ? '(wajib)' : '(jika ada)';
     }
 
     /**
@@ -160,7 +182,30 @@
       var terdahulu = (b.kelulusan || []).filter(function (k) { return k.keputusan; }).map(function (k) {
         return [k.peringkat + '. ' + k.jawatan, k.keputusan + ' · ' + k.tarikh + (k.catatan ? ' — ' + k.catatan : '')];
       });
+      var hotel = b.jenis === 'Hotel';
+      $('subJenis').textContent = hotel ? 'Penginapan Hotel' : 'Tiket Penerbangan';
+      document.title = 'SPHP · Kelulusan ' + (hotel ? 'Hotel' : 'Penerbangan');
       var tempoh = b.bilMalam ? (Number(b.bilMalam) + 1) + ' hari ' + b.bilMalam + ' malam' : '';
+      var peruntukan = [['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Baki peruntukan', fmtRM(b.bakiPeruntukan)]];
+      var butiran = hotel
+        ? '<div class="sec">Penginapan</div>' + rows([
+            ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
+            ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', tempoh]])
+        : '<div class="sec">Penerbangan</div>' + rows([
+            ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
+            ['Dari \u2192 destinasi', b.dari + ' \u2192 ' + b.destinasi],
+            ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
+            ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
+            ['Syarikat', b.syarikat], ['Kelas', b.kelas + (b.layakBisnes ? ' (VU7 / Gred 14)' : '')]]);
+      var opt = function (x) { return '<option' + (b.peruntukan === x ? ' selected' : '') + '>' + x + '</option>'; };
+      var ka = !b.bolehSuntingPeruntukan ? '' :
+        '<details class="ka-box" id="kaBox"><summary>&#9998; Betulkan Peruntukan / Project Code / Vot Head / Baki</summary>' +
+        '<div class="nota">Hanya untuk Ketua Akauntan. Perubahan disimpan bila anda tekan Luluskan, dan direkod dalam sejarah permohonan.</div>' +
+        '<label for="kaPer">Peruntukan</label><select id="kaPer">' + opt('Pembangunan') + opt('Dalaman') + '</select>' +
+        '<div class="row2"><div><label for="kaKod">Project Code <span id="kaKodNota"></span></label><input id="kaKod" list="dl_projectCode" value="' + esc(b.projectCode) + '" style="text-transform:uppercase;"></div>' +
+        '<div><label for="kaVot">Vot Head</label><input id="kaVot" list="dl_votHead" value="' + esc(b.votHead) + '" style="text-transform:uppercase;"></div></div>' +
+        '<label for="kaBaki">Baki Peruntukan (RM)</label><input id="kaBaki" inputmode="decimal" value="' + esc(b.bakiPeruntukan) + '" placeholder="Contoh: 15000.00">' +
+        '<datalist id="dl_projectCode"></datalist><datalist id="dl_votHead"></datalist></details>';
 
       $('root').innerHTML = '<div class="card">' +
         '<div class="eyebrow">Peringkat ' + b.peringkat + ' daripada ' + b.jumlahPeringkat + '</div>' +
@@ -171,11 +216,9 @@
           ['Nama', b.nama], ['Bahagian / Unit', b.bahagian + (b.unit && b.unit !== '-' ? ' / ' + b.unit : '')],
           ['Skim / gred', skimGred(b)], ['Emel', b.emel], ['No. telefon', b.noTelefon], ['Dimohon', b.tarikhMohon]
         ]) +
-        '<div class="sec">Penginapan</div>' + rows([
-          ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''], ['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Daerah / destinasi', b.daerah], ['Nama hotel', b.namaHotel],
-          ['Tarikh masuk', b.tarikhMasuk], ['Tarikh keluar', b.tarikhKeluar], ['Tempoh', tempoh]
-        ]) +
-        (b.hadKelayakan ? '<div class="kel">Kelayakan sewa hotel: ' + esc(b.hadKelayakan) + '</div>' : '') +
+        butiran +
+        '<div class="sec">Peruntukan</div>' + rows(peruntukan) + ka +
+        (hotel && b.hadKelayakan ? '<div class="kel">Kelayakan sewa hotel: ' + esc(b.hadKelayakan) + '</div>' : '') +
         (b.lampiran && b.lampiran.url ? '<div class="kel" style="border-color:var(--mist);color:var(--ink);">&#128206; Lampiran: <a href="' + esc(b.lampiran.url) + '" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;">' + esc(b.lampiran.nama || 'Buka fail') + '</a></div>' : '') +
         (terdahulu.length ? '<div class="sec">Kelulusan terdahulu</div>' + rows(terdahulu) : '') +
         '<label for="catatan">Catatan <span>(wajib jika ditolak)</span></label>' +
@@ -184,6 +227,10 @@
         '<div class="actions"><button class="btn btn-ok" id="bLulus">&#10003; Luluskan</button>' +
         '<button class="btn btn-no" id="bTolak">&#10007; Tolak</button></div>' +
         '</div>';
+      if (b.bolehSuntingPeruntukan) {
+        $('kaPer').addEventListener('change', isiCadangan); isiCadangan();
+        api('getSenaraiPeruntukan', {}).then(function (x) { SENARAI_KOD = x || SENARAI_KOD; isiCadangan(); }).catch(function () {});
+      }
       $('bLulus').addEventListener('click', function () { putus('Diluluskan'); });
       $('bTolak').addEventListener('click', function () { putus('Ditolak'); });
     }
@@ -192,6 +239,14 @@
       var catatan = $('catatan').value.trim(), err = $('err');
       err.classList.remove('show');
       if (keputusan === 'Ditolak' && !catatan) { err.textContent = 'Sila isi sebab penolakan dalam ruang catatan.'; err.classList.add('show'); $('catatan').focus(); return; }
+      var p = { t: TOKEN, keputusan: keputusan, catatan: catatan };
+      if (keputusan === 'Diluluskan' && $('kaBox') && $('kaBox').open) {
+        p.suntingPeruntukan = '1'; p.peruntukan = $('kaPer').value; p.projectCode = $('kaKod').value.trim();
+        p.votHead = $('kaVot').value.trim(); p.bakiPeruntukan = $('kaBaki').value.trim();
+        var salah = !p.votHead ? 'Sila isi Vot Head.' : (p.peruntukan === 'Pembangunan' && !p.projectCode) ? 'Sila isi Project Code untuk peruntukan Pembangunan.'
+          : (!p.bakiPeruntukan || isNaN(Number(p.bakiPeruntukan.replace(/^RM\s*/i, '').replace(/[,\s]/g, '')))) ? 'Sila isi Baki Peruntukan (RM) dengan nombor.' : '';
+        if (salah) { err.textContent = salah; err.classList.add('show'); return; }
+      }
       var soalan = keputusan === 'Diluluskan'
         ? 'Luluskan permohonan ' + DATA.id + '?' + (DATA.peringkat < DATA.jumlahPeringkat ? ' Ia akan dimajukan ke peringkat seterusnya.' : ' Ini kelulusan muktamad.')
         : 'Tolak permohonan ' + DATA.id + '? Pemohon akan dimaklumkan melalui emel.';
@@ -199,7 +254,7 @@
         ya: keputusan === 'Diluluskan' ? 'Ya, Luluskan' : 'Ya, Tolak', bahaya: keputusan !== 'Diluluskan' }))) return;
       $('bLulus').disabled = $('bTolak').disabled = true;
       try {
-        var r = await api('decideByToken', { t: TOKEN, keputusan: keputusan, catatan: catatan });
+        var r = await api('decideByToken', p);
         if (keputusan === 'Diluluskan') mesej('&#10003;', '#4CAF82', 'Diluluskan', r.message + ' Anda boleh tutup halaman ini.');
         else mesej('&#10007;', '#E05C5C', 'Ditolak', r.message + ' Anda boleh tutup halaman ini.');
       } catch (e) {
