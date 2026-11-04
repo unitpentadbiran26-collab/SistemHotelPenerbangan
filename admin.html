@@ -271,21 +271,22 @@
           </button>
           <button class="sidebar-item" id="sb-pelulus">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M16 11l2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            Pelulus Hotel
+            Pelulus
           </button>
         </div>
         <div class="sidebar-section">
           <div class="sidebar-label">Menunggu</div>
           <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Hotel (tindakan anda)</span><b id="countHotel" style="color:var(--gold);">0</b></div>
           <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Hotel (pelulus lain)</span><b id="countHotelLain" style="color:var(--ink-dim);">0</b></div>
-          <div class="sidebar-note" style="display:flex;justify-content:space-between;"><span>Penerbangan</span><b id="countFlight" style="color:var(--gold);">0</b></div>
+          <div class="sidebar-note" style="display:flex;justify-content:space-between;margin-bottom:6px;"><span>Penerbangan (tindakan anda)</span><b id="countFlight" style="color:var(--gold);">0</b></div>
+          <div class="sidebar-note" style="display:flex;justify-content:space-between;"><span>Penerbangan (pelulus lain)</span><b id="countFlightLain" style="color:var(--ink-dim);">0</b></div>
         </div>
       </aside>
 
       <main class="main-content">
         <!-- MENUNGGU -->
         <div id="page-pending">
-          <div class="page-header"><h2>Menunggu Kelulusan</h2><p>Hotel melalui 4 peringkat. Anda (Pegawai Tadbir) meluluskan di peringkat 2: semak gred, kemudian lulus atau tolak.</p></div>
+          <div class="page-header"><h2>Menunggu Kelulusan</h2><p>Hotel dan penerbangan melalui 4 peringkat. Anda (Pegawai Tadbir) meluluskan di peringkat 2: semak skim / gred, kemudian lulus atau tolak.</p></div>
           <div class="tabs" id="pendingTabs">
             <button class="tab active" data-jenis="">Semua</button>
             <button class="tab" data-jenis="Hotel">Hotel</button>
@@ -296,10 +297,15 @@
 
         <!-- PERLU DITEMPAH -->
         <div id="page-tempah" style="display:none;">
-          <div class="page-header"><h2>Perlu Ditempah</h2><p>Permohonan hotel yang sudah diluluskan sepenuhnya (4 peringkat). Buat tempahan hotel sebenar, kemudian rekodkan butirannya di sini. Pemohon akan dimaklumkan melalui emel. Butang <b>Sunting permohonan</b> membolehkan anda membetulkan butiran permohonan (kecuali nama, bahagian, unit dan emel).</p></div>
+          <div class="page-header"><h2>Perlu Ditempah</h2><p>Permohonan hotel dan penerbangan yang sudah diluluskan sepenuhnya (4 peringkat). Buat tempahan hotel / tiket sebenar, kemudian rekodkan butirannya di sini. Pemohon akan dimaklumkan melalui emel. Butang <b>Sunting permohonan</b> (hotel) membolehkan anda membetulkan butiran permohonan (kecuali nama, bahagian, unit dan emel).</p></div>
           <div class="tabs" id="tempahTabs">
             <button class="tab active" data-t="belum">Belum ditempah</button>
             <button class="tab" data-t="siap">Sudah ditempah</button>
+          </div>
+          <div class="tabs" id="tempahJenisTabs" style="margin-top:-6px;">
+            <button class="tab active" data-jenis="">Semua</button>
+            <button class="tab" data-jenis="Hotel">Hotel</button>
+            <button class="tab" data-jenis="Penerbangan">Penerbangan</button>
           </div>
           <div id="tempahList"><div class="empty-state">Memuatkan...</div></div>
         </div>
@@ -345,7 +351,7 @@
 
         <!-- PELULUS -->
         <div id="page-pelulus" style="display:none;">
-          <div class="page-header"><h2>Pelulus Hotel</h2><p>Nama dan emel diubah dalam tab <b>Pelulus</b> di Google Sheet. Cuti pelulus ditetapkan di sini.</p></div>
+          <div class="page-header"><h2>Pelulus</h2><p>Nama dan emel diubah dalam tab <b>Pelulus</b> di Google Sheet. Cuti pelulus ditetapkan di sini.</p></div>
           <div class="note"><b style="color:var(--ink);">Pelulus bercuti?</b> Tekan <b>Tetapkan cuti</b>, pilih pemangku (contoh: Pengurus Besar &rarr; Timbalan Pengurus Besar) dan tarikh cuti.
             Sepanjang tempoh itu, permohonan dihantar terus kepada pemangku. Permohonan yang sedang menunggu pelulus itu juga dipindahkan secara automatik.</div>
           <div class="card" style="overflow-x:auto;" id="pelulusWrap"><div class="empty-state" style="border:none;">Memuatkan...</div></div>
@@ -458,10 +464,11 @@
     function skimGred(b) {
       if (!b.skim) return '';
       if (b.skim === 'PSH') return 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '');
-      if (b.skim === 'VU') return 'VU';
+      if (b.skim === 'VU') return 'VU' + (b.gred || '');
       if (b.skim === 'SSM' || b.skim === 'SSPA') return b.skim + ' ' + (b.gred || '');
       return b.skim + (b.gred || '');
     }
+    function fmtRM(n) { return n === '' || n == null || isNaN(Number(n)) ? '' : 'RM' + Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
     function butiranPermohonan(b) {
       var asas = [['Skim / gred', skimGred(b)], ['Tujuan / program', b.tujuan], ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
         ['Peruntukan', teksPeruntukan(b)]];
@@ -473,7 +480,7 @@
         ['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
         ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
         ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
-        ['Syarikat', b.syarikat], ['Kelas', b.kelas]
+        ['Syarikat', b.syarikat], ['Kelas', b.kelas + (b.layakBisnes ? ' (VU7 / Gred 14)' : '')]
       ]);
     }
     function populateUnitSelect(selectEl, bahagian) {
@@ -581,6 +588,7 @@
         var c = await adminApi('getPendingCounts');
         var ids = c.hotel.concat(c.penerbangan, c.tempah || []);
         $('countAll').textContent = (c.hotel.length + c.penerbangan.length) || '';
+        $('countFlightLain').textContent = c.penerbanganLain || 0;
         $('countTempah').textContent = (c.tempah || []).length || '';
         $('countHotel').textContent = c.hotel.length;
         $('countHotelLain').textContent = c.hotelLain || 0;
@@ -647,7 +655,7 @@
         var ikon = cls === 'lulus' ? '&#10003;' : cls === 'tolak' ? '&#10007;' : k.peringkat;
         return '<span class="stp ' + cls + '" title="' + escapeHtml((k.nama ? k.nama + ' · ' : '') + (k.keputusan ? k.keputusan + ' ' + k.tarikh : 'Belum')) + '"><i>' + ikon + '</i>' + escapeHtml(k.jawatan) + '</span>';
       }).join('') + (b.tempahan && b.tempahan.status
-        ? '<span class="stp ' + (b.tempahan.status === 'Ditempah' ? 'lulus' : 'kini') + '"><i>' + (b.tempahan.status === 'Ditempah' ? '&#10003;' : '&#9998;') + '</i>Tempahan hotel (Unit Pentadbiran)</span>'
+        ? '<span class="stp ' + (b.tempahan.status === 'Ditempah' ? 'lulus' : 'kini') + '"><i>' + (b.tempahan.status === 'Ditempah' ? '&#10003;' : '&#9998;') + '</i>Tempahan ' + (b.jenis === 'Hotel' ? 'hotel' : 'tiket') + ' (Unit Pentadbiran)</span>'
         : '') + '</div>';
     }
     /** Hotel di peringkat lain: papar siapa yang ditunggu + butang hantar semula emel. */
@@ -658,7 +666,7 @@
         ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ')</span>' +
         '<button class="btn btn-ghost btn-sm b-resend">&#9993; Hantar semula emel</button></div>';
     }
-    function giliranSaya(b) { return b.jenis !== 'Hotel' || b.peringkat === 2; }
+    function giliranSaya(b) { return b.peringkat === 2; }
 
     function kadPending(b) {
       var hotel = b.jenis === 'Hotel';
@@ -668,8 +676,8 @@
       }
       return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rantaian(b) + rowsHtml(butiranPermohonan(b)) + lampiranHtml(b) +
         '<div class="pending-actions">' + pilihGred(b) +
-        (hotel ? '' : '<span style="font-size:11.5px;color:var(--ink-dim);">(kelayakan penerbangan belum ditetapkan)</span>') + '</div>' +
-        (hotel ? '<div class="kel">Pilih skim dan isi gred untuk semak kelayakan.</div>' : '') +
+        '</div>' +
+        '<div class="kel">' + (hotel ? 'Pilih skim dan isi gred untuk semak kelayakan.' : '') + '</div>' +
         '<input type="text" class="note-input" placeholder="Catatan / sebab (wajib jika ditolak)">' +
         '<div class="pending-actions"><button class="btn btn-primary btn-sm b-lulus">&#10003; Luluskan</button>' +
         '<button class="btn btn-danger btn-sm b-tolak">&#10007; Tolak</button></div></div>';
@@ -700,9 +708,15 @@
       function tukar() {
         var psh = skim.value === 'PSH', vu = skim.value === 'VU';
         gred.style.display = psh ? 'none' : ''; akad.style.display = psh ? '' : 'none';
-        gred.disabled = vu;
-        if (vu) { gred.value = ''; gred.options[0].textContent = 'Tiada gred (VU)'; } else { gred.options[0].textContent = '-- Gred --'; }
+        if (vu) { gred.value = '7'; gred.disabled = true; } else if (gred.disabled) { gred.disabled = false; gred.value = ''; }
         if (!kel) return;
+        if (b.jenis !== 'Hotel') {
+          var bisnes = vu || gred.value === '14';
+          kel.className = 'kel' + (bisnes ? ' ok' : '');
+          kel.textContent = bisnes ? 'VU7 / Gred 14: kelas Bisnes (dikunci). Kelas dimohon: ' + b.kelas + (b.kelas !== 'Bisnes' ? ' \u2192 akan ditukar ke Bisnes.' : '.')
+            : 'Kelas dimohon: ' + b.kelas + '.';
+          return;
+        }
         clearTimeout(t);
         var n = nilaiGred(card);
         if (!n.skim || (psh ? !n.akademik : (!vu && !n.gred))) { kel.className = 'kel'; kel.textContent = 'Pilih skim dan isi gred untuk semak kelayakan.'; return; }
@@ -729,8 +743,8 @@
     async function putus(card, b, keputusan) {
       var nota = card.querySelector('.note-input').value.trim(), n = nilaiGred(card), hotel = b.jenis === 'Hotel';
       if (keputusan === 'Ditolak' && !nota) { showToast('Sila isi sebab penolakan dalam ruang catatan.', true); return; }
-      if (keputusan === 'Diluluskan' && hotel && (!n.skim || (n.skim === 'PSH' ? !n.akademik : (n.skim !== 'VU' && !n.gred)))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
-      var lanjut = hotel && keputusan === 'Diluluskan' ? ' Permohonan akan dimajukan kepada Ketua Akauntan.' : ' Emel akan dihantar kepada pemohon.';
+      if (keputusan === 'Diluluskan' && (!n.skim || (n.skim === 'PSH' ? !n.akademik : (n.skim !== 'VU' && !n.gred)))) { showToast('Sila tetapkan skim dan gred pemohon dahulu.', true); return; }
+      var lanjut = keputusan === 'Diluluskan' ? ' Permohonan akan dimajukan kepada Ketua Akauntan.' : ' Emel akan dihantar kepada pemohon.';
       var ok = await tanya({ tajuk: (keputusan === 'Diluluskan' ? 'Luluskan ' : 'Tolak ') + b.id + '?', teks: lanjut.trim(),
         ya: keputusan === 'Diluluskan' ? 'Ya, Luluskan' : 'Ya, Tolak', bahaya: keputusan !== 'Diluluskan' });
       if (!ok) return;
@@ -754,7 +768,14 @@
     }
 
     // ---------------- Perlu ditempah ----------------
-    var tempahRows = [], tempahTab = 'belum';
+    var tempahRows = [], tempahTab = 'belum', tempahJenis = '';
+    Array.prototype.forEach.call(document.querySelectorAll('#tempahJenisTabs .tab'), function (t) {
+      t.addEventListener('click', function () {
+        tempahJenis = t.getAttribute('data-jenis');
+        Array.prototype.forEach.call(document.querySelectorAll('#tempahJenisTabs .tab'), function (x) { x.classList.toggle('active', x === t); });
+        renderTempah();
+      });
+    });
     Array.prototype.forEach.call(document.querySelectorAll('#tempahTabs .tab'), function (t) {
       t.addEventListener('click', function () {
         tempahTab = t.getAttribute('data-t');
@@ -770,7 +791,7 @@
     async function loadTempah() {
       if (!SENARAI_HOTEL) { try { SENARAI_HOTEL = await api('getSenaraiHotel'); } catch (e) { SENARAI_HOTEL = []; } }
       try {
-        tempahRows = (await adminApi('getRequests', { jenis: 'Hotel', status: 'Diluluskan' })).filter(function (b) { return b.tempahan && b.tempahan.status; });
+        tempahRows = (await adminApi('getRequests', { status: 'Diluluskan' })).filter(function (b) { return b.tempahan && b.tempahan.status; });
         renderTempah();
       } catch (e) { $('tempahList').innerHTML = '<div class="empty-state">Ralat: ' + escapeHtml(e.message) + '</div>'; }
     }
@@ -796,14 +817,48 @@
         '<button class="btn btn-sm b-sunting">&#9998; Sunting permohonan</button>' +
         '<a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak</a></div></div>';
     }
+    /** Kad tempahan tiket penerbangan */
+    function kadTiket(b) {
+      var t = b.tempahan, k = 'tp-' + escapeHtml(b.id);
+      return '<div class="card pending-card" data-id="' + escapeHtml(b.id) + '">' + kepala(b) + rantaian(b) +
+        rowsHtml([['Dari \u2192 Destinasi', b.dari + '  \u2192  ' + b.destinasi],
+          ['Pergi', b.tarikhPergi + ', bertolak ' + b.masaPergi + (b.noPergi ? ' (' + b.noPergi + ')' : '')],
+          ['Balik', b.tarikhBalik + ', bertolak ' + b.masaBalik + (b.noBalik ? ' (' + b.noBalik + ')' : '')],
+          ['Syarikat dipohon', b.syarikat], ['Kelas', b.kelas + (b.layakBisnes ? ' (VU7 / Gred 14)' : '')],
+          ['Bilangan orang', b.bilOrang ? b.bilOrang + ' orang (tidak termasuk PKA)' : ''],
+          ['Skim / gred', skimGred(b)], ['Peruntukan', teksPeruntukan(b)], ['Tujuan / program', b.tujuan]]) + lampiranHtml(b) +
+        (b.disunting ? '<div class="lamp" style="white-space:pre-line;">&#9998; ' + escapeHtml(b.disunting) + '</div>' : '') +
+        (t.status === 'Ditempah' ? '<div class="kel ok">Ditempah pada ' + escapeHtml(t.tarikh) + '. Ubah di bawah jika perlu; pemohon akan dimaklumkan semula.</div>' : '') +
+        '<div class="form-section" style="margin-top:14px;">Butiran Tiket</div>' +
+        '<div class="field-row">' + medan(k + '-syarikat', 'Syarikat penerbangan', t.syarikat || b.syarikat, 'type="text" placeholder="Contoh: MASwings"') +
+        medan(k + '-penerbangan', 'No. penerbangan', t.penerbangan || [b.noPergi, b.noBalik].filter(Boolean).join(' / '), 'type="text" placeholder="Contoh: MH2611 / MH2618" style="text-transform:uppercase;"') + '</div>' +
+        '<div class="field-row">' + medan(k + '-no', 'No. pengesahan / PNR', t.noPengesahan, 'type="text" style="text-transform:uppercase;"') +
+        medan(k + '-harga', 'Harga tiket (RM) <span>(pilihan)</span>', t.harga, 'type="number" min="0" step="0.01" inputmode="decimal"') + '</div>' +
+        medan(k + '-catatan', 'Catatan kepada pemohon <span>(pilihan)</span>', t.catatan, 'type="text" placeholder="Contoh: Daftar masuk 1 jam sebelum berlepas"') +
+        '<div class="pending-actions"><button class="btn btn-primary btn-sm b-simpan">' + (t.status === 'Ditempah' ? 'Kemas Kini &amp; Maklum Pemohon' : 'Simpan Tiket &amp; Maklum Pemohon') + '</button>' +
+        '<a class="btn btn-ghost btn-sm" target="_blank" href="print.html?id=' + encodeURIComponent(b.id) + '">Cetak</a></div></div>';
+    }
+    async function simpanTiket(card, b) {
+      var k = 'tp-' + b.id, g = function (n) { return document.getElementById(k + '-' + n).value.trim(); };
+      if (!g('penerbangan') && !g('no')) { showToast('Sila isi No. penerbangan atau No. pengesahan / PNR.', true); return; }
+      var ok = await tanya({ tajuk: 'Rekod tiket ' + b.id + '?', teks: 'Butiran tiket akan dihantar kepada pemohon (' + b.emel + ').', ya: 'Ya, Simpan' });
+      if (!ok) return;
+      kunci(card, true);
+      try {
+        var res = await adminApi('saveTicket', { id: b.id, syarikat: g('syarikat'), penerbangan: g('penerbangan'), noPengesahan: g('no'), harga: g('harga'), catatan: g('catatan') });
+        showToast(res.message, !res.emel);
+        loadTempah(); pollCounts(); allRows = [];
+      } catch (e) { showToast('Ralat: ' + e.message, true); kunci(card, false); }
+    }
     function renderTempah() {
-      var rows = tempahRows.filter(function (b) { return tempahTab === 'siap' ? b.tempahan.status === 'Ditempah' : b.tempahan.status !== 'Ditempah'; });
+      var rows = tempahRows.filter(function (b) { return (!tempahJenis || b.jenis === tempahJenis) && (tempahTab === 'siap' ? b.tempahan.status === 'Ditempah' : b.tempahan.status !== 'Ditempah'); });
       var el = $('tempahList');
       if (!rows.length) { el.innerHTML = '<div class="empty-state">' + (tempahTab === 'siap' ? 'Belum ada tempahan direkod.' : 'Tiada permohonan menunggu tempahan.') + '</div>'; return; }
       el.innerHTML = '<datalist id="dlHotel">' + (SENARAI_HOTEL || []).map(function (h) { return '<option value="' + escapeHtml(h.hotel) + '">' + escapeHtml(h.daerah) + '</option>'; }).join('') + '</datalist>' +
-        rows.map(kadTempah).join('');
+        rows.map(function (b) { return b.jenis === 'Hotel' ? kadTempah(b) : kadTiket(b); }).join('');
       Array.prototype.forEach.call(el.querySelectorAll('.pending-card'), function (card) {
         var b = rows.find(function (x) { return x.id === card.getAttribute('data-id'); });
+        if (b.jenis !== 'Hotel') { card.querySelector('.b-simpan').addEventListener('click', function () { simpanTiket(card, b); }); return; }
         // Pilih hotel dari senarai -> alamat diisi automatik (jika ada dalam tab Senarai_Hotel)
         var inHotel = card.querySelector('[id$="-hotel"]'), inAlamat = card.querySelector('[id$="-alamat"]');
         inHotel.addEventListener('change', function () { var a = alamatHotel(inHotel.value); if (a && !inAlamat.value) inAlamat.value = a; });
@@ -826,7 +881,8 @@
 
     // ---------------- Sunting permohonan (hotel Diluluskan) ----------------
     function teksPeruntukan(b) {
-      return [b.peruntukan, b.projectCode ? 'Project Code ' + b.projectCode : '', b.votHead ? 'Vot Head ' + b.votHead : ''].filter(function (x) { return x; }).join(' \u00b7 ');
+      return [b.peruntukan, b.projectCode ? 'Project Code ' + b.projectCode : '', b.votHead ? 'Vot Head ' + b.votHead : '',
+        fmtRM(b.bakiPeruntukan) ? 'Baki ' + fmtRM(b.bakiPeruntukan) : ''].filter(function (x) { return x; }).join(' \u00b7 ');
     }
     function lampiranHtml(b) {
       return b.lampiran && b.lampiran.url
@@ -849,7 +905,8 @@
         '<div class="field"><label>Bilangan orang <span>(tidak termasuk PKA)</span></label><input type="number" min="1" max="200" data-k="bilOrang" value="' + escapeHtml(b.bilOrang) + '"></div>' +
         '<div class="field"><label>Peruntukan</label><select data-k="peruntukan">' + opt(['Pembangunan', 'Dalaman'], b.peruntukan, '-- Pilih --') + '</select></div></div>' +
         '<div class="field-row"><div class="field"><label>Project Code <span>(wajib untuk Pembangunan)</span></label><input data-k="projectCode" value="' + escapeHtml(b.projectCode) + '" style="text-transform:uppercase;"></div>' +
-        '<div class="field"><label>Vot Head</label><input data-k="votHead" value="' + escapeHtml(b.votHead) + '" style="text-transform:uppercase;"></div></div>' +
+        '<div class="field"><label>Vot Head</label><input data-k="votHead" value="' + escapeHtml(b.votHead) + '" style="text-transform:uppercase;"></div>' +
+        '<div class="field"><label>Baki peruntukan (RM)</label><input data-k="bakiPeruntukan" inputmode="decimal" value="' + escapeHtml(b.bakiPeruntukan) + '"></div></div>' +
         '<div class="field"><label>Tujuan / program</label><textarea data-k="tujuan">' + escapeHtml(b.tujuan) + '</textarea></div>' +
         '<div class="field-row"><div class="field"><label>Daerah / destinasi</label><input data-k="daerah" list="dlDaerahS" value="' + escapeHtml(b.daerah) + '"></div>' +
         '<div class="field"><label>Nama hotel</label><input data-k="namaHotel" list="dlHotelS" value="' + escapeHtml(b.namaHotel) + '"></div></div>' +
@@ -878,7 +935,7 @@
       w.querySelector('.b-sunting-simpan').addEventListener('click', async function () {
         var btn = this, ralat = w.querySelector('.form-error');
         var data = { id: b.id };
-        ['skim', 'gred', 'akademik', 'noTelefon', 'bilOrang', 'peruntukan', 'projectCode', 'votHead', 'tujuan', 'daerah', 'namaHotel', 'tarikhMasuk', 'tarikhKeluar']
+        ['skim', 'gred', 'akademik', 'noTelefon', 'bilOrang', 'peruntukan', 'projectCode', 'votHead', 'bakiPeruntukan', 'tujuan', 'daerah', 'namaHotel', 'tarikhMasuk', 'tarikhKeluar']
           .forEach(function (k) { data[k] = q(k).value.trim(); });
         data.maklum = q('maklum').checked ? '1' : '0';
         ralat.classList.remove('show'); btn.disabled = true; btn.textContent = 'Menyimpan...';
