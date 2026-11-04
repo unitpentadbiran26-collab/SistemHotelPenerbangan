@@ -90,7 +90,7 @@
         ['Syarikat penerbangan', b.syarikat], ['Kelas', b.kelas]
       ];
       var skimGred = !b.skim ? '' : b.skim === 'PSH' ? 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '')
-        : b.skim === 'VU' ? 'VU' : (b.skim === 'SSM' || b.skim === 'SSPA') ? b.skim + ' ' + (b.gred || '') : b.skim + (b.gred || '');
+        : b.skim === 'VU' ? 'VU' + (b.gred || '') : (b.skim === 'SSM' || b.skim === 'SSPA') ? b.skim + ' ' + (b.gred || '') : b.skim + (b.gred || '');
       var keputusan = [['Status', b.status + (b.peringkat ? ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ': ' + b.pelulusSemasa + ')' : '')]];
       if (hotel) keputusan.push(['Kelayakan sewa hotel', b.status === 'Diluluskan' ? b.hadKelayakan : '']);
       keputusan.push(['Catatan', b.catatanAdmin], ['Tarikh keputusan', b.tarikhKeputusan]);
@@ -113,12 +113,18 @@
           ['Nama', b.nama], ['Bahagian', b.bahagian], ['Unit', b.unit === '-' ? '' : b.unit], ['Emel', b.emel], ['No. telefon', b.noTelefon],
           ['Skim / gred', skimGred], ['Tujuan / program', b.tujuan],
           ['Bilangan orang (tidak termasuk PKA)', b.bilOrang ? b.bilOrang + ' orang' : ''],
-          ['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Lampiran', b.lampiran ? b.lampiran.nama : 'Tiada']
+          ['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead],
+          ['Baki peruntukan', b.bakiPeruntukan === '' || b.bakiPeruntukan == null ? '' : 'RM' + Number(b.bakiPeruntukan).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')], ['Lampiran', b.lampiran ? b.lampiran.nama : 'Tiada']
         ]) +
         '<h2>B. Butiran ' + (hotel ? 'Penginapan' : 'Penerbangan') + '</h2>' + jadual(butiran) +
         '<h2>C. Keputusan ' + esc(b.organisasi) + '</h2>' + jadual(keputusan) +
         (jadualLulus ? '<h2>D. Peringkat Kelulusan</h2>' + jadualLulus : '') +
-        (b.tempahan && b.tempahan.status ? '<h2>E. Tempahan Hotel (Unit Pentadbiran)</h2>' + jadual(b.tempahan.status === 'Ditempah' ? [
+        (!hotel && b.tempahan && b.tempahan.status ? '<h2>E. Tempahan Tiket (Unit Pentadbiran)</h2>' + jadual(b.tempahan.status === 'Ditempah' ? [
+          ['Syarikat penerbangan', b.tempahan.syarikat], ['No. penerbangan', b.tempahan.penerbangan], ['No. pengesahan / PNR', b.tempahan.noPengesahan],
+          ['Harga tiket', b.tempahan.harga !== '' && b.tempahan.harga != null ? 'RM' + Number(b.tempahan.harga).toFixed(2) : ''],
+          ['Catatan', b.tempahan.catatan], ['Tarikh direkod', b.tempahan.tarikh]
+        ] : [['Status', 'Belum ditempah']]) : '') +
+        (hotel && b.tempahan && b.tempahan.status ? '<h2>E. Tempahan Hotel (Unit Pentadbiran)</h2>' + jadual(b.tempahan.status === 'Ditempah' ? [
           ['Hotel ditempah', b.tempahan.hotel], ['Alamat / no. telefon', b.tempahan.alamat], ['No. pengesahan', b.tempahan.noPengesahan],
           ['Jenis bilik', b.tempahan.jenisBilik], ['Kadar semalam', b.tempahan.kadar !== '' && b.tempahan.kadar != null ? 'RM' + Number(b.tempahan.kadar).toFixed(2) : ''],
           ['Catatan', b.tempahan.catatan], ['Tarikh direkod', b.tempahan.tarikh]
