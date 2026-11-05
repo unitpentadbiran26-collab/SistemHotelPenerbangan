@@ -666,7 +666,7 @@
         ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ')</span>' +
         '<button class="btn btn-ghost btn-sm b-resend">&#9993; Hantar semula emel</button></div>';
     }
-    function giliranSaya(b) { return b.peringkat === 2; }
+    function giliranSaya(b) { return b.giliranAdmin !== undefined ? b.giliranAdmin : b.peringkat === 2; }
 
     function kadPending(b) {
       var hotel = b.jenis === 'Hotel';
