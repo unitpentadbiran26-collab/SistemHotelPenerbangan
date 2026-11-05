@@ -1035,7 +1035,7 @@
             var cuti = !r.cutiMula ? '<span style="color:var(--ink-dim);">Bertugas</span>'
               : (r.sedangCuti ? '<span class="badge badge-Ditolak">Sedang cuti</span>' : '<span class="badge badge-Menunggu">Cuti akan datang</span>') +
                 '<br><span style="font-size:11.5px;color:var(--ink-dim);">' + escapeHtml(r.cutiMula) + ' &rarr; ' + escapeHtml(r.cutiTamat) + '<br>Pemangku: ' + escapeHtml(r.pemangkuJawatan || '-') + '</span>';
-            return '<tr><td><b>' + escapeHtml(r.jawatan) + '</b><br><span style="font-size:11px;color:var(--ink-dim);">' + escapeHtml(r.kod) + '</span></td>' +
+            return '<tr><td><b>' + escapeHtml(r.jawatan) + '</b><br><span style="font-size:11px;color:var(--ink-dim);">' + escapeHtml(r.kod) + (r.skimGred ? ' &middot; ' + escapeHtml(r.skimGred) : '') + '</span></td>' +
               '<td>' + (escapeHtml(r.nama) || '<span style="color:var(--ink-dim);">-</span>') + '</td>' +
               '<td>' + (r.emel ? escapeHtml(r.emel) : '<span style="color:var(--coral);">Belum diisi</span>') + '</td>' +
               '<td style="min-width:150px;">' + cuti + '</td>' +
