@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>SPHP · Kelulusan Permohonan</title>
+  <title>SPPP · Kelulusan Permohonan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
@@ -60,7 +60,7 @@
   .msg .ic{width:56px;height:56px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:26px;margin-bottom:14px;}
   .msg h2{font-size:19px;margin-bottom:6px;}
   .msg p{color:var(--ink-dim);font-size:13.5px;line-height:1.5;}
-  /* ---- Identiti SPHP (beza daripada SPP) ---- */
+  /* ---- Identiti SPPP (beza daripada SPP) ---- */
   .brand-tag{display:inline-block;background:var(--gold);color:#fff;font-weight:800;font-size:11px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;margin-right:6px;vertical-align:1px;}
   /* Dialog dalam halaman (ganti confirm/prompt yang tidak muncul dalam apps Android) */
   .tdlg{position:fixed;inset:0;background:rgba(16,40,40,.45);display:none;align-items:center;justify-content:center;z-index:500;padding:20px;}
@@ -83,7 +83,7 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="brand"><img src="logo.png" alt=""><div><div class="n"><span class="brand-tag">SPHP</span>Kelulusan Permohonan</div><div class="s" id="subJenis">Hotel &amp; Penerbangan</div></div></div>
+    <div class="brand"><img src="logo.png" alt=""><div><div class="n"><span class="brand-tag">SPPP</span>Kelulusan Permohonan</div><div class="s" id="subJenis">Penginapan &amp; Penerbangan</div></div></div>
     <div id="root"><div class="card msg"><p>Memuatkan permohonan...</p></div></div>
     <div class="foot" id="foot"></div>
   </div>
@@ -184,7 +184,7 @@
       });
       var hotel = b.jenis === 'Hotel';
       $('subJenis').textContent = hotel ? 'Penginapan Hotel' : 'Tiket Penerbangan';
-      document.title = 'SPHP · Kelulusan ' + (hotel ? 'Hotel' : 'Penerbangan');
+      document.title = 'SPPP · Kelulusan ' + (hotel ? 'Hotel' : 'Penerbangan');
       var tempoh = b.bilMalam ? (Number(b.bilMalam) + 1) + ' hari ' + b.bilMalam + ' malam' : '';
       var peruntukan = [['Peruntukan', b.peruntukan], ['Project Code', b.projectCode], ['Vot Head', b.votHead], ['Baki peruntukan', fmtRM(b.bakiPeruntukan)]];
       var butiran = hotel
