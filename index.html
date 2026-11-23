@@ -376,7 +376,7 @@
           </div>
           <div class="form-section" style="margin-top:8px;">Maklumat Penerbangan</div>
           <div class="field-row">
-            <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kuching"></div>
+            <div class="field"><label>Dari</label><input type="text" id="p_dari" placeholder="Contoh: Kota Kinabalu"></div>
             <div class="field"><label>Destinasi</label><input type="text" id="p_destinasi" placeholder="Contoh: Kuala Lumpur"></div>
           </div>
           <div class="field-row">
@@ -388,13 +388,9 @@
             <div class="field"><label>Masa Bertolak (Balik)</label><input type="time" id="p_masaBalik"></div>
           </div>
           <div class="field-row">
-            <div class="field"><label>No. Penerbangan Pergi <span>(jika ada)</span></label><input type="text" id="p_noPergi" placeholder="Contoh: MH2511"></div>
-            <div class="field"><label>No. Penerbangan Balik <span>(jika ada)</span></label><input type="text" id="p_noBalik"></div>
-          </div>
-          <div class="field-row">
-            <div class="field"><label>Syarikat Penerbangan <span>(pilihan)</span></label><input type="text" id="p_syarikat" placeholder="Contoh: MASwings"></div>
             <div class="field"><label>Kelas</label><select id="p_kelas"><option value="Ekonomi">Ekonomi</option><option value="Bisnes">Bisnes</option></select>
               <div class="hint" id="p_kelasNota" style="display:none;">Dikunci: VU7 / Gred 14 layak kelas Bisnes.</div></div>
+            <div class="field"></div>
           </div>
           <div class="summary" id="p_aliran"></div>
           <div style="display:flex;gap:10px;">
@@ -807,9 +803,10 @@
       if (m) return err('p', m);
       var d = dataPemohon('p');
       d.dari = v('p_dari'); d.destinasi = v('p_destinasi');
-      d.tarikhPergi = v('p_tarikhPergi'); d.masaPergi = v('p_masaPergi'); d.noPergi = v('p_noPergi');
-      d.tarikhBalik = v('p_tarikhBalik'); d.masaBalik = v('p_masaBalik'); d.noBalik = v('p_noBalik');
-      d.syarikat = v('p_syarikat'); d.kelas = v('p_kelas');
+      // No. penerbangan & syarikat diisi oleh Unit Pentadbiran semasa tempahan tiket.
+      d.tarikhPergi = v('p_tarikhPergi'); d.masaPergi = v('p_masaPergi');
+      d.tarikhBalik = v('p_tarikhBalik'); d.masaBalik = v('p_masaBalik');
+      d.kelas = v('p_kelas');
       hantar(this, 'submitPenerbangan', d, 'p');
     });
 
@@ -817,10 +814,13 @@
     // Ditapis ikut Peruntukan + Bahagian (+ Unit jika diisi). Tiada padanan / tab tiada -> kotak taip biasa.
     var SENARAI_PERUNTUKAN = { projectCode: [], votHead: [] }, LAIN_K = '__LAIN__';
     function normal(s) { return String(s || '').toUpperCase().replace(/^BAHAGIAN\s+/, '').replace(/\s+/g, ' ').trim(); }
+    // Lajur 'Jenis' (pilihan) dalam tab senarai: Hotel / Penerbangan. Kosong = untuk kedua-duanya.
     function padanKod(senarai, px) {
       var per = normal(v(px + '_peruntukan')), bah = normal(v(px + '_bahagian')), unit = normal(v(px + '_unit'));
+      var jenis = px === 'h' ? 'HOTEL' : 'PENERBANGAN';
       return senarai.filter(function (x) {
-        return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit);
+        return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit) &&
+          (!x.jenis || normal(x.jenis) === jenis);
       });
     }
     function isiKod(px, jenis) {
@@ -832,6 +832,7 @@
         list.map(function (x) { return '<option value="' + escapeHtml(x.kod) + '">' + escapeHtml(x.kod + (x.nama ? ' — ' + x.nama : '')) + '</option>'; }).join('') +
         '<option value="' + LAIN_K + '">Lain-lain (nyatakan)</option>';
       if (lama && Array.prototype.some.call(sel.options, function (o) { return o.value === lama; })) sel.value = lama;
+      else if (list.length === 1) sel.value = list[0].kod; // satu pilihan sahaja: terus dipilih
       tukarKod(px, jenis);
     }
     function tukarKod(px, jenis) {
