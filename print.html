@@ -88,7 +88,7 @@
         ['Tarikh pergi', b.tarikhPergi], ['Masa bertolak (pergi)', b.masaPergi], ['No. penerbangan (pergi)', b.noPergi],
         ['Tarikh balik', b.tarikhBalik], ['Masa bertolak (balik)', b.masaBalik], ['No. penerbangan (balik)', b.noBalik],
         ['Syarikat penerbangan', b.syarikat], ['Kelas', b.kelas]
-      ];
+      ].filter(function (r) { return r[0].indexOf('No. penerbangan') < 0 && r[0] !== 'Syarikat penerbangan' || r[1]; });
       var skimGred = !b.skim ? '' : b.skim === 'PSH' ? 'PSH' + (b.akademik ? ' (' + b.akademik + ')' : '')
         : b.skim === 'VU' ? 'VU' + (b.gred || '') : (b.skim === 'SSM' || b.skim === 'SSPA') ? b.skim + ' ' + (b.gred || '') : b.skim + (b.gred || '');
       var keputusan = [['Status', b.status + (b.peringkat ? ' (peringkat ' + b.peringkat + '/' + b.jumlahPeringkat + ': ' + b.pelulusSemasa + ')' : '')]];
