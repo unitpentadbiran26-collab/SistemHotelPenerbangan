@@ -132,7 +132,8 @@
       var per = normal($('kaPer').value), bah = normal(DATA.bahagian), unit = normal(DATA.unit);
       ['projectCode', 'votHead'].forEach(function (j) {
         var list = (SENARAI_KOD[j] || []).filter(function (x) {
-          return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit);
+          return normal(x.peruntukan) === per && (!x.bahagian || normal(x.bahagian) === bah) && (!x.unit || normal(x.unit) === unit) &&
+            (!x.jenis || normal(x.jenis) === normal(DATA.jenis));
         });
         $('dl_' + j).innerHTML = list.map(function (x) { return '<option value="' + esc(x.kod) + '">' + esc(x.nama || '') + '</option>'; }).join('');
       });
